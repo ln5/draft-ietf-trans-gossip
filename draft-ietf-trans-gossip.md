@@ -504,6 +504,136 @@ can be found at XXX.
 
 \[TBD specify something here or leave this for others?\]
 
+# 3-Method Ecosystem
+
+The use of three distinct methods for monitoring logs may seem excessive,
+but each represents a needed component in the CT ecosystem. To understand
+why, the drawbacks of each component must be outlined. In this discussion
+we assume that an attacker knows which mechanisms an HTTPS client and HTTPS
+server implement.
+
+## SCT Feedback
+
+SCT Feedback requires the cooperation of HTTPS clients and more importantly
+HTTPS servers. HTTPS servers can be built to work out of the box with no
+explicit configuration, and the logic behind the .well-known URIs pre-provided.
+However, to take full advantage of the system, a HTTPS server would wish to
+
+- Minimize its disk commitment by whitelisting known SCTs and
+  certificate chains
+- Maximize its chance of detecting a misissued certificate by configuring
+  a trust store of CAs
+- Establish a "push" mechanism for POSTing SCTs to Auditors and Monitors
+
+These configuration needs, and the simple fact that it would require some
+deployment of software, mean that some percentage of HTTPS servers will not
+deploy SCT Feedback.
+
+If SCT Feedback was the only mechanism in the ecosystem, any server that
+did not implement the feature could be attacked without risk
+of detection.
+
+If SCT Feedback was not deployed, users who wished to have the strongest
+measure of privacy protection could be attacked without risk
+of detection.
+
+## STH Pollination
+
+STH Pollination requires the cooperation of HTTPS clients, HTTPS servers,
+and logs.
+
+HTTPS Clients must have a mechanism to safely request inclusion proofs in
+a privacy preserving manner.
+
+\[ln: clients don't need inclusion proofs in order to take part in pollination; clients do need inclusion proofs in order for STHs to be of any value to them directly\]
+
+HTTPS Servers must deploy software (although, as in the case with SCT Feedback
+this logic can be pre-provided) and commit some configurable amount of disk
+space to the endeavor.
+
+Logs must provide access to clients to query inclusion proofs in a privacy
+preserving manner, most likely through DNS.
+
+Unlike SCT Feedback, the STH Pollination mechanism is not hampered if only a
+minority of HTTPS servers deploy it. However, it makes an assumption that
+an HTTPS client can query DNS in an anonymous manner. While this may be the
+case for users of shared DNS services such as a large ISP, in other
+situations it would be unacceptable. For instance, DNS requests originating
+from a production webserver deployment would be rare (as webservers do not
+make many outbound requests) and could leak administrative information or
+confidential relationships.
+
+\[
+tjr: This example is a bit of a stretch, would love to see somehting better.
+\]
+
+For this reason, some percentage of HTTPS clients may choose to not enable
+the SCT lookup component of STH pollination. (Although they could still
+request and send STHs amoung participating HTTPS servers.) Indeed, there
+is a reasonable case to be made that any option built should be off by
+default.
+
+\[
+tjr: We should make the text above note that a HTTPS client may operate
+without the SCT lookup functionality, but still pass around STHs.
+\]
+
+If STH Pollination was the only mechanism deployed, users that disable it
+would be able to be attacked without risk of detection.
+
+If STH Pollination was not deployed, the majority of HTTPS Clients visiting
+HTTPS Servers who did not deploy SCT Feedback could be attacked without risk
+of detection.
+
+## Trusted Auditor Relationship
+
+The Trusted Auditor Relationship is expected to be the rarest gossip
+mechanism, as an HTTPS Client is providing an unadulterated report of its
+browsing history to a third party. While there are valid and common reasons
+for doing so, there is no appropriate way to enter into this relationship
+without retrieving informed consent from the user.
+
+However, the Trusted Auditor Relationship mechanism still provides value
+to a class of HTTPS Clients. The ability to change one's Trusted Auditor
+is a form of Trust Agility that allows a user to choose who to trust, and
+be able to revise that decision later without consequence. A Trusted Auditor
+connection can be made more confidential than DNS (through the use of TLS), and
+can even be made (somewhat) anonymous through the use of anonymity services
+such as Tor. (Note that this does ignore the de-anonymization possibilities
+available from viewing a user's browsing history.)
+
+\[
+tjr: Frankly this isn't the best arguement.  There are probably corporate
+or organizational desires here we could add in.
+\]
+
+If the Trusted Auditor relationship was the only mechanism deployed, users
+who do not enable it (the majority) would be able to be attacked without
+risk of detection.
+
+If the Trusted Auditor relationship was not deployed, users would be unable
+to take steps to protect themselves if the STH Pollination approach was
+unable or unacceptable to them (because some HTTPS Servers will not
+provide SCT Feedback.)
+
+\[ln: why is sth pollination dependent on sct feedback? do you mean that sct feedback is how clients get sth's? that's not what i envision.\]
+
+## Interaction
+
+The interactions of the mechanisms is thus outlined:
+
+HTTPS Clients can be attacked without risk of detection if they do not
+participate in any of the three mechanisms.
+
+HTTPS Servers that omit SCT Feedback allow a portion of their users to be
+attacked; the vulnerable users are those who do not participate in STH
+Pollination (which in this case implies the SCT lookup functionality of it)
+and that not have a Trusted Auditor relationship.
+
+However, these HTTPS Servers do gain some herd immunity against attack if
+some HTTPS clients participate in either STH Feedback or a Trusted Auditor
+relationship.
+
 # Security considerations
 
 ## Privacy considerations
