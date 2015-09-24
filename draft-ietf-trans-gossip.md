@@ -246,6 +246,9 @@ often than TBD.
 \[benl: "sent to the server" only really counts if the server presented a valid SCT in the handshake and the certificate is known to be unrevoked (which will be hard for a MitM to sustain)\]
 \[TODO: expand on rate/resource limiting motivation\]
 
+Refer to {#pooling-policy-recommendations} for recommendations about 
+strategies.
+
 An SCT MUST NOT be sent to any other HTTPS server than one serving the
 domain that the certificate signed by the SCT refers to. This would
 lead to two types of privacy leaks. First, the server receiving the
@@ -318,7 +321,10 @@ The data received in a GET of the well-known URL or sent in the POST
 is defined in {{feedback-dataformat}}.
 
 HTTPS servers SHOULD share all SCTs and accompanying certificate
-chains they see that pass the checks in {{feedback-clisrv}}.
+chains they see that pass the checks in {{feedback-clisrv}}. If this
+is an infeasible amount of data, the server may choose to expire
+submissions according to an undefined policy. Suggestions for such
+a policy can be found in {#pooling-policy-recommendations}.
 
 HTTPS servers MUST NOT share any other data that they may learn from
 the submission of SCT Feedback by HTTPS clients.
@@ -400,8 +406,10 @@ An HTTPS client may acquire STHs by several methods:
 
 HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
 pollinate STH pools with STHs. Which STHs to send and how often
-pollination should happen is regarded as policy and out of scope for
-this document with exception of privacy concerns explained in the next section. 
+pollination should happen is regarded as undefined policy with 
+the exception of privacy concerns explained in the 
+next section. Suggestions for the policy may be found in 
+{#pooling-policy-recommendations}.
 
 An HTTPS client could be tracked by giving it a unique or rare STH.
 To address this concern, we place restrictions on different components
@@ -737,7 +745,7 @@ auditor is a trusted by the client to not reveal their associations
 with servers. Auditors MUST NOT share such SCTs in any way, including
 sending them to an external log, without first mixing them with
 multiple other SCTs learned through submissions from multiple other
-clients. The details of mixing SCTs are XXX TBD.
+clients. Suggestions for mixing SCTs are presented in {#pooling-policy-recommendations}.
 
 There is a possible fingerprinting attack where a log issues a unique
 SCT for targeted log client(s). A colluding log and HTTPS server
@@ -882,6 +890,36 @@ taking on this role needs to consider the following:
   the issuance of the SCT. The log's inability to provide either proof
   will not be externally cryptographically-verifiable, as it may be
   indistinguishable from a network error.
+
+# Policy Recommendations {#pooling-policy-recommendations}
+
+This section is intended as suggestions to implementors of HTTPS Clients,
+HTTPS Servers, and Auditors. In several components of the CT Gossip ecosystem,
+the recommendation is made that data from multiple sources be ingested, mixed, 
+provided to a third party, stored for an indeterminite period of time, and 
+eventually deleted.  The instances of these recommendations in this draft are:
+
+- When a client receives SCTs during SCT Feedback, it should store the SCTs and Certificates for some amount of time, provide some of them back to the server at some point, and eventually remove them from its store
+- When a client receives STHs during STH Pollination, it should store them for some amount of time, mix them with other STHs, release some of them them to various servers at some point, resolve some of them to new STHs, and eventually remove them from its store
+- When a server receieves SCTs during SCT Feedback, it should store them for some period of time, provide them to auditors some number of times, and may eventually remove them
+- When a server receives STHs during STH Pollination, it should store them for some period of time, mix them with other STHs, provide some of them to connecting clients, may resolve them to new STHs via Proof Fetching, and eventually remove them from its store
+- When a Trusted Auditor receives SCTs or historical STHs from clients, it should store them for some period of time, mix them with SCTs received from other clients, and act upon them at some period of time
+
+Each of these instances have specific requirements for user privacy, and each have options that may not be invoked. As one example, a HTTPS client should not mix SCTs from server A with SCTs from server B and release server B's SCTs to Server A.  As another example, a HTTPS server may choose to resolve several STHs to a single more current STH via proof fetching, but it is under no obligation to do so.
+
+These requirements should be met, but the general problem of aggregating multiple pieces of data, choosing when and how many to release, and when to remove is shared.  This problem has been previously been considered in the case of Mix Networks and Remailers, including papers such as [X], [Y], and [Z].
+
+Certain common recommendations can be made:
+
+- When choosing how many times to release data before expiring it from a cache, use a random number chosen from a distribution, rather than a fixed number. This prevents an adversary from knowing with certainty that it has successfully flushed a cache of a potentially incriminating piece of data.
+
+\[
+TODO:
+ - Enumerating the problems of different types of mixes vs Cottrel Mix
+ - Flushing Attacks
+ - Integrating the IP address into the algorithm for releasing data
+ - Prefer aggregating multiple piece of data into a single STH when possible
+]
 
 # IANA considerations
 
