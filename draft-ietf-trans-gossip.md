@@ -455,7 +455,7 @@ When multiplied by the number of logs that a client accepts STHs for,
 this number of unique STHs grow and the negative privacy implications
 grow with it. It's important that this is taken into account when logs
 are chosen for default settings in HTTPS clients. This concern is 
-discussed upon in XXX.
+discussed upon in {#privacy-sth-interaction}.
 
 \[TBD urge HTTPS clients to store STHs retrieved in responses?\]
 
@@ -809,6 +809,33 @@ client itself will not necessarily derive direct benefit.
 tjr: This section is the only place where we mention a client may request a bare STH (with no proof).
 We should include that up above somewhere, probably near "Proof Fetching"
 \]
+
+### Privacy in STH Interaction {#privacy-sth-interaction}
+
+An HTTPS client may pollinate any STH within the last 14 days. An 
+HTTPS Client may also pollinate a STH for any log that it knows about.
+When a client pollinates STHs to a server, it will release more than one
+STH at a time. It is unclear if a server may 'prime' a client and 
+be able to reliably detect the client at a later time.
+
+It's clear that a single site can track a user any way they wish, but this 
+attack works cross-origin and is therefore more concerning. Two independent 
+sites A and B want to collaborate to track a user cross-origin.  A feeds a 
+client Carol some N specific STHs from the M logs Carol trusts, chosen to 
+be older and less common, but still in the validity window.  Carol visits 
+B and chooses to release some of the STHs she has stored, according to some 
+policy.
+
+Modelling a representation for how common older STHs are in the pools of 
+clients, and examining that with a given policy of how to choose which 
+of those STHs to send to B, it should be possible to calculate statistics 
+about how unique Carol looks when talking to B and how useful/accurate 
+such a tracking mechanism is.  
+
+Building such a model is likely impossible without some real world data,
+and requires a given implementation of a policy. To combat this attack,
+suggestions are provided in XXX to attempt to minimize it, but follow-up
+testing with real world deployment to improvide the policy will be required.
 
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
 
