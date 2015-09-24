@@ -386,7 +386,7 @@ supporting the protocol, and retrieving new STHs. In the case of HTTPS
 clients, STHs are sent in an already established TLS session. This
 makes it hard for an attacker to disrupt STH gossiping without also
 disturbing ordinary secure browsing (https://). This is discussed more 
-in XXX Blocking Discussion XXX.
+in {#blocking-policy-frustrating}.
 
 STHs are sent by POSTing them to the .well-known URL:
 
@@ -715,6 +715,48 @@ Pollination with Proof Fetching and that not have a Trusted Auditor relationship
 
 # Security considerations
 
+## Censorship/Blocking considerations
+
+We assume a network attacker who is able to fully control the client's 
+internet connection for some period of time - including selectively 
+blocking requests to certain hosts and truncating TLS connections based 
+on information observed or guessed about client behavior. In order to 
+successfully detect log misbehavior, the gossip mechanisms must still work 
+even in these conditions.
+
+There are several gossip connections that can be blocked:
+
+1. Clients sending SCTs to servers in SCT Feedback
+2. Servers sending SCTs to auditors in SCT Feedback (server push mechanism)
+3. Servers making SCTs available to auditors (auditor pull mechanism)
+4. Clients fetching proofs in STH Pollination 
+5. Clients sending STHs to servers in STH Pollination
+6. Servers sending STHs to clients in STH Pollination
+7. Clients sending SCTs to Trusted Auditors
+
+If a party cannot connect to another party, it can be assured that the 
+connection did not succeed. While it may not have been maliciously blocked, it
+knows the tranaction did not succeed. Mechanisms which result in a positive 
+affirmation from the recipient that the transaction succeeded allow confirmation 
+that a connection was not blocked. If no positive affirmation was received, 
+the party can know the recipient may not have recieved its data. In both situations,
+the party can factor this into strategies suggested in {#pooling-policy-recommendations} 
+and in {#blocking-policy-response}.  
+
+The connections that allow positive affirmation are 1, 2, 4, 5, and 7.
+
+More insidious is blocking the connections that do not allow positive confirmation: 3 and 6.
+An attacker may truncate a or drop a response from a server to a client, such that the
+server believes it has shared data when it has not. 
+
+\[
+tjr: How do we want to handle this??
+\] 
+
+Handling censorship and network blocking (which is indistinguishable from 
+network error) is relegated to the implementation policy chosen by clients.
+Suggestions for client behavior are specified in {#blocking-policy-recommendations}.
+
 ## Privacy considerations
 
 The most sensitive relationships in the CT ecosystem are the
@@ -891,10 +933,15 @@ taking on this role needs to consider the following:
   will not be externally cryptographically-verifiable, as it may be
   indistinguishable from a network error.
 
-# Policy Recommendations {#pooling-policy-recommendations}
+# Policy Recommendations 
 
 This section is intended as suggestions to implementors of HTTPS Clients,
-HTTPS Servers, and Auditors. In several components of the CT Gossip ecosystem,
+HTTPS Servers, and Auditors. It is not a requirement for technique of 
+implementation, so long as privacy considerations established above are obeyed.
+
+## Mixing Recommendations {#pooling-policy-recommendations}
+
+In several components of the CT Gossip ecosystem,
 the recommendation is made that data from multiple sources be ingested, mixed, 
 provided to a third party, stored for an indeterminite period of time, and 
 eventually deleted.  The instances of these recommendations in this draft are:
@@ -916,10 +963,42 @@ Certain common recommendations can be made:
 \[
 TODO:
  - Enumerating the problems of different types of mixes vs Cottrel Mix
- - Flushing Attacks
  - Integrating the IP address into the algorithm for releasing data
  - Prefer aggregating multiple piece of data into a single STH when possible
+ - The importance of Flushing Attacks, and tying in network connection, and time interval
 ]
+
+## Blocking Recommendations {#blocking-policy-recommendations}
+
+### Frustrating blocking {#blocking-policy-frustrating}
+
+When making gossip connections to HTTPS Servers or Trusted Auditors, 
+it is desirable to minimize the plaintext metadata in the connection
+that can be used to identify the connection as a gossip connection
+and therefore be of interest to block. Additionally, introducing some 
+randomness into client behavior may be important - we assume that the 
+adversary is able to inspect the behavior of the HTTPS client and 
+understand how it makes gossip connections. 
+
+As an example, if a client, after establishing a TLS connection (and 
+receiving a SCT, but not making it's own HTTPS request yet), immediately 
+opens a second TLS connection for the purpose of gossip - the adversary 
+can reliably block this second connection to block gossip without 
+affecting normal browsing.  For this reason it is recommended to 
+run the gossip protocols over an existing connection to the server, 
+making use of connection multiplexing such as HTTP Keep-Alives or SPDY.
+
+Truncation is also a concern -if a client always establishes a TLS connection, 
+makes a request, receives a response, and then always attempts a gossip 
+communication immediatelly following the first response - truncation will
+allow an attacker to block gossip reliably. 
+
+### Responding to possible blocking {#blocking-policy-response}
+
+\[
+tjr: Not sure here.  Maybe this section will get folded up into the above.  
+Or maybe it relates to the escape valve.
+\]
 
 # IANA considerations
 
