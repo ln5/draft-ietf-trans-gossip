@@ -378,12 +378,13 @@ An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
 - asking its supported logs for the current STH directly or indirectly;
-- via some other (currently unspecified) mechanism.
+- resolving a SCT to a STH via an inclusion proof
+- resolving one STH to another via a consistency proof
 
 HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
 pollinate STH pools with STHs. Which STHs to send and how often
 pollination should happen is regarded as policy and out of scope for
-this document with exception of certain privacy concerns.
+this document with exception of privacy concerns explained in the next section. 
 
 An HTTPS client could be tracked by giving it a unique or rare STH.
 To address this concern, we place restrictions on different components
@@ -395,36 +396,63 @@ of the system to ensure an STH will not be rare.
 
 An STH is considered fresh iff its timestamp is less than 14 days in
 the past. Given a maximum STH issuance rate of one per hour, an
-attacker has 336 unique STHs per log for tracking.
+attacker has 336 unique STHs per log for tracking. Clients MUST ignore
+STHs older than 14 days. We consider STHs within this validity window to 
+be personally identifiable data, and STHs outside this window to be
+personally identifiable.
 
 When multiplied by the number of logs that a client accepts STHs for,
 this number of unique STHs grow and the negative privacy implications
 grow with it. It's important that this is taken into account when logs
-are chosen for default settings in HTTPS clients.
+are chosen for default settings in HTTPS clients. This concern is elaborated upon in XXX.
 
 \[TBD urge HTTPS clients to store STHs retrieved in responses?\]
 
 \[TBD share inclusion proofs and consistency proofs too?\]
 
-### HTTPS client STH and Inclusion Proof Fetching
+### HTTPS Clients and Proof Fetching
 
-An HTTPS client retrieves SCTs from an HTTPS server, and must obtain
+\[
+tjr: I am establishing a term here "Proof Fetching" to refer to the part of STH Pollination that involves getting includion or consistency proofs.
+This avoids us having to say "resolve SCTs or Historical STHs" everywhere.
+\]
+
+There are two types of proofs a client may retrieve.
+
+An HTTPS client will retrieve SCTs from an HTTPS server, and must obtain
 an inclusion proof to an STH in order to verify the promise made by
-the SCT. This retrieval mechanism reveals the client's browsing habits
-when the client requests the proof diretly from the log. To mitigate
-this risk, an HTTPS client MUST retrieve the proof in a manner that
-disguises the client from the log.
+the SCT. 
 
-Additionally, for this inclusion proof to be acceptable to the client,
-the inclusion proof MUST reference a STH that is within the acceptable
-freshness interval.
+An HTTPS client may receive SCT bundled with an inclusion proof to a 
+historical STH via an unspecified future mechanism. Because this historical 
+STH is considered personally identifiable information per above, the client 
+must obtain a consistency proof to a more recent STH.
+
+If a client requested either proof directly from a log or auditor, it would reveal 
+the client's browsing habits to a third party. To mitigate
+this risk, an HTTPS client MUST retrieve the proof in a manner that
+disguises the client.
 
 Depending on the client's DNS provider, DNS may provide an appropriate
 intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
 providing a caching layer for oft-requested inclusion proofs.)
 
-Also Tor.
+Anonyminity networks such as Tor also present a mechanism for a client to
+anonymously retrieve a proof from an auditor or log.
+
+### STH Pollination without Proof Fetching
+
+An HTTPS client MAY participate in STH Pollination without fetching proofs. 
+In this situation, the client receives STHs from a server,
+applies the same validation logic to them (signed by a known log, within a validity window)
+and will later pass them to a HTTPS server.
+
+When operating in this fashion, the HTTPS client is promoting gossip for 
+Certificate Transparency, but derives no direct benefit itself. In comparison, 
+a client who resolves SCTs or historical STHs to recent STHs and pollinates them
+is assured that if it was attacked, there is a probability that the ecosystem will
+detect and respond to the attack (by distrusting the log).
 
 ### Auditor and Monitor Action
 
@@ -479,8 +507,8 @@ that is "logged in to" a provider of various internet
 services. Another equivalent arrangement is a trusted party like a
 corporation to which an employee is connected through a VPN or by
 other similar means. A third might be individuals or smaller groups of
-people running their own services. In such a setting, retrieving STHs
-and inclusion proofs from that third party in order to validate SCTs
+people running their own services. In such a setting, retrieving proofs 
+from that third party 
 could be considered reasonable from a privacy perspective. The HTTPS
 client does its own auditing and might additionally share SCTs and
 STHs with the trusted party to contribute to herd immunity. Here, the
@@ -494,7 +522,7 @@ DNS resolver services. DNS resolvers are typically provided by the
 internet service provider (ISP) used, which by the nature of name
 resolving already know a great deal about which sites their users
 visit. As mentioned in Section XXX, in order for HTTPS clients to be
-able to retrieve inclusion proofs for certificates in a privacy
+able to retrieve proofs in a privacy
 preserving manner, logs could expose a DNS interface in addition to
 the ordinary HTTPS interface. An informal writeup of such a protocol
 can be found at XXX.
@@ -517,7 +545,7 @@ server implement.
 SCT Feedback requires the cooperation of HTTPS clients and more importantly
 HTTPS servers. HTTPS servers can be built to work out of the box with no
 explicit configuration, and the logic behind the .well-known URIs pre-provided.
-However, to take full advantage of the system, a HTTPS server would wish to
+However, to take full advantage of the system, a HTTPS server would wish to:
 
 - Minimize its disk commitment by whitelisting known SCTs and
   certificate chains
@@ -534,54 +562,43 @@ did not implement the feature could be attacked without risk
 of detection.
 
 If SCT Feedback was not deployed, users who wished to have the strongest
-measure of privacy protection could be attacked without risk
-of detection.
+measure of privacy protection (by disabling STH Pollination Proof Fetching
+and forgoing a Trusted Auditor) could be attacked without risk of detection. 
 
 ## STH Pollination
 
 STH Pollination requires the cooperation of HTTPS clients, HTTPS servers,
 and logs.
 
-HTTPS Clients must have a mechanism to safely request inclusion proofs in
-a privacy preserving manner.
-
-\[ln: clients don't need inclusion proofs in order to take part in pollination; clients do need inclusion proofs in order for STHs to be of any value to them directly\]
+For a client to fully participate in STH Pollination, and have this mechanism 
+detect attacks against it, the client must have a mechanism to safely perform 
+Proof Fetching in a privacy preserving manner. The client may pollinate STHs 
+it recieeves without performing Proof Fetching, 
+but we do not consider this option in this section.
 
 HTTPS Servers must deploy software (although, as in the case with SCT Feedback
 this logic can be pre-provided) and commit some configurable amount of disk
 space to the endeavor.
 
-Logs must provide access to clients to query inclusion proofs in a privacy
+Logs must provide access to clients to query proofs in a privacy
 preserving manner, most likely through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if only a
 minority of HTTPS servers deploy it. However, it makes an assumption that
-an HTTPS client can query DNS in an anonymous manner. While this may be the
-case for users of shared DNS services such as a large ISP, in other
-situations it would be unacceptable. For instance, DNS requests originating
-from a production webserver deployment would be rare (as webservers do not
-make many outbound requests) and could leak administrative information or
-confidential relationships.
-
-\[
-tjr: This example is a bit of a stretch, would love to see somehting better.
-\]
-
-For this reason, some percentage of HTTPS clients may choose to not enable
-the SCT lookup component of STH pollination. (Although they could still
-request and send STHs amoung participating HTTPS servers.) Indeed, there
-is a reasonable case to be made that any option built should be off by
-default.
-
-\[
-tjr: We should make the text above note that a HTTPS client may operate
-without the SCT lookup functionality, but still pass around STHs.
-\]
+an HTTPS client performs anonymized Proof Fetching (such as the DNS mechaism 
+discussed). However, any manner that is anonymous for some (such as clients 
+who use shared DNS services such as a large ISP), may not be anonymous for others. 
+For instance, if DNS requests are avoided due to proxy configuration files, 
+proof requests over DNS leak data that otherwise is not disclosed. For this 
+reason, some percentage of HTTPS clients may choose to not enable the Proof Fetching
+component of STH pollination.  (Although they can still request and send STHs 
+amoung participating HTTPS servers, as mentioned earlier this affords them no 
+direct benefit.) 
 
 If STH Pollination was the only mechanism deployed, users that disable it
 would be able to be attacked without risk of detection.
 
-If STH Pollination was not deployed, the majority of HTTPS Clients visiting
+If STH Pollination was not deployed, HTTPS Clients visiting
 HTTPS Servers who did not deploy SCT Feedback could be attacked without risk
 of detection.
 
@@ -594,7 +611,12 @@ for doing so, there is no appropriate way to enter into this relationship
 without retrieving informed consent from the user.
 
 However, the Trusted Auditor Relationship mechanism still provides value
-to a class of HTTPS Clients. The ability to change one's Trusted Auditor
+to a class of HTTPS Clients. For example, web crawlers have no concept of
+a "user" and no expectation of privacy. Organizations already performing network 
+monitoring for anomolies or attacks can run their own Trusted Auditor for 
+the same purpose with marginal increase in privacy concerns.
+
+The ability to change one's Trusted Auditor
 is a form of Trust Agility that allows a user to choose who to trust, and
 be able to revise that decision later without consequence. A Trusted Auditor
 connection can be made more confidential than DNS (through the use of TLS), and
@@ -602,21 +624,14 @@ can even be made (somewhat) anonymous through the use of anonymity services
 such as Tor. (Note that this does ignore the de-anonymization possibilities
 available from viewing a user's browsing history.)
 
-\[
-tjr: Frankly this isn't the best arguement.  There are probably corporate
-or organizational desires here we could add in.
-\]
-
 If the Trusted Auditor relationship was the only mechanism deployed, users
 who do not enable it (the majority) would be able to be attacked without
 risk of detection.
 
-If the Trusted Auditor relationship was not deployed, users would be unable
-to take steps to protect themselves if the STH Pollination approach was
-unable or unacceptable to them (because some HTTPS Servers will not
-provide SCT Feedback.)
-
-\[ln: why is sth pollination dependent on sct feedback? do you mean that sct feedback is how clients get sth's? that's not what i envision.\]
+If the Trusted Auditor relationship was not deployed, crawlers and organizations 
+would build it themselves for their own needs. By standardizing it, users who 
+wish to opt-in (for instance those unwilling to participate fully in STH Pollination) 
+can have an interopable standard they can use to choose and change thei trusted auditor.
 
 ## Interaction
 
@@ -625,14 +640,19 @@ The interactions of the mechanisms is thus outlined:
 HTTPS Clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
-HTTPS Servers that omit SCT Feedback allow a portion of their users to be
-attacked; the vulnerable users are those who do not participate in STH
-Pollination (which in this case implies the SCT lookup functionality of it)
-and that not have a Trusted Auditor relationship.
+HTTPS Clients are afforded the greatest measure of protection when they
+either participate in STH Pollination with PRoof Fetching or have a Trusted 
+Auditor relationship. Participating in SCT Feedback enables a HTTPS Client 
+to assist in detecting the exact target of an attack, although they do not 
+gain any direct benefit from it.
 
-However, these HTTPS Servers do gain some herd immunity against attack if
-some HTTPS clients participate in either STH Feedback or a Trusted Auditor
-relationship.
+HTTPS Servers that omit SCT Feedback may never learn about targeted attacks against them,
+even if the attack occured and the log distrusted. They do gain some herd immunity to 
+detect attacks, through their clients participating in STH Pollination or a Trusted Auditor Relationship.
+
+When HTTPS Servers omit SCT feedback, it allow a portion of their users to be
+attacked without detection; the vulnerable users are those who do not participate in STH
+Pollination with PRoof Fetching and that not have a Trusted Auditor relationship.
 
 # Security considerations
 
