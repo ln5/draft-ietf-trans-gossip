@@ -736,10 +736,10 @@ There are several gossip connections that can be blocked:
 
 If a party cannot connect to another party, it can be assured that the 
 connection did not succeed. While it may not have been maliciously blocked, it
-knows the tranaction did not succeed. Mechanisms which result in a positive 
+knows the transaction did not succeed. Mechanisms which result in a positive 
 affirmation from the recipient that the transaction succeeded allow confirmation 
 that a connection was not blocked. If no positive affirmation was received, 
-the party can know the recipient may not have recieved its data. In both situations,
+the party can know the recipient may not have received its data. In both situations,
 the party can factor this into strategies suggested in {#pooling-policy-recommendations} 
 and in {#blocking-policy-response}.  
 
@@ -876,7 +876,7 @@ be older and less common, but still in the validity window.  Carol visits
 B and chooses to release some of the STHs she has stored, according to some 
 policy.
 
-Modelling a representation for how common older STHs are in the pools of 
+Modeling a representation for how common older STHs are in the pools of 
 clients, and examining that with a given policy of how to choose which 
 of those STHs to send to B, it should be possible to calculate statistics 
 about how unique Carol looks when talking to B and how useful/accurate 
@@ -885,7 +885,7 @@ such a tracking mechanism is.
 Building such a model is likely impossible without some real world data,
 and requires a given implementation of a policy. To combat this attack,
 suggestions are provided in XXX to attempt to minimize it, but follow-up
-testing with real world deployment to improvide the policy will be required.
+testing with real world deployment to improvise the policy will be required.
 
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
 
@@ -943,12 +943,12 @@ implementation, so long as privacy considerations established above are obeyed.
 
 In several components of the CT Gossip ecosystem,
 the recommendation is made that data from multiple sources be ingested, mixed, 
-provided to a third party, stored for an indeterminite period of time, and 
+provided to a third party, stored for an indeterminate period of time, and 
 eventually deleted.  The instances of these recommendations in this draft are:
 
 - When a client receives SCTs during SCT Feedback, it should store the SCTs and Certificates for some amount of time, provide some of them back to the server at some point, and eventually remove them from its store
 - When a client receives STHs during STH Pollination, it should store them for some amount of time, mix them with other STHs, release some of them them to various servers at some point, resolve some of them to new STHs, and eventually remove them from its store
-- When a server receieves SCTs during SCT Feedback, it should store them for some period of time, provide them to auditors some number of times, and may eventually remove them
+- When a server receives SCTs during SCT Feedback, it should store them for some period of time, provide them to auditors some number of times, and may eventually remove them
 - When a server receives STHs during STH Pollination, it should store them for some period of time, mix them with other STHs, provide some of them to connecting clients, may resolve them to new STHs via Proof Fetching, and eventually remove them from its store
 - When a Trusted Auditor receives SCTs or historical STHs from clients, it should store them for some period of time, mix them with SCTs received from other clients, and act upon them at some period of time
 
@@ -990,7 +990,7 @@ making use of connection multiplexing such as HTTP Keep-Alives or SPDY.
 
 Truncation is also a concern -if a client always establishes a TLS connection, 
 makes a request, receives a response, and then always attempts a gossip 
-communication immediatelly following the first response - truncation will
+communication immediately following the first response - truncation will
 allow an attacker to block gossip reliably. 
 
 ### Responding to possible blocking {#blocking-policy-response}
@@ -1016,6 +1016,10 @@ Seo, Magnus Ahltorp, Yan Zhu.
 
 - STH Pollination Proof Fetching defined and indicated is optional
 - Adding 3-Method Ecosystem section
+- Handle cases with Logs cease operation
+- Add a bit about tracking via STH Interaction
+- Add a section with some early recommendations for mixing
+- Add a section detailing blocking connections, frustrating it, and the implications
 
 ## Changes between -01 and -02
 
