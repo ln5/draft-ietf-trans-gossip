@@ -77,7 +77,7 @@ One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
 information about the logs and their operations, but not to leak any
 additional information about the operation of any of the other
-particpants. Privacy of consumers of log information (in particular,
+participants. Privacy of consumers of log information (in particular,
 of web browsers and other TLS clients) should not be damaged by
 gossip.
 
@@ -354,7 +354,7 @@ share STHs between HTTPS clients, CT auditors, and monitors in a
 privacy-preserving manner.
 
 HTTPS servers supporting the protocol act as STH pools. HTTPS clients
-and others in the possesion of STHs should pollinate STH pools by
+and others in the possession of STHs should pollinate STH pools by
 sending STHs to them, and retrieving new STHs to send to new servers.
 CT auditors and monitors should retrieve STHs from pools by
 downloading STHs from them.
@@ -413,7 +413,7 @@ are chosen for default settings in HTTPS clients. This concern is elaborated upo
 ### HTTPS Clients and Proof Fetching
 
 \[
-tjr: I am establishing a term here "Proof Fetching" to refer to the part of STH Pollination that involves getting includion or consistency proofs.
+tjr: I am establishing a term here "Proof Fetching" to refer to the part of STH Pollination that involves getting inclusion or consistency proofs.
 This avoids us having to say "resolve SCTs or Historical STHs" everywhere.
 \]
 
@@ -438,7 +438,7 @@ intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
 providing a caching layer for oft-requested inclusion proofs.)
 
-Anonyminity networks such as Tor also present a mechanism for a client to
+Anonymity networks such as Tor also present a mechanism for a client to
 anonymously retrieve a proof from an auditor or log.
 
 ### STH Pollination without Proof Fetching
@@ -573,7 +573,7 @@ and logs.
 For a client to fully participate in STH Pollination, and have this mechanism 
 detect attacks against it, the client must have a mechanism to safely perform 
 Proof Fetching in a privacy preserving manner. The client may pollinate STHs 
-it recieeves without performing Proof Fetching, 
+it receives without performing Proof Fetching, 
 but we do not consider this option in this section.
 
 HTTPS Servers must deploy software (although, as in the case with SCT Feedback
@@ -585,14 +585,14 @@ preserving manner, most likely through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if only a
 minority of HTTPS servers deploy it. However, it makes an assumption that
-an HTTPS client performs anonymized Proof Fetching (such as the DNS mechaism 
+an HTTPS client performs anonymized Proof Fetching (such as the DNS mechanism 
 discussed). However, any manner that is anonymous for some (such as clients 
 who use shared DNS services such as a large ISP), may not be anonymous for others. 
 For instance, if DNS requests are avoided due to proxy configuration files, 
 proof requests over DNS leak data that otherwise is not disclosed. For this 
 reason, some percentage of HTTPS clients may choose to not enable the Proof Fetching
 component of STH pollination.  (Although they can still request and send STHs 
-amoung participating HTTPS servers, as mentioned earlier this affords them no 
+among participating HTTPS servers, as mentioned earlier this affords them no 
 direct benefit.) 
 
 If STH Pollination was the only mechanism deployed, users that disable it
@@ -613,7 +613,7 @@ without retrieving informed consent from the user.
 However, the Trusted Auditor Relationship mechanism still provides value
 to a class of HTTPS Clients. For example, web crawlers have no concept of
 a "user" and no expectation of privacy. Organizations already performing network 
-monitoring for anomolies or attacks can run their own Trusted Auditor for 
+monitoring for anomalies or attacks can run their own Trusted Auditor for 
 the same purpose with marginal increase in privacy concerns.
 
 The ability to change one's Trusted Auditor
@@ -631,7 +631,7 @@ risk of detection.
 If the Trusted Auditor relationship was not deployed, crawlers and organizations 
 would build it themselves for their own needs. By standardizing it, users who 
 wish to opt-in (for instance those unwilling to participate fully in STH Pollination) 
-can have an interopable standard they can use to choose and change thei trusted auditor.
+can have an interoperable standard they can use to choose and change their trusted auditor.
 
 ## Interaction
 
@@ -641,18 +641,18 @@ HTTPS Clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
 HTTPS Clients are afforded the greatest measure of protection when they
-either participate in STH Pollination with PRoof Fetching or have a Trusted 
+either participate in STH Pollination with Proof Fetching or have a Trusted 
 Auditor relationship. Participating in SCT Feedback enables a HTTPS Client 
 to assist in detecting the exact target of an attack, although they do not 
 gain any direct benefit from it.
 
 HTTPS Servers that omit SCT Feedback may never learn about targeted attacks against them,
-even if the attack occured and the log distrusted. They do gain some herd immunity to 
+even if the attack occurred and the log distrusted. They do gain some herd immunity to 
 detect attacks, through their clients participating in STH Pollination or a Trusted Auditor Relationship.
 
 When HTTPS Servers omit SCT feedback, it allow a portion of their users to be
 attacked without detection; the vulnerable users are those who do not participate in STH
-Pollination with PRoof Fetching and that not have a Trusted Auditor relationship.
+Pollination with Proof Fetching and that not have a Trusted Auditor relationship.
 
 # Security considerations
 
@@ -810,6 +810,11 @@ valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Karen
 Seo, Magnus Ahltorp, Yan Zhu.
 
 # ChangeLog
+
+## Changes between ietf-00 and ietf-01
+
+- STH Pollination Proof Fetching defined and indicated is optional
+- Adding 3-Method Ecosystem section
 
 ## Changes between -01 and -02
 
