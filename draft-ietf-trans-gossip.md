@@ -42,11 +42,11 @@ informative:
 
 This document describes three gossiping mechanisms for Certificate
 Transparency (CT) {{RFC6962}}: SCT Feedback, STH Pollination and
-Trusted Auditor Relationship.
+a Trusted Auditor Relationship.
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
 Timestamps (SCTs) (Section 3.2 of {{RFC6962}}) with CT auditors in a
-privacy-preserving manner by sending SCTs to originating HTTPS servers
+privacy-preserving manner by sending SCTs to originating HTTPS servers,
 which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools sharing
@@ -97,7 +97,7 @@ partitioning attack.
 
 A partitioning attack is when a log serves different views of the log
 to different clients. Each client would be able to verify the
-append-only nature of the log while in the extreme case being the only
+append-only nature of the log, while in the extreme case being the only
 client seeing this particular view.
 
 Gossiping about what's known about logs helps solve the problem of
@@ -108,21 +108,23 @@ sides, to see the other side.
 Disseminating known information about a log poses a potential threat
 to the privacy of end users. Some data of interest (e.g. SCTs) are
 linkable to specific log entries and thereby to specific sites, which
-makes them privacy-sensitive. Gossip about this data has to take
+makes them privacy-sensitive. Gossip has to take
 privacy considerations into account in order not to leak associations
 between users of the log (e.g., web browsers) and certificate holders
 (e.g., web sites). Even sharing STHs (which do not link to specific
 log entries) can be problematic -- user tracking by fingerprinting
 through rare STHs is one potential attack.
 
-However, there is no loss in privacy if a client sends SCTs for a
+However, there are avenues by which information can be shared that is 
+not damaging to user privacy. For example, there is no loss in privacy 
+if a client sends SCTs for a
 given site to the site corresponding to the SCT, because the site's
 access logs would already indicate that the client is accessing that
 site. In this way a site can accumulate records of SCTs that have been
 issued by various logs for that site, providing a consolidated
 repository of SCTs which can be queried by auditors.
 
-Sharing an STH is considered reasonably safe from a privacy
+As another example, sharing an STH is considered reasonably safe from a privacy
 perspective as long as the same STH is shared by a large number of
 other clients. This "safety in numbers" is achieved by requiring
 gossip only for STHs of a certain "freshness" and limiting the
@@ -199,17 +201,19 @@ There are three separate gossip streams:
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
+# Gossip Mechanisms
+
 ## SCT Feedback
 
 The goal of SCT Feedback is for clients to share SCTs and certificate
 chains with CT auditors and monitors in a privacy-preserving manner.
 
-HTTPS clients store SCTs and certificate chains they see and later
+HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
 .well-known URL. This is described in {{feedback-clisrv}}. Note that
 clients send the same SCTs and chains to servers multiple times with
 the assumption that a potential man-in-the-middle attack eventually
-will cease so that an honest server will receive collected malicious
+will cease, and an honest server will receive collected malicious
 SCTs and certificate chains.
 
 HTTPS servers store SCTs and certificate chains received from clients
@@ -226,7 +230,7 @@ log and SHOULD store the remaining SCTs together with the
 corresponding certificate chain for later use in feedback.
 
 When the client later reconnects to any HTTPS server for the same
-domain it again receives a set of SCTs. The client MUST add new SCTs
+domain, it again receives a set of SCTs. The client MUST add new SCTs
 from known logs to its store of SCTs for the server. The client MUST
 send to the server the ones in the store that are for that server and
 were not received from that server.
@@ -251,9 +255,9 @@ server would learn information about the other HTTPS servers visited
 by its clients.
 
 If the HTTPS client has configuration options for not sending cookies
-to third parties, SCTs MUST be treated as cookies with respect to this
-setting.
-\[TODO: expand on why -- local storage cleanup; more?\]
+to third parties, SCTs of third parties MUST be treated as cookies with respect to this
+setting. These prevents third party tracking through the use of SCTs/certificates,
+which would bypass the cookie policy.
 
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
@@ -275,10 +279,10 @@ before storing them:
   1. if the leaf cert is not for a domain that the server is
   authoritative for, the SCT MUST be discarded
 
-Check number 1 is for detecting duplicates. It's important to note
-that the check must be on pairs of SCT and chain in order to catch
-different chains accompanied by the same SCT.
-\[XXX why is this important?\]
+Check number 1 is for detecting duplicates and minimizing processing and storage by the server. It's important to note
+that the check should be on pairs of SCT and chain in order to catch
+different chains accompanied by the same SCT. This mis-matched chain 
+information may be useful as a diagnostic tool for HTTPS server operators.
 
 Check number 2 is to prevent spamming attacks where an adversary
 can fill up the store prior to attacking a client, or a denial of
@@ -289,11 +293,14 @@ sites they visit and additionally to prevent spamming attacks.
 
 Note that an HTTPS server MAY perform a certificate chain validation
 on a submitted certificate chain, and if it matches a trust root
-configured on the server (but is otherwise unknown to the server), the
+configured on the server (but whose leaf cert is otherwise unknown to the server), the
 HTTPS server MAY store the certificate chain and MAY choose to store
 any submitted SCTs even if they are unable to be verified. The risk of
 spamming and denial of service can be mitigated by configuring the
 server with all known acceptable certificates (or certificate hashes).
+This information may enable a HTTPS server operator to detect attacks
+or unusual behavior of Certificate Authorities even outside the Certificate
+Transparency ecosystem.
 
 ### HTTPS server to auditors {#feedback-srvaud}
 
@@ -325,13 +332,15 @@ Auditors SHOULD regularly poll HTTPS servers at the well-known
 collected-sct-feedback URL. The frequency of the polling and how to
 determine which domains to poll is outside the scope of this
 document. However, the selection MUST NOT be influenced by potential
-HTTPS clients connecting directly to the auditor, as it would reveal
-private information provided by the clients.
+HTTPS clients connecting directly to the auditor. For example, if a poll
+to example.com occurs directly after a client submits a SCT for example.com, 
+an adversary observing the auditor can trivially conclude the activity 
+of the client.
 
 ### SCT Feedback data format {#feedback-dataformat}
 
-The data shared between HTTPS clients and servers as well as between
-HTTPS servers and CT auditors/monitors is a JSON object {{RFC7159}}
+The data shared between HTTPS clients and servers, as well as between
+HTTPS servers and CT auditors/monitors, is a JSON object {{RFC7159}}
 with the following content:
 
 - sct_feedback: An array of objects consisting of
@@ -346,6 +355,13 @@ with the following content:
 
 The 'x509_chain' element MUST contain the leaf certificate and the
 full chain to a known root.
+
+\[ TBD: There was discussion about including a few field for client->server 
+reporting, which is the exact set and order of certificates sent by the HTTPS 
+server to the client. This is additional diagnostic information that a HTTPS server
+could use to check it's deployment... but is pretty much useless to CT or gossip.
+Right now we're not including this, but we're polling server operators to see if they
+would welcome this data.]
 
 ## STH pollination
 
@@ -363,7 +379,8 @@ STH Pollination is carried out by sending STHs to HTTPS servers
 supporting the protocol, and retrieving new STHs. In the case of HTTPS
 clients, STHs are sent in an already established TLS session. This
 makes it hard for an attacker to disrupt STH gossiping without also
-disturbing ordinary secure browsing (https://).
+disturbing ordinary secure browsing (https://). This is discussed more 
+in XXX Blocking Discussion XXX.
 
 STHs are sent by POSTing them to the .well-known URL:
 
@@ -404,7 +421,8 @@ personally identifiable.
 When multiplied by the number of logs that a client accepts STHs for,
 this number of unique STHs grow and the negative privacy implications
 grow with it. It's important that this is taken into account when logs
-are chosen for default settings in HTTPS clients. This concern is elaborated upon in XXX.
+are chosen for default settings in HTTPS clients. This concern is 
+discussed upon in XXX.
 
 \[TBD urge HTTPS clients to store STHs retrieved in responses?\]
 
@@ -686,7 +704,7 @@ auditor is a trusted by the client to not reveal their associations
 with servers. Auditors MUST NOT share such SCTs in any way, including
 sending them to an external log, without first mixing them with
 multiple other SCTs learned through submissions from multiple other
-clients. The details of mixing SCTs are TBD.
+clients. The details of mixing SCTs are XXX TBD.
 
 There is a possible fingerprinting attack where a log issues a unique
 SCT for targeted log client(s). A colluding log and HTTPS server
@@ -705,10 +723,10 @@ tracks a client by using a variation of cert chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[XXX any mitigations possible here?\]
 
-### Privacy for HTTPS clients requesting STHs
+### Privacy for HTTPS clients performing STH Proof Fetching
 
-An HTTPS client that does not act as an auditor should only request an
-STH from a CT log that it accepts SCTs from. An HTTPS client should
+An HTTPS client performing Proof Fetching should only request proofs 
+from a CT log that it accepts SCTs from. An HTTPS client should
 regularly [XXX how regularly? This has operational implications for log
 operators] request an STH from all logs it is willing to accept, even
 if it has seen no SCTs from that log.
@@ -720,7 +738,7 @@ client:
 
 - that the client gossips;
 
-- that the client been using CT at least until the time that the
+- that the client has been using CT at least until the time that the
   timestamp and the tree size indicate;
 
 - that the client is talking, possibly indirectly, to the log
@@ -754,28 +772,34 @@ the STH and reporting via STH Pollination provides a benefit to the CT
 ecosystem as a whole by providing oversight on logs, but the HTTPS
 client itself will not necessarily derive direct benefit.
 
+\[
+tjr: This section is the only place where we mention a client may request a bare STH (with no proof).
+We should include that up above somewhere, probably near "Proof Fetching"
+\]
+
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
 
 Some HTTPS clients may choose to use a trusted auditor. This trust
-relationship leaks a certain amount of information from the client to
-the auditor. In particular, it is likely to identify the web sites
+relationship leaks a large amount of information from the client to
+the auditor. In particular, it will identify the web sites
 that the client has visited to the auditor. Some clients may already
 share this information to a third party, for example, when using a
 server to synchronize browser history across devices in a
 server-visible way, or when doing DNS lookups through a trusted DNS
 resolver. For clients with such a relationship already established,
-sending SCT Feedback to the same organization does not appear to leak
+sending SCTs to a trusted auditor run by the same organization does not appear to leak
 any additional information to the trusted third party.
 
 Clients who wish to contact an auditor without associating their
-identities with their SCT Feedback may wish to use an anonymizing
+identities with their SCTs may wish to use an anonymizing
 network like Tor to submit SCT Feedback to the auditor. Auditors
 SHOULD accept SCT Feedback that arrives over such anonymizing
 networks.
 
 Clients sending feedback to an auditor may prefer to reduce the
 temporal granularity of the history leakage to the auditor by caching
-and delaying their SCT Feedback reports. This strategy is only as
+and delaying their SCT Feedback reports. This elaborated upon in XXX Mixing.
+This strategy is only as
 effective as the granularity of the timestamps embedded in the SCTs
 and STHs.
 
@@ -788,7 +812,7 @@ taking on this role needs to consider the following:
   that they query. Querying the log through a cache or a proxy with
   many other users may avoid this leakage, but may leak information to
   the cache or proxy, in the same way that an non-Auditing HTTPS
-  Client leaks information to a trusted Auditor.
+  Client leaks information to a trusted auditor.
 
 - an effective Auditor needs a strategy about what to do in the event
   that it discovers misbehavior from a log. Misbehavior from a log
