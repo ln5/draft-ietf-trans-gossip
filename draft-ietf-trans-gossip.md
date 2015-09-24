@@ -418,6 +418,39 @@ STHs older than 14 days. We consider STHs within this validity window to
 be personally identifiable data, and STHs outside this window to be
 personally identifiable.
 
+A log may cease operation, in which case there will soon be no STH within 
+the validity window. Clients SHOULD perform all three methods of gossip 
+about a log that has ceased operation - it is possible the log was still 
+compromised and gossip can detect that. STH Pollination is the one mechanism where 
+a client must know about a log shutdown. A client who does not know about a 
+log shutdown MUST NOT attempt any heuristic to detect a shutdown. Instead the 
+client MUST be informed about the shutdown from a verifiable source (e.g. a 
+software update). The client SHOULD be provided the final STH issued by the 
+log and SHOULD resolve SCTs and STHs to this final STH. If a SCT or STH cannot 
+be resolved to the final STH... XXX?
+
+\[
+tjr: Shit.  I think we need an escape valve. Assume someone compromises a log, 
+isolates a client until shutdown, then the client goes off and does its happy 
+thing on a clean network.
+
+It requests STH resolution of the split view to the non-split view.  The legit 
+log can't do that. It returns a 500. What does the client do?  In a perfect world, 
+the log would see a signed STH it doesn't know about and report on itself. We shouldn't 
+assume a perfect world though.
+
+How do we detect it?
+
+Another example is a non-shut down log that gets own. Client sees a split view, 
+then goes to a clean network.  It attempts to resolve a STH to a current one 
+with the legit log.  The legit log can't do it. Returns a 500. Again, perfect 
+world - log self-reports itself. How do we solve this in an imperfect world?
+
+Do we specify a heuristic like "If you can't resolve a STH after trying N times, 
+during which you do get successful responses from the log, fuck it just send it 
+to Google and the EFF"?
+]
+
 When multiplied by the number of logs that a client accepts STHs for,
 this number of unique STHs grow and the negative privacy implications
 grow with it. It's important that this is taken into account when logs
