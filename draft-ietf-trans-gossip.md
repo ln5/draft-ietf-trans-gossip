@@ -207,6 +207,8 @@ There are three separate gossip streams:
 
 The goal of SCT Feedback is for clients to share SCTs and certificate
 chains with CT auditors and monitors in a privacy-preserving manner.
+SCT Feedback is the most privacy-preserving gossip mechanism, as it
+does not share any additional data whatsoever with any third party. 
 
 HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
@@ -602,9 +604,11 @@ server implement.
 ## SCT Feedback
 
 SCT Feedback requires the cooperation of HTTPS clients and more importantly
-HTTPS servers. HTTPS servers can be built to work out of the box with no
-explicit configuration, and the logic behind the .well-known URIs pre-provided.
-However, to take full advantage of the system, a HTTPS server would wish to:
+HTTPS servers. Although SCT Feedback does require a significant amount of 
+server-side logic to respond to the corresponding APIs, this functionality 
+does not require customization, so it may be pre-provides and work out of 
+the box. However, to take full advantage of the system, a HTTPS server would
+wish to perform some configuration to optimize its operation:
 
 - Minimize its disk commitment by whitelisting known SCTs and
   certificate chains
@@ -617,8 +621,8 @@ deployment of software, mean that some percentage of HTTPS servers will not
 deploy SCT Feedback.
 
 If SCT Feedback was the only mechanism in the ecosystem, any server that
-did not implement the feature could be attacked without risk
-of detection.
+did not implement the feature, would open itself and its users to attack 
+without any possibility of detection.
 
 If SCT Feedback was not deployed, users who wished to have the strongest
 measure of privacy protection (by disabling STH Pollination Proof Fetching
@@ -699,7 +703,7 @@ The interactions of the mechanisms is thus outlined:
 HTTPS Clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
-HTTPS Clients are afforded the greatest measure of protection when they
+HTTPS Clients are afforded the greatest chance of detecting an attack when they
 either participate in STH Pollination with Proof Fetching or have a Trusted 
 Auditor relationship. Participating in SCT Feedback enables a HTTPS Client 
 to assist in detecting the exact target of an attack, although they do not 
