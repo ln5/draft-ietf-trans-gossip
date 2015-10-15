@@ -1,6 +1,6 @@
 ---
 title: Gossiping in CT
-docname: draft-ietf-trans-gossip-00
+docname: draft-ietf-trans-gossip-01
 category: exp
 pi: [toc, sortrefs, symrefs]
 ipr: trust200902
