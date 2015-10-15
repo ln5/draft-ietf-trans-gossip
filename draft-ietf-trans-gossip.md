@@ -25,7 +25,21 @@ author:
     email: tom@ritter.vg
 
 normative:
-  RFC6962:
+  RFC-6962-BIS-09:
+    title: "Certificate Transparency"
+    author:
+      -
+        ins: B. Laurie
+      -
+        ins: A. Langley
+      -
+        ins: E. Kasper
+      -
+        ins: E. Messeri
+      -
+        ins: R. Stradling
+    date: 2015-10-13
+    target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
   RFC7159:
 
 informative:
@@ -41,16 +55,16 @@ informative:
 --- abstract
 
 This document describes three gossiping mechanisms for Certificate
-Transparency (CT) {{RFC6962}}: SCT Feedback, STH Pollination and
+Transparency (CT) {{RFC-6962-BIS-09}}: SCT Feedback, STH Pollination and
 Trusted Auditor Relationship.
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
-Timestamps (SCTs) (Section 3.2 of {{RFC6962}}) with CT auditors in a
+Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT auditors in a
 privacy-preserving manner by sending SCTs to originating HTTPS servers
 which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools sharing
-Signed Tree Heads (STHs) (Section 3.5 of {{RFC6962}}) with other
+Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with other
 connecting clients in the hope that STHs will find their way to
 auditors and monitors.
 
@@ -131,7 +145,7 @@ frequency by which logs can issue STHs.
 # Terminology and data flow
 
 This document relies on terminology and data structures defined in
-{{RFC6962}}, including STH, SCT, Version, LogID, SCT timestamp,
+{{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT timestamp,
 CtExtensions, SCT signature, Merkle Tree Hash.
 
 The following picture shows how certificates, SCTs and STHs flow
@@ -341,7 +355,7 @@ with the following content:
     the first and so on.
 
   - sct_data: An array of objects consisting of the base64
-    representation of the binary SCT data as defined in {{RFC6962}}
+    representation of the binary SCT data as defined in {{RFC-6962-BIS-09}}
     Section 3.2.
 
 The 'x509_chain' element MUST contain the leaf certificate and the
@@ -389,8 +403,10 @@ An HTTPS client could be tracked by giving it a unique or rare STH.
 To address this concern, we place restrictions on different components
 of the system to ensure an STH will not be rare.
 
-- Logs cannot issue STHs too frequently. This is restricted to 1 per
-  hour.
+- HTTPS clients sliently ignore STHs from logs with an STH issuance
+  frequency of more than one STH per hour. Logs use the STH Frequency
+  Count metadata to express this ({{RFC-6962-BIS-09}} sections 3.6
+  and 5.1).
 - HTTPS clients silently ignore STHs which are not fresh.
 
 An STH is considered fresh iff its timestamp is less than 14 days in
@@ -443,30 +459,10 @@ continues to be tracked in the system.
 The data sent from HTTPS clients and CT monitors and auditors to HTTPS
 servers is a JSON object {{RFC7159}} with the following content:
 
-- sths -- an array of 0 or more fresh STH objects
-  \[XXX recently collected\] from the log associated with log_id. Each
-  of these objects consists of
+- sths -- an array of 0 or more fresh SignedTreeHead's as defined in
+  {{RFC-6962-BIS-09}} Section 3.6.1.
 
-  - sth_version: Version as defined in {{RFC6962}} Section 3.2, as a
-    number. The version of the protocol to which the sth_gossip object
-    conforms.
-
-  - tree_size: The size of the tree, in entries, as a number.
-
-  - timestamp: The timestamp of the STH as defined in {{RFC6962}}
-    Section 3.2, as a number.
-
-  - sha256_root_hash: The Merkle Tree Hash of the tree as defined in
-    {{RFC6962}} Section 2.1, as a base64 encoded string.
-
-  - tree_head_signature: A TreeHeadSignature as defined in
-    {{RFC6962}} Section 3.5 for the above data, as a base64 encoded
-    string.
-
-  - log_id: LogID as defined in {{RFC6962}} Section 3.2, as a base64
-    encoded string.
-
-\[XXX An STH is considered recently collected iff TBD.\]
+\[XXX An STH is considered fresh iff TBD.\]
 
 ## Trusted Auditor Stream
 
@@ -484,7 +480,7 @@ and inclusion proofs from that third party in order to validate SCTs
 could be considered reasonable from a privacy perspective. The HTTPS
 client does its own auditing and might additionally share SCTs and
 STHs with the trusted party to contribute to herd immunity. Here, the
-ordinary {{RFC6962}} protocol is sufficient for the client to do the
+ordinary {{RFC-6962-BIS-09}} protocol is sufficient for the client to do the
 auditing while SCT Feedback and STH Pollination can be used in whole
 or in parts for the gossip part.
 
@@ -677,8 +673,8 @@ HTTP Cookies, etc. -- this is acceptable.
 
 The fingerprinting attack described above could be avoided by
 requiring that logs i) MUST return the same SCT for a given cert chain
-({{RFC6962}} Section 3) and ii) use a deterministic signature scheme
-when signing the SCT ({{RFC6962}} Section 2.1.4).
+({{RFC-6962-BIS-09}} Section 3) and ii) use a deterministic signature scheme
+when signing the SCT ({{RFC-6962-BIS-09}} Section 2.1.4).
 
 There is another similar fingerprinting attack where an HTTPS server
 tracks a client by using a variation of cert chains. The risk for this
