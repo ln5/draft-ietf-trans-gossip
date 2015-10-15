@@ -261,7 +261,7 @@ by its clients.
 
 If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies with respect to this
-setting. These prevents third party tracking through the use of SCTs/certificates,
+setting. This prevents third party tracking through the use of SCTs/certificates,
 which would bypass the cookie policy.
 
 SCTs and corresponding certificates are POSTed to the originating
@@ -341,7 +341,7 @@ collected-sct-feedback URL. The frequency of the polling and how to
 determine which domains to poll is outside the scope of this
 document. However, the selection MUST NOT be influenced by potential
 HTTPS clients connecting directly to the auditor. For example, if a poll
-to example.com occurs directly after a client submits a SCT for example.com, 
+to example.com occurs directly after a client submits an SCT for example.com, 
 an adversary observing the auditor can trivially conclude the activity 
 of the client.
 
@@ -403,7 +403,7 @@ An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
 - asking its supported logs for the current STH directly or indirectly;
-- resolving a SCT to a STH via an inclusion proof
+- resolving an SCT to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
 HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
@@ -436,7 +436,7 @@ a client must know about a log shutdown. A client who does not know about a
 log shutdown MUST NOT attempt any heuristic to detect a shutdown. Instead the 
 client MUST be informed about the shutdown from a verifiable source (e.g. a 
 software update). The client SHOULD be provided the final STH issued by the 
-log and SHOULD resolve SCTs and STHs to this final STH. If a SCT or STH cannot 
+log and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH cannot 
 be resolved to the final STH... XXX?
 
 \[
@@ -452,11 +452,11 @@ assume a perfect world though.
 How do we detect it?
 
 Another example is a non-shut down log that gets own. Client sees a split view, 
-then goes to a clean network.  It attempts to resolve a STH to a current one 
+then goes to a clean network.  It attempts to resolve an STH to a current one 
 with the legit log.  The legit log can't do it. Returns a 500. Again, perfect 
 world - log self-reports itself. How do we solve this in an imperfect world?
 
-Do we specify a heuristic like "If you can't resolve a STH after trying N times, 
+Do we specify a heuristic like "If you can't resolve an STH after trying N times, 
 during which you do get successful responses from the log, fuck it just send it 
 to Google and the EFF"?
 ]
@@ -634,7 +634,7 @@ STH Pollination requires the cooperation of HTTPS clients, HTTPS servers,
 and logs.
 
 For a client to fully participate in STH Pollination, and have this mechanism 
-detect attacks against it, the client must have a mechanism to safely perform 
+detect attacks against it, the client must have a way to safely perform 
 Proof Fetching in a privacy preserving manner. The client may pollinate STHs 
 it receives without performing Proof Fetching, 
 but we do not consider this option in this section.
@@ -867,7 +867,7 @@ We should include that up above somewhere, probably near "Proof Fetching"
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
 An HTTPS client may pollinate any STH within the last 14 days. An 
-HTTPS Client may also pollinate a STH for any log that it knows about.
+HTTPS Client may also pollinate an STH for any log that it knows about.
 When a client pollinates STHs to a server, it will release more than one
 STH at a time. It is unclear if a server may 'prime' a client and 
 be able to reliably detect the client at a later time.
@@ -963,10 +963,9 @@ These requirements should be met, but the general problem of aggregating multipl
 Certain common recommendations can be made:
 
 - When choosing how many times to release data before expiring it from a cache, use a random number chosen from a distribution, rather than a fixed number. This prevents an adversary from knowing with certainty that it has successfully flushed a cache of a potentially incriminating piece of data.
-
 \[
 TODO:
- - Enumerating the problems of different types of mixes vs Cottrel Mix
+ - Enumerating the problems of different types of mixes vs Cottrell Mix
  - Integrating the IP address into the algorithm for releasing data
  - Prefer aggregating multiple piece of data into a single STH when possible
  - The importance of Flushing Attacks, and tying in network connection, and time interval
@@ -985,7 +984,7 @@ adversary is able to inspect the behavior of the HTTPS client and
 understand how it makes gossip connections. 
 
 As an example, if a client, after establishing a TLS connection (and 
-receiving a SCT, but not making it's own HTTPS request yet), immediately 
+receiving an SCT, but not making it's own HTTPS request yet), immediately 
 opens a second TLS connection for the purpose of gossip - the adversary 
 can reliably block this second connection to block gossip without 
 affecting normal browsing.  For this reason it is recommended to 
