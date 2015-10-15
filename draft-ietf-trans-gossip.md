@@ -812,14 +812,6 @@ tracks a client by using a variation of cert chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[XXX any mitigations possible here?\]
 
-### Privacy for HTTPS clients performing STH Proof Fetching
-
-An HTTPS client performing Proof Fetching should only request proofs 
-from a CT log that it accepts SCTs from. An HTTPS client should
-regularly [XXX how regularly? This has operational implications for log
-operators] request an STH from all logs it is willing to accept, even
-if it has seen no SCTs from that log.
-
 ### Privacy in STH Pollination
 
 An STH linked to an HTTPS client may indicate the following about that
@@ -836,35 +828,28 @@ client:
 - which software and software version is being used.
 
 There is a possible fingerprinting attack where a log issues a unique
-STH for a targeted log auditor or HTTPS client. This is similar to the
-fingerprinting attack described in {{privacy-feedback}}, but it is
-mitigated by the following factors:
+STH for a targeted HTTPS client. This is similar to the fingerprinting 
+attack described in {{privacy-feedback}}, but can operate cross-origin.
+If a log (or HTTPS Server cooperating with a log) provides a unique STH 
+to a client, the targeted client will be the only client pollinating that 
+STH cross-origin.
 
-- the relationship between auditors and logs is not sensitive in the
-  way that the relationship between HTTPS clients and HTTPS servers
-  is;
-
-- because auditors regularly exchange STHs with each other, the
-  re-appearance of a targeted STH from some auditor does not imply
-  that the auditor was the original one targeted by the log;
-
-- an HTTPS client's relationship to a log is not sensitive in the way
-  that its relationship to an HTTPS server is. As long as the client
-  does not query the log for anything other than individual STHs, the
-  client should not leak anything else to the log itself. However, a
-  log and an HTTPS server which are collaborating could use this
-  technique to fingerprint a targeted HTTPS client.
-
-Note that an HTTPS client in the configuration described in this
-document doesn't make direct use of the STH itself. Its fetching of
-the STH and reporting via STH Pollination provides a benefit to the CT
-ecosystem as a whole by providing oversight on logs, but the HTTPS
-client itself will not necessarily derive direct benefit.
+It is mitigated partially because the log is limited in the number of 
+STHs it can issue. It must 'save' one of its STHs each MMD to perform 
+the attack.
 
 \[
-tjr: This section is the only place where we mention a client may request a bare STH (with no proof).
-We should include that up above somewhere, probably near "Proof Fetching"
+tjr: I'm still bothered by this attack.  But I'm not sure if there's
+anything we can do about it...
 \]
+
+### Privacy for HTTPS clients performing STH Proof Fetching
+
+An HTTPS client performing Proof Fetching should only request proofs 
+from a CT log that it accepts SCTs from. An HTTPS client should
+regularly [XXX how regularly? This has operational implications for log
+operators] request an STH from all logs it is willing to accept, even
+if it has seen no SCTs from that log.
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
