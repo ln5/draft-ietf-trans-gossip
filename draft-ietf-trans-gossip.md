@@ -742,20 +742,22 @@ If a party cannot connect to another party, it can be assured that the
 connection did not succeed. While it may not have been maliciously blocked, it
 knows the transaction did not succeed. Mechanisms which result in a positive 
 affirmation from the recipient that the transaction succeeded allow confirmation 
-that a connection was not blocked. If no positive affirmation was received, 
-the party can know the recipient may not have received its data. In both situations,
-the party can factor this into strategies suggested in {#pooling-policy-recommendations} 
-and in {#blocking-policy-response}.  
+that a connection was not blocked. In this situation, the party can factor this 
+into strategies suggested in {#pooling-policy-recommendations} and in 
+{#blocking-policy-response}.  
 
 The connections that allow positive affirmation are 1, 2, 4, 5, and 7.
 
-More insidious is blocking the connections that do not allow positive confirmation: 3 and 6.
-An attacker may truncate a or drop a response from a server to a client, such that the
-server believes it has shared data when it has not. 
-
-\[
-tjr: How do we want to handle this??
-\] 
+More insidious is blocking the connections that do not allow positive 
+confirmation: 3 and 6. An attacker may truncate a or drop a response from a 
+server to a client, such that the server believes it has shared data with the 
+recipient, when it has not. However, in both scenatios (3 and 6), the server
+cannot distinguish the client as a cooperating member of the CT ecosystem or
+as an attacker performing a sybil attack, aiming to flush the server's data 
+store.  Therefore the fact that these connections can be undetectably blocked 
+does not actually alter the threat model of servers responding to these 
+requests. The choice of algorithm to release data is crucial to protect against 
+these attacks, strategies are suggested in {#pooling-policy-recommendations}.
 
 Handling censorship and network blocking (which is indistinguishable from 
 network error) is relegated to the implementation policy chosen by clients.
