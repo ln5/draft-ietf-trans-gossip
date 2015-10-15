@@ -651,8 +651,8 @@ minority of HTTPS servers deploy it. However, it makes an assumption that
 an HTTPS client performs anonymized Proof Fetching (such as the DNS mechanism 
 discussed). However, any manner that is anonymous for some (such as clients 
 who use shared DNS services such as a large ISP), may not be anonymous for others. 
-For instance, if DNS requests are avoided due to proxy configuration files, 
-proof requests over DNS leak data that otherwise is not disclosed. For this 
+For instance, DNS leaks a considerable amount of information (including what data 
+is already present in the cache) in plaintext over the network.  For this 
 reason, some percentage of HTTPS clients may choose to not enable the Proof Fetching
 component of STH pollination.  (Although they can still request and send STHs 
 among participating HTTPS servers, as mentioned earlier this affords them no 
@@ -818,6 +818,21 @@ There is another similar fingerprinting attack where an HTTPS server
 tracks a client by using a variation of cert chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[XXX any mitigations possible here?\]
+
+### Privacy for HTTPS clients performing STH Proof Fetching
+
+An HTTPS client performing Proof Fetching should only request proofs 
+from a CT log that it accepts SCTs from. An HTTPS client should
+regularly [XXX how regularly? This has operational implications for log
+operators] request an STH from all logs it is willing to accept, even
+if it has seen no SCTs from that log.
+
+The actual mechanism by which Proof Fetching is done carries 
+considerable privacy concerns. Although out of scope for the document, 
+DNS is a mechanism currently discussed. DNS leaks data in plaintext 
+over the network (including what sites the user is visiting and what 
+sites they have previously visited) - thus it may not be suitable for 
+some. 
 
 ### Privacy in STH Pollination
 
