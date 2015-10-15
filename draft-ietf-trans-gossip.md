@@ -765,11 +765,18 @@ Suggestions for client behavior are specified in {#blocking-policy-recommendatio
 
 ## Privacy considerations
 
-The most sensitive relationships in the CT ecosystem are the
-relationships between HTTPS clients and HTTPS servers. Client-server
-relationships can be aggregated into a network graph with potentially
-serious implications for correlative de-anonymisation of clients and
-relationship-mapping or clustering of servers or of clients.
+CT Gossip deals with a HTTPS Clients who are trying to share indicators 
+that correspond to their browsing history. The most sensitive relationships 
+in the CT ecosystem are the relationships between HTTPS clients and HTTPS 
+servers. Client-server relationships can be aggregated into a network graph 
+with potentially serious implications for correlative de-anonymisation of 
+clients and relationship-mapping or clustering of servers or of clients.
+
+There are; however, certain clients who do not require privacy protection.
+Examples of these clients are web crawlers or robots. However, the method 
+by which these clients crawl the web may in fact be considered sensitive 
+information. In general, it is better to err on the side of safety, and 
+not assume a client is okay with giving up its privacy.
 
 ### Privacy and SCTs {#privacy-SCT}
 
