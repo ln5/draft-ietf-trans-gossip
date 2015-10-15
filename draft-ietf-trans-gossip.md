@@ -390,6 +390,18 @@ The 'x509\_chain' element MUST contain the leaf certificate and the
 full chain to a root accepted by all of the logs in the set of logs
 issuing all the SCTs in the 'sct\_data' element.
 
+The 'x509_chain' element SHOULD contain the leaf certificate and the
+full chain to a trust anchor that is publicly trusted by the client. 
+A client SHOULD NOT submit certificates that chain to an administratively
+trusted root, as this represents private client data. If a 
+certificate contains SCTs issued by publicly trusted logs, and chains
+to an administratively added trust anchor, the client SHOULD submit
+the 'x509_chain' consisting only of the leaf certificate.
+
+\[
+tjr: We want to change the 'SHOULD NOT' to something slightly different.
+\]
+
 \[TBD: Be strict about what sct_data may contain or is this sufficiently
 implied by previous sections?\]
 
