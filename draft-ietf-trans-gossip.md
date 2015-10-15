@@ -689,8 +689,8 @@ described above. \[XXX any mitigations possible here?\]
 
 An HTTPS client that does not act as an auditor should only request an
 STH from a CT log that it accepts SCTs from. An HTTPS client should
-regularly [XXX how regularly? This has operational implications for log
-operators] request an STH from all logs it is willing to accept, even
+regularly \[XXX how regularly? This has operational implications for log
+operators\] request an STH from all logs it is willing to accept, even
 if it has seen no SCTs from that log.
 
 ### Privacy in STH Pollination
