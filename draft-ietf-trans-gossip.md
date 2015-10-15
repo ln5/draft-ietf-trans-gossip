@@ -403,7 +403,7 @@ An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
 - asking its supported logs for the current STH directly or indirectly;
-- resolving an SCT to an STH via an inclusion proof
+- resolving a SCT and certificate to a STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
 HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
@@ -425,7 +425,7 @@ An STH is considered fresh iff its timestamp is less than 14 days in
 the past. Given a maximum STH issuance rate of one per hour, an
 attacker has 336 unique STHs per log for tracking. Clients MUST ignore
 STHs older than 14 days. We consider STHs within this validity window to 
-be personally identifiable data, and STHs outside this window to be
+be personally identifiable data, and STHs outside this window not 
 personally identifiable.
 
 A log may cease operation, in which case there will soon be no STH within 
@@ -710,8 +710,8 @@ to assist in detecting the exact target of an attack, although they do not
 gain any direct benefit from it.
 
 HTTPS Servers that omit SCT Feedback may never learn about targeted attacks against them,
-even if the attack occurred and the log distrusted. They do gain some herd immunity to 
-detect attacks, through their clients participating in STH Pollination or a Trusted Auditor Relationship.
+even if the attack occurred and the log distrusted. They do gain some herd immunity, 
+enabling them to detect attacks, through their clients participating in STH Pollination or a Trusted Auditor Relationship.
 
 When HTTPS Servers omit SCT feedback, it allow a portion of their users to be
 attacked without detection; the vulnerable users are those who do not participate in STH
@@ -888,7 +888,7 @@ such a tracking mechanism is.
 
 Building such a model is likely impossible without some real world data,
 and requires a given implementation of a policy. To combat this attack,
-suggestions are provided in XXX to attempt to minimize it, but follow-up
+suggestions are provided in {#pooling-policy-recommendations} to attempt to minimize it, but follow-up
 testing with real world deployment to improvise the policy will be required.
 
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
