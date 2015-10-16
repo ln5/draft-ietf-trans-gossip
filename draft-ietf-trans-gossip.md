@@ -417,7 +417,7 @@ An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
 - asking its supported logs for the current STH directly or indirectly;
-- resolving a SCT and certificate to a STH via an inclusion proof
+- resolving an SCT and certificate to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
 HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
@@ -603,7 +603,7 @@ SCT Feedback requires the cooperation of HTTPS clients and more importantly
 HTTPS servers. Although SCT Feedback does require a significant amount of 
 server-side logic to respond to the corresponding APIs, this functionality 
 does not require customization, so it may be pre-provides and work out of 
-the box. However, to take full advantage of the system, a HTTPS server would
+the box. However, to take full advantage of the system, an HTTPS server would
 wish to perform some configuration to optimize its operation:
 
 - Minimize its disk commitment by whitelisting known SCTs and
@@ -613,7 +613,7 @@ wish to perform some configuration to optimize its operation:
 - Establish a "push" mechanism for POSTing SCTs to Auditors and Monitors
 
 These configuration needs, and the simple fact that it would require some
-deployment of software, mean that some percentage of HTTPS servers will not
+deployment of software, means that some percentage of HTTPS servers will not
 deploy SCT Feedback.
 
 If SCT Feedback was the only mechanism in the ecosystem, any server that
@@ -1029,9 +1029,9 @@ Seo, Magnus Ahltorp, Yan Zhu.
 
 ## Changes between ietf-00 and ietf-01
 
-- STH Pollination Proof Fetching defined and indicated is optional
-- Adding 3-Method Ecosystem section
-- Handle cases with Logs cease operation
+- STH Pollination Proof Fetching defined and indicated as optional
+- Adding the 3-Method Ecosystem section
+- Handle cases with Logs ceasing operation
 - Add a bit about tracking via STH Interaction
 - Add a section with some early recommendations for mixing
 - Add a section detailing blocking connections, frustrating it, and the implications
