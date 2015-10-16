@@ -828,10 +828,15 @@ client. Given all the other opportunities for HTTPS servers to
 fingerprint clients -- TLS session tickets, HPKP and HSTS headers,
 HTTP Cookies, etc. -- this is acceptable.
 
-The fingerprinting attack described above could be avoided by
-requiring that logs i) MUST return the same SCT for a given cert chain
-({{RFC-6962-BIS-09}} Section 3) and ii) use a deterministic signature scheme
-when signing the SCT ({{RFC-6962-BIS-09}} Section 2.1.4).
+The fingerprinting attack described above would be mitigated by a
+requirement that logs MUST use a deterministic signature scheme when
+signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using
+RSA is not required to use a deterministic signature scheme.
+
+Since logs are allowed to issue a new SCT for a certificate already
+present in the log, mandating deterministic signatures does not stop
+this fingerprinting attack altogether. It does make the attack harder
+to pull off without being detected though.
 
 There is another similar fingerprinting attack where an HTTPS server
 tracks a client by using a variation of cert chains. The risk for this
