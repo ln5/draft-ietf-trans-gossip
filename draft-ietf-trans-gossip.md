@@ -647,6 +647,13 @@ minority of HTTPS servers deploy it. However, it makes an assumption that
 an HTTPS client performs anonymized Proof Fetching (such as the DNS mechanism 
 discussed). However, any manner that is anonymous for some (such as clients 
 who use shared DNS services such as a large ISP), may not be anonymous for others. 
+
+\[
+    I find prefixing anything with "anonymous" is problematic. I worry
+    about the term "anonymized Proof Fetching" refering to the DNS
+    mechanism. It's too strong. --ln5
+\]
+
 For instance, DNS leaks a considerable amount of information (including what data 
 is already present in the cache) in plaintext over the network.  For this 
 reason, some percentage of HTTPS clients may choose to not enable the Proof Fetching
