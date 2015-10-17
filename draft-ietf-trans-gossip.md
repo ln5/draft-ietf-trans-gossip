@@ -416,23 +416,24 @@ The goal of sharing Signed Tree Heads (STHs) through pollination is to
 share STHs between HTTPS clients, CT auditors, and monitors in while
 still preserving the privacy of the end user. The sharing of STHs
 contribute to the overall goal of detecting misbehaving logs by
-providing auditors and monitors with SCTs from many vantage points,
+providing CT auditors and monitors with SCTs from many vantage points,
 making it possible to detect logs that are presenting inconsistent views.
 
 HTTPS servers supporting the protocol act as STH pools. HTTPS clients
-and others in the possession of STHs should pollinate STH pools by
-sending STHs to them, and retrieving new STHs to send to new servers.
-CT auditors and monitors should retrieve STHs from pools by
-downloading STHs from them.
+and CT auditors and monitors in the possession of STHs should pollinate STH pools by
+sending STHs to them, and retrieving new STHs to send to other STH pools.
+CT auditors and monitors should perform their auditing and monitoring duties by
+retrieving STHs from pools.
 
 STH Pollination is carried out by sending STHs to HTTPS servers
 supporting the protocol, and retrieving new STHs. In the case of HTTPS
-clients, STHs are sent in an already established TLS session. This
+clients, STHs SHOULD be sent in an already established TLS session. This
 makes it hard for an attacker to disrupt STH gossiping without also
 disturbing ordinary secure browsing (https://). This is discussed more 
 in {#blocking-policy-frustrating}.
 
-STHs are sent by POSTing them to the .well-known URL:
+HTPS clients send STHs to HTTPS servers by POSTing them to the
+well-known URL:
 
     https://<domain>/.well-known/ct/v1/sth-pollination
 
@@ -444,7 +445,8 @@ in {{sth-pollination-dataformat}}.
 An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
-- asking logs that it recognises for the current STH directly or indirectly;
+- asking logs that it recognises for the current STH, either directly
+  (v2/get-sth) or indirectly (for example over DNS)
 - resolving an SCT and certificate to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
