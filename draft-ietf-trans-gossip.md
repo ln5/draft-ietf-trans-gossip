@@ -394,17 +394,21 @@ with the following content:
 
   - sct_data: An array of objects consisting of the base64
     representation of the binary SCT data as defined in {{RFC-6962-BIS-09}}
-    Section 3.2.
+    Section 3.3.
 
-The 'x509_chain' element MUST contain the leaf certificate and the
-full chain to a known root.
+The 'x509\_chain' element MUST contain the leaf certificate and the
+full chain to a root accepted by all of the logs in the set of logs
+issuing all the SCTs in the 'sct\_data' element.
 
-\[ TBD: There was discussion about including a few field for client->server 
+\[TBD: Be strict about what sct_data may contain or is this sufficiently
+implied by previous sections?\]
+
+\[TBD: There was discussion about including a few field for client->server
 reporting, which is the exact set and order of certificates sent by the HTTPS 
 server to the client. This is additional diagnostic information that a HTTPS server
 could use to check it's deployment... but is pretty much useless to CT or gossip.
 Right now we're not including this, but we're polling server operators to see if they
-would welcome this data.]
+would welcome this data.\]
 
 ## STH pollination {#sth-pollination}
 
