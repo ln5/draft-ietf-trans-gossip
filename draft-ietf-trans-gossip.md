@@ -227,11 +227,11 @@ There are three separate gossip streams:
 ## SCT Feedback
 
 The goal of SCT Feedback is for clients to share SCTs and certificate
-chains with CT auditors and monitors while still preserving privacy of
+chains with CT auditors and monitors while still preserving the privacy of
 the end user. The sharing of SCTs contribute to the overall goal of
 detecting misbehaving logs by providing auditors and monitors with
-SCTs from many vantage points, making it possible to catch more
-violations of MMD and also logs presenting inconsistent views.
+SCTs from many vantage points, making it possible to catch a higher
+number of violations of MMD and also catch logs presenting inconsistent views.
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
