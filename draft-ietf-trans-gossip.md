@@ -115,7 +115,7 @@ privacy considerations into account in order not to leak associations
 between users of the log (e.g., web browsers) and certificate holders
 (e.g., web sites). Even sharing STHs (which do not link to specific
 log entries) can be problematic -- user tracking by fingerprinting
-through rare STHs is one potential attack.
+through rare STHs is one potential attack (see {{#sth-pollination}}).
 
 However, there are avenues by which information can be shared that is 
 not damaging to user privacy. For example, there is no loss in privacy 
