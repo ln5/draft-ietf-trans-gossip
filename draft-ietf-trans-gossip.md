@@ -237,6 +237,11 @@ SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
 they've visisted to any third party.
 
+\[Here's an alternative to that paragraph:
+SCT Feedback is the most privacy-preserving gossip mechanism, as it
+does not create any potential cross-origin tracking mechanisms.
+\]
+
 HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
 well-known URL (associated with that server), as described in {{feedback-clisrv}}. Note that
