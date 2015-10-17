@@ -67,18 +67,13 @@ Auditor Relationship.
 
 # Introduction
 
-The purpose of the protocols in this document is to detect misbehavior
-by CT logs. In particular, CT logs can misbehave by rewriting
-history or by presenting a "split view" of their operations, also
-known as a partitioning attack {{THREAT-ANALYSIS}}. The CT log mechanism provides
-interfaces that enable third parties to detect these forms of misbehavior. In order
-for the community to detect some forms of log misbehavior, there needs to be a
-well-defined way to "gossip" about the responses from the logs that makes
-use of the log query mechanisms {{RFC-6962-BIS-09}}.
+The purpose of the protocols in this document, collectively referred
+to as CT Gossip, is to detect certain misbehavior by CT logs. In
+particular, CT Gossip aims to detect logs that are providing
+incosistent views to different log clients.
 
-\[TODO: enumerate the interfaces used for detecting misbehaviour]
+\[TODO: enumerate the interfaces used for detecting misbehaviour?\]
 \[TODO: should we include detection of failure of meeting MMD too?\]
-
 
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
@@ -90,13 +85,13 @@ gossip.
 
 This document presents three different, complementary mechanisms for
 non-log elements of the CT ecosystem to exchange information about logs
-in a manner that preserves the privacy of the HTTPS clients.
+in a manner that preserves the privacy of HTTPS clients.
 They should provide protective benefits for the system as a
 whole even if their adoption is not universal.
 
 # Defining the problem
 
-When a log serves different views of the log to different clients this
+When a log provides different views of the log to different clients this
 is described as a partitioning attack. Each client would be able to
 verify the append-only nature of the log but, in the extreme case,
 each client might see a unique view of the log.
@@ -106,11 +101,6 @@ consistency, i.e., they should never rewrite history.
 Additionally, monitors and other log clients need to exchange
 information about monitored logs in order to be able to detect a
 partitioning attack (as described above).
-
-A partitioning attack is when a log serves different views of the log
-to different clients. Each client would be able to verify the
-append-only nature of the log, while in the extreme case being the only
-client seeing this particular view.
 
 Gossiping about log responses to queries helps address the problem of
 detecting malicious or compromised logs with respect to a partitioning
