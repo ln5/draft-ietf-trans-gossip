@@ -363,7 +363,8 @@ submissions according to an undefined policy. Suggestions for such
 a policy can be found in {#pooling-policy-recommendations}.
 
 HTTPS servers MUST NOT share any other data that they may learn from
-the submission of SCT Feedback by HTTPS clients.
+the submission of SCT Feedback by HTTPS clients, like the HTTPS client
+IP address or the time of submission.
 
 Auditors SHOULD provide the following URL accepting HTTPS POSTing of
 SCT feedback data:
