@@ -240,13 +240,13 @@ they've visisted to any third party.
 HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
 well-known URL (associated with that server), as described in {{feedback-clisrv}}. Note that
-clients send the same SCTs and chains to servers multiple times with
+clients will send the same SCTs and chains to servers multiple times with
 the assumption that a potential man-in-the-middle attack eventually
 will cease, and an honest server will receive collected malicious
 SCTs and certificate chains.
 
 HTTPS servers store SCTs and certificate chains received from clients
-and later share them with CT auditors by either posting them or making
+and later share them with CT auditors by either posting them to auditors or making
 them available via a well-known URL. This is described in
 {{feedback-srvaud}}.
 
