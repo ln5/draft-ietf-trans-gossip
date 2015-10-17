@@ -545,6 +545,8 @@ intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
 providing a caching layer for oft-requested inclusion proofs.)
 
+\[TODO: Add a reference to Google's DNS mechanism. \]
+
 Anonymity networks such as Tor also present a mechanism for a client to
 anonymously retrieve a proof from an auditor or log.
 
