@@ -281,7 +281,7 @@ often than TBD.
 \[benl: "sent to the server" only really counts if the server presented a valid SCT in the handshake and the certificate is known to be unrevoked (which will be hard for a MitM to sustain)\]
 \[TODO: expand on rate/resource limiting motivation\]
 
-Refer to {#pooling-policy-recommendations} for recommendations about 
+Refer to {{pooling-policy-recommendations}} for recommendations about
 strategies.
 
 An SCT MUST NOT be sent to any other HTTPS server than one serving the
@@ -360,7 +360,7 @@ HTTPS servers SHOULD share all SCTs and accompanying certificate
 chains they see that pass the checks in {{feedback-clisrv}}. If this
 is an infeasible amount of data, the server may choose to expire
 submissions according to an undefined policy. Suggestions for such
-a policy can be found in {#pooling-policy-recommendations}.
+a policy can be found in {{pooling-policy-recommendations}}.
 
 HTTPS servers MUST NOT share any other data that they may learn from
 the submission of SCT Feedback by HTTPS clients, like the HTTPS client
@@ -430,7 +430,7 @@ supporting the protocol, and retrieving new STHs. In the case of HTTPS
 clients, STHs SHOULD be sent in an already established TLS session. This
 makes it hard for an attacker to disrupt STH gossiping without also
 disturbing ordinary secure browsing (https://). This is discussed more 
-in {#blocking-policy-frustrating}.
+in {{blocking-policy-frustrating}}.
 
 HTPS clients send STHs to HTTPS servers by POSTing them to the
 well-known URL:
@@ -455,7 +455,7 @@ pollinate STH pools with STHs. Which STHs to send and how often
 pollination should happen is regarded as undefined policy with 
 the exception of privacy concerns explained in the 
 next section. Suggestions for the policy may be found in 
-{#pooling-policy-recommendations}.
+{{pooling-policy-recommendations}}.
 
 An HTTPS client could be tracked by giving it a unique or rare STH.
 To address this concern, we place restrictions on different components
@@ -511,7 +511,7 @@ When multiplied by the number of logs from which a client accepts STHs,
 this number of unique STHs grow and the negative privacy implications
 grow with it. It's important that this is taken into account when logs
 are chosen for default settings in HTTPS clients. This concern is 
-discussed upon in {#privacy-sth-interaction}.
+discussed upon in {{privacy-sth-interaction}}.
 
 \[TBD urge HTTPS clients to store STHs retrieved in responses?\]
 
@@ -776,8 +776,8 @@ connection did not succeed. While it may not have been maliciously blocked, it
 knows the transaction did not succeed. Mechanisms which result in a positive 
 affirmation from the recipient that the transaction succeeded allow confirmation 
 that a connection was not blocked. In this situation, the party can factor this 
-into strategies suggested in {#pooling-policy-recommendations} and in 
-{#blocking-policy-response}.  
+into strategies suggested in {{pooling-policy-recommendations}} and in
+{{blocking-policy-response}}.
 
 The connections that allow positive affirmation are 1, 2, 4, 5, and 7.
 
@@ -790,11 +790,11 @@ as an attacker performing a sybil attack, aiming to flush the server's data
 store.  Therefore the fact that these connections can be undetectably blocked 
 does not actually alter the threat model of servers responding to these 
 requests. The choice of algorithm to release data is crucial to protect against 
-these attacks, strategies are suggested in {#pooling-policy-recommendations}.
+these attacks, strategies are suggested in {{pooling-policy-recommendations}}.
 
 Handling censorship and network blocking (which is indistinguishable from 
 network error) is relegated to the implementation policy chosen by clients.
-Suggestions for client behavior are specified in {#blocking-policy-recommendations}.
+Suggestions for client behavior are specified in {{blocking-policy-recommendations}}.
 
 ## Privacy considerations
 
@@ -833,7 +833,7 @@ auditor is a trusted by the client to not reveal their associations
 with servers. Auditors MUST NOT share such SCTs in any way, including
 sending them to an external log, without first mixing them with
 multiple other SCTs learned through submissions from multiple other
-clients. Suggestions for mixing SCTs are presented in {#pooling-policy-recommendations}.
+clients. Suggestions for mixing SCTs are presented in {{pooling-policy-recommendations}}.
 
 There is a possible fingerprinting attack where a log issues a unique
 SCT for targeted log client(s). A colluding log and HTTPS server
@@ -935,7 +935,7 @@ such a tracking mechanism is.
 
 Building such a model is likely impossible without some real world data,
 and requires a given implementation of a policy. To combat this attack,
-suggestions are provided in {#pooling-policy-recommendations} to attempt to minimize it, but follow-up
+suggestions are provided in {{pooling-policy-recommendations}} to attempt to minimize it, but follow-up
 testing with real world deployment to improvise the policy will be required.
 
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
