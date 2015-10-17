@@ -329,11 +329,12 @@ service attack on the server's storage space.
 Check number 3 is to help malfunctioning clients from leaking which
 sites they visit and additionally to prevent DoS attacks.
 
-Note that an HTTPS server MAY perform a certificate chain validation
-on a submitted certificate chain, and if it matches a trust anchor
-configured on the server (but whose leaf cert is otherwise unknown to the server), the
-HTTPS server MAY store the certificate chain and MAY choose to store
-any submitted SCTs even if they are unable to be verified. The risk of
+Note that an HTTPS server MAY choose to store a submitted SCT and the
+accompanying certificate chain even when the SCT can't be verified
+according to check number 2. One such case would be when a certificate
+chain validation is performed and the chain ends in a trust anchor
+configured on the server.
+The risk of
 spamming and denial of service can be mitigated by configuring the
 server with all known acceptable certificates (or certificate hashes) applicable to this server.
 This information may enable a HTTPS server operator to detect attacks
