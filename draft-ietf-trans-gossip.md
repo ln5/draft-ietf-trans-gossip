@@ -267,6 +267,7 @@ were not received from that server.
 \[ TODO: fix the above paragraph -- it is vague and confusing.  maybe
   an example including a client caching at most one SCT per host+log
   would clarify \]
+\[TODO: define "same domain" \]
 
 Note that the SCT store also contains SCTs received in certificates.
 
