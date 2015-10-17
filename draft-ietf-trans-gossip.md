@@ -42,16 +42,6 @@ normative:
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
   RFC7159:
 
-informative:
-  THREAT-ANALYSIS:
-    title: "Threat Analysis for Certificate Transparency"
-    author:
-      -
-        ins: S. Kent
-        name: Stephen Kent
-    date: 2015
-    target: https://datatracker.ietf.org/doc/draft-ietf-trans-threat-analysis/
-
 --- abstract
 
 The logs in Certificate Transparency are untrusted in the sense that
@@ -863,8 +853,8 @@ described above. \[XXX any mitigations possible here?\]
 
 An HTTPS client performing Proof Fetching should only request proofs 
 from a CT log that it accepts SCTs from. An HTTPS client should
-regularly [XXX how regularly? This has operational implications for log
-operators] request an STH from all logs it is willing to accept, even
+regularly \[XXX how regularly? This has operational implications for log
+operators\] request an STH from all logs it is willing to accept, even
 if it has seen no SCTs from that log.
 
 The actual mechanism by which Proof Fetching is done carries 
@@ -904,14 +894,6 @@ the attack.
 tjr: I'm still bothered by this attack.  But I'm not sure if there's
 anything we can do about it...
 \]
-
-### Privacy for HTTPS clients performing STH Proof Fetching
-
-An HTTPS client performing Proof Fetching should only request proofs 
-from a CT log that it accepts SCTs from. An HTTPS client should
-regularly [XXX how regularly? This has operational implications for log
-operators] request an STH from all logs it is willing to accept, even
-if it has seen no SCTs from that log.
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
@@ -1007,7 +989,7 @@ eventually deleted.  The instances of these recommendations in this draft are:
 
 Each of these instances have specific requirements for user privacy, and each have options that may not be invoked. As one example, a HTTPS client should not mix SCTs from server A with SCTs from server B and release server B's SCTs to Server A.  As another example, a HTTPS server may choose to resolve several STHs to a single more current STH via proof fetching, but it is under no obligation to do so.
 
-These requirements should be met, but the general problem of aggregating multiple pieces of data, choosing when and how many to release, and when to remove is shared.  This problem has been previously been considered in the case of Mix Networks and Remailers, including papers such as [X], [Y], and [Z].
+These requirements should be met, but the general problem of aggregating multiple pieces of data, choosing when and how many to release, and when to remove is shared.  This problem has been previously been considered in the case of Mix Networks and Remailers, including papers such as \[X\], \[Y\], and \[Z\].
 
 Certain common recommendations can be made:
 
