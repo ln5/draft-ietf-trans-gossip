@@ -110,7 +110,7 @@ sides, to see the other side.
 Disseminating information about a log poses a potential threat
 to the privacy of end users. Some data of interest (e.g. SCTs) are
 linkable to specific log entries and thereby to specific sites, which
-makes them privacy-sensitive. Gossiping about this data has to take
+makes sharing them with others privacy-sensitive. Gossiping about this data has to take
 privacy considerations into account in order not to leak associations
 between users of the log (e.g., web browsers) and certificate holders
 (e.g., web sites). Even sharing STHs (which do not link to specific
