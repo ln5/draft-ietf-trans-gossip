@@ -1048,12 +1048,13 @@ Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 ## Changes between ietf-00 and ietf-01
 
-- STH Pollination Proof Fetching defined and indicated as optional
-- Adding the 3-Method Ecosystem section
-- Handle cases with Logs ceasing operation
-- Add a bit about tracking via STH Interaction
-- Add a section with some early recommendations for mixing
-- Add a section detailing blocking connections, frustrating it, and the implications
+- STH Pollination Proof Fetching defined and indicated as optional.
+- 3-Method Ecosystem section added.
+- Cases with Logs ceasing operation handled.
+- Text on tracking via STH Interaction added.
+- Section with some early recommendations for mixing added.
+- Section detailing blocking connections, frustrating it, and the
+  implications added.
 
 ## Changes between -01 and -02
 
