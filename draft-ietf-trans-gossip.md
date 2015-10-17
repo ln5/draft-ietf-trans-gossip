@@ -115,7 +115,7 @@ privacy considerations into account in order not to leak associations
 between users of the log (e.g., web browsers) and certificate holders
 (e.g., web sites). Even sharing STHs (which do not link to specific
 log entries) can be problematic -- user tracking by fingerprinting
-through rare STHs is one potential attack (see {{#sth-pollination}}).
+through rare STHs is one potential attack (see {{sth-pollination}}).
 
 # Overview
 
@@ -149,7 +149,7 @@ perspective as long as the same STH is shared by a large number of
 other log clients. This "safety in numbers" can be achieved by requiring
 gossiping of STHs only of a certain "freshness" while also refusing to
 gossip about STHs from logs with too high an STH issuance frequency
-(see {{STH pollination}}.
+(see {{sth-pollination}}).
 
 # Terminology and data flow
 
@@ -631,7 +631,7 @@ If SCT Feedback was not deployed, users who wished to have the strongest
 measure of privacy protection (by disabling STH Pollination Proof Fetching
 and forgoing a Trusted Auditor) could be attacked without risk of detection. 
 
-## STH Pollination
+## STH Pollination {#3metheco-sth-pollination}
 
 STH Pollination requires the cooperation of HTTPS clients, HTTPS servers,
 and logs.
