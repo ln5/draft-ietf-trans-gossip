@@ -70,10 +70,10 @@ Auditor Relationship.
 The purpose of the protocols in this document, collectively referred
 to as CT Gossip, is to detect certain misbehavior by CT logs. In
 particular, CT Gossip aims to detect logs that are providing
-incosistent views to different log clients.
+incosistent views to different log clients and logs failing to include
+submitted certificates within the time period stipulated by MMD.
 
 \[TODO: enumerate the interfaces used for detecting misbehaviour?\]
-\[TODO: should we include detection of failure of meeting MMD too?\]
 
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
@@ -117,22 +117,6 @@ between users of the log (e.g., web browsers) and certificate holders
 log entries) can be problematic -- user tracking by fingerprinting
 through rare STHs is one potential attack (see {{#sth-pollination}}).
 
-However, there are avenues by which information can be shared that is 
-not damaging to user privacy. For example, there is no loss in privacy 
-if a client sends SCTs for a
-given site to the site corresponding to the SCT. This is because the site's
-logs would already indicate that the client is accessing that
-site. In this way a site can accumulate records of SCTs that have been
-issued by various logs for that site, providing a consolidated
-repository of SCTs that could be queried by auditors.
-
-Sharing an STH is considered reasonably safe from a privacy
-perspective as long as the same STH is shared by a large number of
-other log clients. This "safety in numbers" can be achieved by requiring
-gossiping of STHs only of a certain "freshness" while also refusing to
-gossip about STHs from logs with too high an STH issuance frequency
-(see {{STH pollination}}.
-
 # Overview
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
@@ -149,6 +133,23 @@ HTTPS clients in a Trusted Auditor Relationship share SCTs and STHs
 with trusted auditors or monitors directly, with expectations of
 privacy sensitive data being handled according to whatever privacy
 policy is agreed on between client and trusted party.
+
+Despite the privacy risks with sharing SCTs there is no loss in privacy 
+if a client sends SCTs for a
+given site to the site corresponding to the SCT. This is because the site's
+logs would already indicate that the client is accessing that
+site. In this way a site can accumulate records of SCTs that have been
+issued by various logs for that site, providing a consolidated
+repository of SCTs that could be shared with auditors. Auditors can
+use this information to detect logs that misbehaves by not including
+certificates within the time period stipulated by the MMD metadata.
+
+Sharing an STH is considered reasonably safe from a privacy
+perspective as long as the same STH is shared by a large number of
+other log clients. This "safety in numbers" can be achieved by requiring
+gossiping of STHs only of a certain "freshness" while also refusing to
+gossip about STHs from logs with too high an STH issuance frequency
+(see {{STH pollination}}.
 
 # Terminology and data flow
 
