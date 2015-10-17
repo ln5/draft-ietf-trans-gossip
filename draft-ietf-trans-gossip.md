@@ -1048,6 +1048,8 @@ Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 ## Changes between ietf-00 and ietf-01
 
+- Improve langugage and readability based on feedback from Stephen
+  Kent.
 - STH Pollination Proof Fetching defined and indicated as optional.
 - 3-Method Ecosystem section added.
 - Cases with Logs ceasing operation handled.
