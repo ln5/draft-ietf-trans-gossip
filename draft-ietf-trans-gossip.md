@@ -344,7 +344,7 @@ Transparency ecosystem.
 ### HTTPS server to auditors {#feedback-srvaud}
 
 HTTPS servers receiving SCTs from clients SHOULD share SCTs and
-certificate chains with CT auditors by either providing the well-known
+certificate chains with CT auditors by either serving them on the well-known
 URL:
 
     https://<domain>/.well-known/ct/v1/collected-sct-feedback
