@@ -392,8 +392,8 @@ logs in the set of logs issuing all the SCTs in the 'sct\_data'
 element.
 
 Some clients have trust anchors that are locally added (e.g. by an
-administrator or by the user themselves).  Some of these local trust
-anchors are privacy-sensitive: that is, they leak information about
+administrator or by the user themselves). A local trust
+anchors is potentially privacy-sensitive since it may carry information about
 the specific computer or user. If a certificate is covered by SCTs
 issued by publicly trusted logs, but it chains to a privacy-sensitive
 local trust anchor, the client SHOULD submit it as an `x509\_chain`
