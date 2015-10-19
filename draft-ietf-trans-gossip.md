@@ -264,6 +264,7 @@ server but which were not received from that server.
 \[TODO: fix the above paragraph -- it is vague and confusing. maybe
   an example including a client caching at most one SCT per host+log
   would clarify\]
+
 \[TODO: define "same domain"\]
 
 Note that the SCT store also contains SCTs received in certificates.
@@ -271,7 +272,10 @@ Note that the SCT store also contains SCTs received in certificates.
 The client MUST NOT send the same set of SCTs to the same server more
 often than TBD.
 
-\[benl: "sent to the server" only really counts if the server presented a valid SCT in the handshake and the certificate is known to be unrevoked (which will be hard for a MitM to sustain)\]
+\[benl says: "sent to the server" only really counts if the server
+presented a valid SCT in the handshake and the certificate is known to
+be unrevoked (which will be hard for a MitM to sustain)\]
+
 \[TODO: expand on rate/resource limiting motivation\]
 
 Refer to {{pooling-policy-recommendations}} for recommendations about
@@ -496,29 +500,6 @@ update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
 cannot be resolved to the final STH... XXX?
 
-
-\[tjr: Shit. I think we need an escape valve. Assume someone compromises
-a log, isolates a client until shutdown, then the client goes off and
-does its happy thing on a clean network.
-
-It requests STH resolution of the split view to the non-split
-view. The legit log can't do that. It returns a 500. What does the
-client do?  In a perfect world, the log would see a signed STH it
-doesn't know about and report on itself. We shouldn't assume a perfect
-world though.
-
-How do we detect it?
-
-Another example is a non-shut down log that gets own. Client sees a
-split view, then goes to a clean network. It attempts to resolve an
-STH to a current one with the legit log. The legit log can't do
-it. Returns a 500. Again, perfect world - log self-reports itself. How
-do we solve this in an imperfect world?
-
-Do we specify a heuristic like "If you can't resolve an STH after
-trying N times, during which you do get successful responses from the
-log, fuck it just send it to Google and the EFF"?\]
-
 When multiplied by the number of logs from which a client accepts
 STHs, this number of unique STHs grow and the negative privacy
 implications grow with it. It's important that this is taken into
@@ -526,16 +507,7 @@ account when logs are chosen for default settings in HTTPS
 clients. This concern is discussed upon in
 {{privacy-sth-interaction}}.
 
-\[TBD urge HTTPS clients to store STHs retrieved in responses?\]
-
-\[TBD share inclusion proofs and consistency proofs too?\]
-
 ### HTTPS Clients and Proof Fetching
-
-\[tjr: I am establishing a term here "Proof Fetching" to refer to the
-part of STH Pollination that involves getting inclusion or consistency
-proofs. This avoids us having to say "resolve SCTs or Historical
-STHs" everywhere.\]
 
 There are two types of proofs a client may retrieve.
 
@@ -559,7 +531,8 @@ intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
 providing a caching layer for oft-requested inclusion proofs.)
 
-\[TODO: Add a reference to Google's DNS mechanism.\]
+\[TODO: Add a reference to Google's DNS mechanism more proper than
+http://www.certificate-transparency.org/august-2015-newsletter\]
 
 Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
@@ -697,12 +670,6 @@ assumption that an HTTPS client performs anonymized Proof Fetching
 (such as the DNS mechanism discussed). However, any manner that is
 anonymous for some (such as clients who use shared DNS services such
 as a large ISP), may not be anonymous for others.
-
-\[
-    I find prefixing anything with "anonymous" is problematic. I worry
-    about the term "anonymized Proof Fetching" refering to the DNS
-    mechanism. It's too strong. --ln5
-\]
 
 For instance, DNS leaks a considerable amount of information
 (including what data is already present in the cache) in plaintext
@@ -895,7 +862,7 @@ described above. \[XXX any mitigations possible here?\]
 
 An HTTPS client performing Proof Fetching should only request proofs
 from a CT log that it accepts SCTs from. An HTTPS client should
-regularly \[XXX how regularly? This has operational implications for
+regularly \[TBD how regularly? This has operational implications for
 log operators\] request an STH from all logs it is willing to accept,
 even if it has seen no SCTs from that log.
 
@@ -931,11 +898,6 @@ only client pollinating that STH cross-origin.
 It is mitigated partially because the log is limited in the number of
 STHs it can issue. It must 'save' one of its STHs each MMD to perform
 the attack.
-
-\[
-tjr: I'm still bothered by this attack. But I'm not sure if there's
-anything we can do about it...
-\]
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
@@ -1069,16 +1031,12 @@ Certain common recommendations can be made:
   certainty that it has successfully flushed a cache of a potentially
   incriminating piece of data.
 
-
-\[TODO:
- - Enumerating the problems of different types of mixes vs Cottrell
-   Mix
- - Integrating the IP address into the algorithm for releasing data
- - Prefer aggregating multiple piece of data into a single STH when
-   possible
- - The importance of Flushing Attacks, and tying in network
-connection, and time interval
-\]
+- \[TODO Enumerating the problems of different types of mixes vs Cottrell Mix\]
+- \[TODO Integrating the IP address into the algorithm for releasing data\]
+- \[TODO Prefer aggregating multiple piece of data into a single STH when
+  possible\]
+- \[TODO The importance of Flushing Attacks, and tying in network
+  connection, and time interval\]
 
 ## Blocking Recommendations {#blocking-policy-recommendations}
 
@@ -1109,8 +1067,8 @@ response - truncation will allow an attacker to block gossip reliably.
 ### Responding to possible blocking {#blocking-policy-response}
 
 
-\[tjr: Not sure here. Maybe this section will get folded up into the above.
-Or maybe it relates to the escape valve.\]
+\[Not sure here. Maybe this section will get folded up into the above.
+Or maybe it relates to the escape valve. --tjr\]
 
 # IANA considerations
 
