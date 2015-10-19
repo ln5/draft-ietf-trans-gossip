@@ -386,9 +386,18 @@ with the following content:
     representation of the binary SCT data as defined in {{RFC-6962-BIS}}
     Section 3.3.
 
-The 'x509\_chain' element MUST contain the leaf certificate and the
-full chain to a root accepted by all of the logs in the set of logs
-issuing all the SCTs in the 'sct\_data' element.
+The 'x509\_chain' element MUST contain at least the leaf certificate
+and SHOULD contain the full chain to a root accepted by all of the
+logs in the set of logs issuing all the SCTs in the 'sct\_data'
+element.
+
+Some clients have trust anchors that are locally added (e.g. by an
+administrator or by the user themselves).  Some of these local trust
+anchors are privacy-sensitive: that is, they leak information about
+the specific computer or user. If a certificate is covered by SCTs
+issued by publicly trusted logs, but it chains to a privacy-sensitive
+local trust anchor, the client SHOULD submit it as an `x509\_chain`
+consisting only of the leaf certificate.
 
 \[TBD: Be strict about what sct_data may contain or is this sufficiently
 implied by previous sections?\]
