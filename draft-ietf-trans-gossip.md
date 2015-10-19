@@ -324,6 +324,10 @@ accompanying certificate chain even when the SCT can't be verified
 according to check number 2. One such case would be when a certificate
 chain validation is performed and the chain ends in a trust anchor
 configured on the server.
+In this instance, the server could also be configured to not bother
+with known-to-be-good (i.e. administratively-vetted) leaf
+certificates, and only store unknown leaf certificates that chain to a
+known trust anchor.
 The risk of
 spamming and denial of service can be mitigated by configuring the
 server with all known acceptable certificates (or certificate hashes) applicable to this server.
