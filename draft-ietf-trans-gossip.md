@@ -673,7 +673,7 @@ strongest measure of privacy protection (by disabling STH Pollination
 Proof Fetching and forgoing a Trusted Auditor) could be attacked
 without risk of detection.
 
-## STH Pollination {#3metheco-sth-pollination}
+## STH Pollination {#threemetheco-sth-pollination}
 
 STH Pollination requires the cooperation of HTTPS clients, HTTPS
 servers, and logs.
