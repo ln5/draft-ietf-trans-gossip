@@ -571,8 +571,6 @@ servers is a JSON object {{RFC7159}} with the following content:
 - sths -- an array of 0 or more fresh SignedTreeHead's as defined in
   {{RFC-6962-BIS}} Section 3.6.1.
 
-\[XXX An STH is considered fresh iff TBD.\]
-
 ## Trusted Auditor Stream
 
 HTTPS clients MAY send SCTs and cert chains, as well as STHs, directly
