@@ -428,7 +428,7 @@ The goal of sharing Signed Tree Heads (STHs) through pollination is to
 share STHs between HTTPS clients, CT auditors, and monitors in while
 still preserving the privacy of the end user. The sharing of STHs
 contribute to the overall goal of detecting misbehaving logs by
-providing CT auditors and monitors with SCTs from many vantage points,
+providing CT auditors and monitors with STHs from many vantage points,
 making it possible to detect logs that are presenting inconsistent
 views.
 
