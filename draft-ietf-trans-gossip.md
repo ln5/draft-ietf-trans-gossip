@@ -404,7 +404,7 @@ logs in the set of logs issuing all the SCTs in the 'sct\_data'
 element.
 
 Some clients have trust anchors that are locally added (e.g. by an
-administrator or by the user themselves). A local trust anchors is
+administrator or by the user themselves). A local trust anchor is
 potentially privacy-sensitive since it may carry information about the
 specific computer or user. If a certificate is covered by SCTs issued
 by publicly trusted logs, but it chains to a privacy-sensitive local
