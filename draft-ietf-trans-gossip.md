@@ -507,7 +507,7 @@ account when logs are chosen for default settings in HTTPS
 clients. This concern is discussed upon in
 {{privacy-sth-interaction}}.
 
-### HTTPS Clients and Proof Fetching
+### HTTPS Clients and Proof Fetching {#clients-proof-fetching}
 
 There are two types of proofs a client may retrieve.
 
@@ -596,7 +596,7 @@ today is the relation between internet users and their providers of
 DNS resolver services. DNS resolvers are typically provided by the
 internet service provider (ISP) used, which by the nature of name
 resolving already know a great deal about which sites their users
-visit. As mentioned in Section XXX, in order for HTTPS clients to be
+visit. As mentioned in {{clients-proof-fetching}}, in order for HTTPS clients to be
 able to retrieve proofs in a privacy preserving manner, logs could
 expose a DNS interface in addition to the ordinary HTTPS interface. An
 informal writeup of such a protocol can be found at XXX.
