@@ -620,7 +620,7 @@ SCT Feedback requires the cooperation of HTTPS clients and more
 importantly HTTPS servers. Although SCT Feedback does require a
 significant amount of server-side logic to respond to the
 corresponding APIs, this functionality does not require customization,
-so it may be pre-provides and work out of the box. However, to take
+so it may be pre-provided and work out of the box. However, to take
 full advantage of the system, an HTTPS server would wish to perform
 some configuration to optimize its operation:
 
@@ -1075,8 +1075,8 @@ Or maybe it relates to the escape valve. --tjr\]
 # Contributors
 
 The authors would like to thank the following contributors for
-valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Karen
-Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
+valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Josef
+Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 # ChangeLog
 
