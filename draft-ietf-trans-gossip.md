@@ -111,13 +111,13 @@ fingerprinting through rare STHs is one potential attack (see
 # Overview
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
-Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT auditors
-in a privacy-preserving manner by sending SCTs to originating HTTPS
-servers which in turn share them with CT auditors.
+Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT
+auditors in a privacy-preserving manner by sending SCTs to originating
+HTTPS servers which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools sharing
-Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with other
-connecting clients in the hope that STHs will find their way to
+Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with
+other connecting clients in the hope that STHs will find their way to
 auditors and monitors.
 
 HTTPS clients in a Trusted Auditor Relationship share SCTs and STHs
@@ -145,8 +145,8 @@ frequency (see {{sth-pollination}}).
 # Terminology and data flow
 
 This document relies on terminology and data structures defined in
-{{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT timestamp,
-CtExtensions, SCT signature, Merkle Tree Hash.
+{{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT
+timestamp, CtExtensions, SCT signature, Merkle Tree Hash.
 
 The following picture shows how certificates, SCTs and STHs flow
 through a CT system with SCT Feedback and STH Pollination. It does not
@@ -596,10 +596,10 @@ today is the relation between internet users and their providers of
 DNS resolver services. DNS resolvers are typically provided by the
 internet service provider (ISP) used, which by the nature of name
 resolving already know a great deal about which sites their users
-visit. As mentioned in {{clients-proof-fetching}}, in order for HTTPS clients to be
-able to retrieve proofs in a privacy preserving manner, logs could
-expose a DNS interface in addition to the ordinary HTTPS interface. An
-informal writeup of such a protocol can be found at XXX.
+visit. As mentioned in {{clients-proof-fetching}}, in order for HTTPS
+clients to be able to retrieve proofs in a privacy preserving manner,
+logs could expose a DNS interface in addition to the ordinary HTTPS
+interface. An informal writeup of such a protocol can be found at XXX.
 
 
 ### Trusted Auditor data format
@@ -843,8 +843,8 @@ HTTP Cookies, etc. -- this is acceptable.
 
 The fingerprinting attack described above would be mitigated by a
 requirement that logs MUST use a deterministic signature scheme when
-signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using RSA
-is not required to use a deterministic signature scheme.
+signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using
+RSA is not required to use a deterministic signature scheme.
 
 Since logs are allowed to issue a new SCT for a certificate already
 present in the log, mandating deterministic signatures does not stop
