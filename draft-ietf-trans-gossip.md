@@ -624,8 +624,8 @@ so it may be pre-provided and work out of the box. However, to take
 full advantage of the system, an HTTPS server would wish to perform
 some configuration to optimize its operation:
 
-- Minimize its disk commitment by whitelisting known SCTs and
-  certificate chains
+- Minimize its disk commitment by maintaing a list of hashes over
+  known SCTs and certificate chains
 - Maximize its chance of detecting a misissued certificate by
   configuring a trust store of CAs
 - Establish a "push" mechanism for POSTing SCTs to Auditors and
