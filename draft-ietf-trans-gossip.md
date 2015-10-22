@@ -485,8 +485,8 @@ An STH is considered fresh iff its timestamp is less than 14 days in
 the past. Given a maximum STH issuance rate of one per hour, an
 attacker has 336 unique STHs per log for tracking. Clients MUST ignore
 STHs older than 14 days. We consider STHs within this validity window
-to be personally identifiable data, and STHs outside this window not
-personally identifiable.
+not to be personally identifiable data, and STHs outside this window
+to be personally identifiable.
 
 A log may cease operation, in which case there will soon be no STH
 within the validity window. Clients SHOULD perform all three methods
