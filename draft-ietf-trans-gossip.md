@@ -249,36 +249,48 @@ described in {{feedback-srvaud}}.
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake. The client MUST discard
-SCTs that are not signed by a log known to the client and SHOULD store
-the remaining SCTs together with the corresponding certificate chain
-for later use in SCT Feedback.
+a set of SCTs as part of the TLS handshake, as part of the leaf certificate, 
+in an OCSP response, or via a TLS extension. The client MUST discard
+SCTs that are not signed by a log known to the client. To be able to 
+provide data via SCT Feedback, the client SHOULD store the remaining 
+SCTs together with the certificate chain the client constructed. 
+This certificate chain begins with the certificate identified in the 
+SCT, and terminates in a Trust Anchor trusted by the client.
 
-When the client later reconnects to any HTTPS server for the same
-domain, it again receives a set of SCTs. The client MUST add new SCTs
-from known logs to its store of SCTs for the server. The client MUST
-send to the server any SCTs in the store that are associated with that
-server but which were not received from that server.
+Note that if the client stores SCTs and constructed certificate chains, 
+it MUST associate the data with the first-party domain connected to,
+and MUST NOT associate the data with other domain names that may be 
+present in the leaf certificate. This is to prevent a client from
+leaking browsing history to other domains present in the certificate, 
+but not operated by the same individual.
 
-\[TODO: fix the above paragraph -- it is vague and confusing. maybe
-  an example including a client caching at most one SCT per host+log
-  would clarify\]
+\[ Specifically - CloudFlare puts multiple unrelated domains in a single 
+   certificate. We can't assume all the domains in a cert are run by the 
+   same entity.
+\]
 
-\[TODO: define "same domain"\]
+When the client later reconnects to a server for which it has stored 
+SCTs and constructed certificate chains, it will mostly likely again 
+receive a set of SCTs and construct a certificate chain. The client 
+SHOULD add new SCTs from known logs (along with the corresponding 
+constructed certificate chain) to its store of SCTs for the server. 
 
-Note that the SCT store also contains SCTs received in certificates.
+To participate in SCT Feedback, the client must also send the collected 
+data back to the server. The client SHOULD send to the server the SCTs 
+and their corresponding constructed certificate chains that it has 
+collected. If the client chooses to do so, it MUST NOT send any SCTs 
+(or constructed certificate chains) that it has just recieved from the 
+server. Doing so would not give the server any new information and it 
+could allow a malicious server to flush the client's datastore of data 
+that provides evidence of an attack. 
 
-The client MUST NOT send the same set of SCTs to the same server more
-often than TBD.
-
-\[benl says: "sent to the server" only really counts if the server
-presented a valid SCT in the handshake and the certificate is known to
-be unrevoked (which will be hard for a MitM to sustain)\]
-
-\[TODO: expand on rate/resource limiting motivation\]
-
-Refer to {{pooling-policy-recommendations}} for recommendations about
-strategies.
+There are other ways that a malicious server could attempt to flush a 
+client's datastore of incriminating evidence. Therefore the client 
+SHOULD implement an algorithm that attempts to mitigate flushing attacks.
+Sample guidance for such an algorithm is presented in {{pooling-policy-recommendations}}
+Additionally, to increase the difficulty for malicious servers, the client
+MAY require the server present an unrevoked certificate and/or 
+accompanied by a valid SCT.
 
 An SCT MUST NOT be sent to any other HTTPS server than one serving the
 domain to which the certificate signed by the SCT refers. Not
@@ -394,8 +406,8 @@ with the following content:
 - sct_feedback: An array of objects consisting of
 
   - x509_chain: An array of base64-encoded X.509 certificates. The
-    first element is the end-entity certificate, the second chains to
-    the first and so on.
+    first element is the end-entity certificate, the second element 
+    signs the first and so on, terminating in a Trust Anchor.
 
   - sct_data: An array of objects consisting of the base64
     representation of the binary SCT data as defined in
@@ -405,6 +417,10 @@ The 'x509\_chain' element MUST contain at least the leaf certificate
 and SHOULD contain the full chain to a root accepted by all of the
 logs in the set of logs issuing all the SCTs in the 'sct\_data'
 element.
+
+\[ TODO: We had discussed the above paragraph, and we definely need to 
+   clarify it. 
+\]
 
 Some clients have trust anchors that are locally added (e.g. by an
 administrator or by the user themselves). A local trust anchor is
