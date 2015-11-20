@@ -515,9 +515,14 @@ heuristic to detect a shutdown. Instead the client MUST be informed
 about the shutdown from a verifiable source (e.g. a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
+<<<<<<< HEAD
 cannot be resolved to the final STH... 
 
 \[ TODO: Talk about an auditor of last resort. \]
+=======
+cannot be resolved to the final STH, clients should follow the 
+requirements and recommendations set forth in {#blocking-policy-response}.
+>>>>>>> ad0f95a... Define the auditor of last resort for STHs, and what to dow ith SCTs (SCT Feedback, or if the webserver doesn't implement it, oh well).
 
 When multiplied by the number of logs from which a client accepts
 STHs, this number of unique STHs grow and the negative privacy
@@ -555,6 +560,13 @@ http://www.certificate-transparency.org/august-2015-newsletter\]
 
 Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
+
+Resolving either SCTs and STHs may result in errors. These errors
+may be routine downtime or other transient errors, or they may be 
+indicative of an attack. Clients should follow the requirements and
+recommendations set forth in {#blocking-policy-response} when handling
+these errors in order to give the CT ecosystem the greatest chance of 
+detecting and responding to a compromise.
 
 ### STH Pollination without Proof Fetching
 
@@ -655,14 +667,20 @@ These configuration needs, and the simple fact that it would require
 some deployment of software, means that some percentage of HTTPS
 servers will not deploy SCT Feedback.
 
+It is worthwhile to note that an attacker may be able to prevent 
+detection of an attack on a webserver (in all cases) if SCT 
+Feedback is not implemented. this attack is detailed in {#activly-malicious-log}).
+
 If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-If SCT Feedback was not deployed, users who wished to have the
-strongest measure of privacy protection (by disabling STH Pollination
-Proof Fetching and forgoing a Trusted Auditor) could be attacked
-without risk of detection.
+If SCT Feedback is not deployed by a webserver, malicious logs will be 
+able to attack all users of the webserver (who do not have a Trusted 
+Auditor relationship) with impunity. Additionally, users who wished to 
+have the strongest measure of privacy protection (by disabling STH 
+Pollination Proof Fetching and forgoing a Trusted Auditor) could be 
+attacked without risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
 
@@ -746,23 +764,49 @@ HTTPS Clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
 HTTPS Clients are afforded the greatest chance of detecting an attack
-when they either participate in STH Pollination with Proof Fetching or
-have a Trusted Auditor relationship. Participating in SCT Feedback
-enables a HTTPS Client to assist in detecting the exact target of an
-attack, although they do not gain any direct benefit from it.
+when they either participate in both SCT Feedback and STH Pollination 
+with Proof Fetching or if they have a Trusted Auditor relationship. 
+(Participating in SCT Feedback is required to prevent a malicious log
+from refusing to ever resolve a SCT to a STH, as put forward in 
+{#activly-malicious-log}). Additionally, participating in SCT 
+Feedback enables a HTTPS Client to assist in detecting the exact target 
+of an attack.
 
-HTTPS Servers that omit SCT Feedback may never learn about targeted
-attacks against them, even if the attack occurred and the log
-distrusted. They do gain some herd immunity, enabling them to detect
-attacks, through their clients participating in STH Pollination or a
-Trusted Auditor Relationship.
+HTTPS Servers that omit SCT Feedback enable malicious logs to carry out 
+attacks without risk of detection. If these servers are targeted 
+specifically, even if the attack is detected, without SCT Feedback they 
+may never learn that they were specifically targeted. HTTPS servers 
+without SCT Feedback do gain some measure of herd immunity, but only 
+because their clients participate in STH Pollination (with Proof 
+Fetching) or have a Trusted Auditor Relationship.
 
-When HTTPS Servers omit SCT feedback, it allow a portion of their
-users to be attacked without detection; the vulnerable users are those
-who do not participate in STH Pollination with Proof Fetching and that
-not have a Trusted Auditor relationship.
+When HTTPS Servers omit SCT feedback, it allows their users to be 
+attacked without detection by a malicious log; the vulnerable users are 
+those who do not have a Trusted Auditor relationship.
 
 # Security considerations
+
+## Attacks by actively malicious logs {#activly-malicious-log}
+
+One of the most powerful attacks possible in the CT ecosystem is a
+trusted log that has actively decided to be malicious. It can carry 
+out an attack in two ways:
+
+In the first attack, the log can present a split view of the log for 
+all time. The only way to detect this attack is to resolve each view 
+of the log to the two most recent STHs and then force the log to present
+a consistency proof. (Which it cannot.) This attack can be detected by 
+Auditors or Monitors participating in STH Pollination, as long as they are
+explicitly build to handle the situation of a log continuously presenting
+a split view.
+
+In the second attack, the log can sign a SCT, and refuse to ever include 
+it in the tree. (Alternately, it can include it in a branch of the tree and 
+issue a STH, but then abandon that branch.) Whenever someone requests an 
+inclusion proof for that SCT (or a consistency proof from that STH), the log 
+would respond with an error, and a client may simply regard the response
+as a transient error. This attack can be detected using SCT Feedback, or an 
+Auditor of Last Resort, as presented in {#blocking-policy-response}.
 
 ## Censorship/Blocking considerations
 
@@ -1089,9 +1133,49 @@ SHOULD send gossip data in an already established TLS session. This
 can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
 
 ### Responding to possible blocking {#blocking-policy-response}
+In some cirsumstances a client may have a piece of data that they have
+attempted to share (via SCT Feedback or STH Pollination), but have been 
+unable to do so: with every attempt they recieve an error. These 
+situations are:
 
-\[Not sure here. Maybe this section will get folded up into the above.
-Or maybe it relates to the escape valve. --tjr\]
+1. The client has a SCT and certificate, and attempts to retrieve an 
+inclusion proof - but recieves an error on every attempt.
+2. The client has a STH, and attempts to resolve it to a newer STH via
+a consistency proof - but recieves an error on every attempt.
+3. The client has attempted to share a SCT and constructed certificate
+via SCT Feedback - but recieves an error on every attempt.
+4. The client has attempted to share a STH via STH Pollination - but
+recieves an error on every attempt.
+5. The client has attempted to share a specific piece of data with a 
+Trusted Auditor - but recieves an error on every attempt.
+
+In the case of 1 or 2, it is conceivable that the reason for the errors
+is that the log acted improperly, either therough malicious actions or 
+compromise. A proof may not be able to be fetched because it does not 
+exist (and only errors or timeouts occur) - one such situation may arise 
+because of an actively malicious log, as presented in {#activly-malicious-log}.
+This data is especially important to share with the broader Internet to 
+detect this situation.
+
+If a SCT has attempted to be resolved to a STH via an inclusion proof
+multiple times, and each time has failed, a client SHOULD make every 
+effort to send this SCT via SCT Feedback. However the client MUST NOT
+share the data with any other third party (excepting a Trusted Auditor
+should one exist). 
+
+If a STH has attempted to be resolved to a newer STH via a consistency 
+proof multiple times, and each time has failed, a client MAY share the 
+STH with an "Auditor of Last Resort" even if the STH in question is no 
+longer within the validity window. This auditor may be pre-configured 
+by the client but the client SHOULD permit a user to change or disable 
+whom data is sent to.
+
+In the 3rd, 4th, and 5th cases, we assume that the webserver(s) or 
+trusted auditor in question is either experience an operational failure, 
+or being attacked. In both cases, a client SHOULD retain the data for 
+later submission (subject to Private Browsing or other history-clearing 
+actions taken by the user.)
+
 
 # IANA considerations
 
