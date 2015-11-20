@@ -60,7 +60,7 @@ Auditor Relationship.
 The purpose of the protocols in this document, collectively referred
 to as CT Gossip, is to detect certain misbehavior by CT logs. In
 particular, CT Gossip aims to detect logs that are providing
-incosistent views to different log clients and logs failing to include
+inconsistent views to different log clients, and logs failing to include
 submitted certificates within the time period stipulated by MMD.
 
 \[TODO: enumerate the interfaces used for detecting misbehaviour?\]
@@ -81,7 +81,7 @@ their adoption is not universal.
 
 # Defining the problem
 
-When a log provides different views of the log to different clients
+When a log provides different views of the merkle tree to different clients,
 this is described as a partitioning attack. Each client would be able
 to verify the append-only nature of the log but, in the extreme case,
 each client might see a unique view of the log.
@@ -92,15 +92,15 @@ Additionally, monitors and other log clients need to exchange
 information about monitored logs in order to be able to detect a
 partitioning attack (as described above).
 
-Gossiping about log responses to queries helps address the problem of
+Gossiping about log behavior helps address the problem of
 detecting malicious or compromised logs with respect to a partitioning
 attack. We want some side of the partitioned tree, and ideally both
 sides, to see the other side.
 
 Disseminating information about a log poses a potential threat to the
-privacy of end users. Some data of interest (e.g. SCTs) are linkable
-to specific log entries and thereby to specific sites, which makes
-sharing them with others privacy-sensitive. Gossiping about this data
+privacy of end users. Some data of interest (e.g. SCTs) is linkable
+to specific log entries and thereby to specific websites, which makes
+sharing them with others a privacy concern. Gossiping about this data
 has to take privacy considerations into account in order not to leak
 associations between users of the log (e.g., web browsers) and
 certificate holders (e.g., web sites). Even sharing STHs (which do not
@@ -113,9 +113,9 @@ fingerprinting through rare STHs is one potential attack (see
 SCT Feedback enables HTTPS clients to share Signed Certificate
 Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
-HTTPS servers which in turn share them with CT auditors.
+HTTPS servers, who in turn share them with CT auditors.
 
-In STH Pollination, HTTPS clients use HTTPS servers as pools sharing
+In STH Pollination, HTTPS clients use HTTPS servers as pools to share
 Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with
 other connecting clients in the hope that STHs will find their way to
 auditors and monitors.
@@ -132,13 +132,13 @@ already indicate that the client is accessing that site. In this way a
 site can accumulate records of SCTs that have been issued by various
 logs for that site, providing a consolidated repository of SCTs that
 could be shared with auditors. Auditors can use this information to
-detect logs that misbehaves by not including certificates within the
+detect logs that misbehave by not including certificates within the
 time period stipulated by the MMD metadata.
 
 Sharing an STH is considered reasonably safe from a privacy
 perspective as long as the same STH is shared by a large number of
 other log clients. This "safety in numbers" can be achieved by
-requiring gossiping of STHs only of a certain "freshness" while also
+allowing gossiping of STHs only of a certain "freshness", while also
 refusing to gossip about STHs from logs with too high an STH issuance
 frequency (see {{sth-pollination}}).
 
@@ -191,7 +191,7 @@ Log entries   /                   |     |
 # Who gossips with whom {#who}
 
 - HTTPS clients and servers (SCT Feedback and STH Pollination)
-- HTTPS servers and CT auditors (SCT Feedback)
+- HTTPS servers and CT auditors (SCT Feedback and STH Pollination)
 - CT auditors and monitors (Trusted Auditor Relationship)
 
 Additionally, some HTTPS clients may engage with an auditor who they
@@ -209,7 +209,7 @@ There are three separate gossip streams:
 - STH Pollination -- HTTPS clients and CT auditors/monitors using
   HTTPS servers as STH pools for exchanging STHs.
 
-- Trusted Auditor Stream, HTTPS clients communicating directly with
+- Trusted Auditor Stream -- HTTPS clients communicating directly with
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
@@ -221,9 +221,8 @@ The goal of SCT Feedback is for clients to share SCTs and certificate
 chains with CT auditors and monitors while still preserving the
 privacy of the end user. The sharing of SCTs contribute to the overall
 goal of detecting misbehaving logs by providing auditors and monitors
-with SCTs from many vantage points, making it possible to catch a
-higher number of violations of MMD and also catch logs presenting
-inconsistent views.
+with SCTs from many vantage points, making it more likely to catch a
+violation of a log's MMD or a log presenting inconsistent views.
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
@@ -238,9 +237,9 @@ HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
 well-known URL (associated with that server), as described in
 {{feedback-clisrv}}. Note that clients will send the same SCTs and
-chains to servers multiple times with the assumption that a potential
+chains to a server multiple times with the assumption that any
 man-in-the-middle attack eventually will cease, and an honest server
-will receive collected malicious SCTs and certificate chains.
+will eventually receive collected malicious SCTs and certificate chains.
 
 HTTPS servers store SCTs and certificate chains received from clients
 and later share them with CT auditors by either posting them to
