@@ -299,9 +299,12 @@ HTTPS server at the well-known URL:
 
     https://<domain>/.well-known/ct/v1/sct-feedback
 
-The data sent in the POST is defined in {{feedback-dataformat}}.
+The data sent in the POST is defined in {{feedback-dataformat}}. This 
+data SHOULD be sent in an already established TLS session. This makes 
+it hard for an attacker to disrupt SCT Feedback without also disturbing 
+ordinary secure browsing (https://). This is discussed more in {{blocking-policy-frustrating}}.
 
-HTTPS servers perform a number of sanity checks on SCTs from clients
+HTTPS servers perform a number of sanity checks on submissions from clients
 before storing them:
 
   1. if a bit-wise compare of an SCT plus chain matches a pair already
@@ -320,27 +323,28 @@ should be on pairs of SCT and chain in order to catch different chains
 accompanied by the same SCT. This mis-matched chain information may be
 useful as a diagnostic tool for HTTPS server operators.
 
-Check number 2 is to prevent DoS attacks where an adversary can fill
-up the store prior to attacking a client, or a denial of service
-attack on the server's storage space.
+Check number 2 is to prevent denial of service attacks where an 
+adversary fills up the store prior to attacking a client (thus 
+preventing the client's submission from being recorded), or an attack
+where the adversary simply attempts to fill up server's storage space.
 
 Check number 3 is to help malfunctioning clients from leaking which
 sites they visit and additionally to prevent DoS attacks.
 
 Note that an HTTPS server MAY choose to store a submitted SCT and the
 accompanying certificate chain even when the SCT can't be verified
-according to check number 2. One such case would be when a certificate
-chain validation is performed and the chain ends in a trust anchor
-configured on the server. In this instance, the server could also be
-configured to not bother with known-to-be-good
+according to check number 2. This can allow a server to identify 
+interesting certificates absent valid SCTs. The server could choose
+to perform certificate chain validation and store the submission if 
+the chain ends in a trust anchor configured on the server. 
+
+To reduce the risk of DoS attacks, the server could also be
+configured to not bother storing known-to-be-good
 (i.e. administratively-vetted) leaf certificates, and only store
-unknown leaf certificates that chain to a known trust anchor. The
-risk of spamming and denial of service can be mitigated by configuring
-the server with all known acceptable certificates (or certificate
-hashes) applicable to this server. This information may enable a
-HTTPS server operator to detect attacks or unusual behavior of
-Certificate Authorities even outside the Certificate Transparency
-ecosystem.
+unknown leaf certificates that chain to a known trust anchor. This 
+information may enable a HTTPS server operator to detect attacks or 
+unusual behavior of Certificate Authorities even outside the Certificate 
+Transparency ecosystem.
 
 ### HTTPS server to auditors {#feedback-srvaud}
 
@@ -424,33 +428,29 @@ to see if they would welcome this data.\]
 ## STH pollination {#sth-pollination}
 
 The goal of sharing Signed Tree Heads (STHs) through pollination is to
-share STHs between HTTPS clients, CT auditors, and monitors in while
+share STHs between HTTPS clients, CT auditors, and monitors while
 still preserving the privacy of the end user. The sharing of STHs
 contribute to the overall goal of detecting misbehaving logs by
 providing CT auditors and monitors with STHs from many vantage points,
 making it possible to detect logs that are presenting inconsistent
 views.
 
-HTTPS servers supporting the protocol act as STH pools. HTTPS clients
-and CT auditors and monitors in the possession of STHs should
+HTTPS servers supporting the protocol act as STH pools. HTTPS clients, 
+CT auditors and monitors in the possession of STHs should
 pollinate STH pools by sending STHs to them, and retrieving new STHs
 to send to other STH pools. CT auditors and monitors should perform
 their auditing and monitoring duties by retrieving STHs from pools.
-
-STH Pollination is carried out by sending STHs to HTTPS servers
-supporting the protocol, and retrieving new STHs. In the case of HTTPS
-clients, STHs SHOULD be sent in an already established TLS
-session. This makes it hard for an attacker to disrupt STH gossiping
-without also disturbing ordinary secure browsing (https://). This is
-discussed more in {{blocking-policy-frustrating}}.
 
 HTPS clients send STHs to HTTPS servers by POSTing them to the
 well-known URL:
 
     https://<domain>/.well-known/ct/v1/sth-pollination
 
-The data sent in the POST is defined in
-{{sth-pollination-dataformat}}.
+The data sent in the POST is defined in {{sth-pollination-dataformat}}. 
+This data SHOULD be sent in an already established TLS session. This 
+makes it hard for an attacker to disrupt STH gossiping without also 
+disturbing ordinary secure browsing (https://). This is discussed more 
+in {{blocking-policy-frustrating}}.
 
 The response contains zero or more STHs in the same format, described
 in {{sth-pollination-dataformat}}.
@@ -497,7 +497,9 @@ heuristic to detect a shutdown. Instead the client MUST be informed
 about the shutdown from a verifiable source (e.g. a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
-cannot be resolved to the final STH... XXX?
+cannot be resolved to the final STH... 
+
+\[ TODO: Talk about an auditor of last resort. \]
 
 When multiplied by the number of logs from which a client accepts
 STHs, this number of unique STHs grow and the negative privacy
@@ -541,7 +543,7 @@ to anonymously retrieve a proof from an auditor or log.
 An HTTPS client MAY participate in STH Pollination without fetching
 proofs. In this situation, the client receives STHs from a server,
 applies the same validation logic to them (signed by a known log,
-within a validity window) and will later pass them to a HTTPS server.
+within the validity window) and will later pass them to a HTTPS server.
 
 When operating in this fashion, the HTTPS client is promoting gossip
 for Certificate Transparency, but derives no direct benefit itself. In
@@ -584,7 +586,7 @@ corporation to which an employee is connected through a VPN or by
 other similar means. A third might be individuals or smaller groups of
 people running their own services. In such a setting, retrieving
 proofs from that third party could be considered reasonable from a
-privacy perspective. The HTTPS client does its own auditing and might
+privacy perspective. The HTTPS client may also do its own auditing and might
 additionally share SCTs and STHs with the trusted party to contribute
 to herd immunity. Here, the ordinary {{RFC-6962-BIS-09}} protocol is
 sufficient for the client to do the auditing while SCT Feedback and
@@ -623,7 +625,7 @@ so it may be pre-provided and work out of the box. However, to take
 full advantage of the system, an HTTPS server would wish to perform
 some configuration to optimize its operation:
 
-- Minimize its disk commitment by maintaing a list of hashes over
+- Minimize its disk commitment by maintaining a list of hashes over
   known SCTs and certificate chains
 - Maximize its chance of detecting a misissued certificate by
   configuring a trust store of CAs
@@ -635,7 +637,7 @@ some deployment of software, means that some percentage of HTTPS
 servers will not deploy SCT Feedback.
 
 If SCT Feedback was the only mechanism in the ecosystem, any server
-that did not implement the feature, would open itself and its users to
+that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
 If SCT Feedback was not deployed, users who wished to have the
@@ -650,21 +652,21 @@ servers, and logs.
 
 For a client to fully participate in STH Pollination, and have this
 mechanism detect attacks against it, the client must have a way to
-safely perform Proof Fetching in a privacy preserving manner. The
+safely perform Proof Fetching in a privacy preserving manner. (The
 client may pollinate STHs it receives without performing Proof
-Fetching, but we do not consider this option in this section.
+Fetching, but we do not consider this option in this section.)
 
 HTTPS Servers must deploy software (although, as in the case with SCT
 Feedback this logic can be pre-provided) and commit some configurable
 amount of disk space to the endeavor.
 
-Logs must provide access to clients to query proofs in a privacy
-preserving manner, most likely through DNS.
+Logs (or a third party) must provide access to clients to query proofs
+in a privacy preserving manner, most likely through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
 only a minority of HTTPS servers deploy it. However, it makes an
 assumption that an HTTPS client performs anonymized Proof Fetching
-(such as the DNS mechanism discussed). However, any manner that is
+(such as the DNS mechanism discussed). Unfotunetly, any manner that is
 anonymous for some (such as clients who use shared DNS services such
 as a large ISP), may not be anonymous for others.
 
@@ -672,7 +674,7 @@ For instance, DNS leaks a considerable amount of information
 (including what data is already present in the cache) in plaintext
 over the network. For this reason, some percentage of HTTPS clients
 may choose to not enable the Proof Fetching component of STH
-pollination. (Although they can still request and send STHs among
+Pollination. (Although they can still request and send STHs among
 participating HTTPS servers, as mentioned earlier this affords them no
 direct benefit.)
 
@@ -774,7 +776,7 @@ suggested in {{pooling-policy-recommendations}} and in
 The connections that allow positive affirmation are 1, 2, 4, 5, and 7.
 
 More insidious is blocking the connections that do not allow positive
-confirmation: 3 and 6. An attacker may truncate a or drop a response
+confirmation: 3 and 6. An attacker may truncate or drop a response
 from a server to a client, such that the server believes it has shared
 data with the recipient, when it has not. However, in both scenatios
 (3 and 6), the server cannot distinguish the client as a cooperating
@@ -783,7 +785,7 @@ attack, aiming to flush the server's data store. Therefore the fact
 that these connections can be undetectably blocked does not actually
 alter the threat model of servers responding to these requests. The
 choice of algorithm to release data is crucial to protect against
-these attacks, strategies are suggested in
+these attacks; strategies are suggested in
 {{pooling-policy-recommendations}}.
 
 Handling censorship and network blocking (which is indistinguishable
@@ -802,7 +804,7 @@ implications for correlative de-anonymisation of clients and
 relationship-mapping or clustering of servers or of clients.
 
 There are, however, certain clients that do not require privacy
-protection. Examples of these clients are web crawlers or robots but
+protection. Examples of these clients are web crawlers or robots - but
 even in this case, the method by which these clients crawl the web may
 in fact be considered sensitive information. In general, it is better
 to err on the side of safety, and not assume a client is okay with
@@ -822,7 +824,8 @@ itself; and to a trusted CT auditor, if one exists.
 SCTs introduce yet another mechanism for HTTPS servers to store state
 on an HTTPS client, and potentially track users. HTTPS clients which
 allow users to clear history or cookies associated with an origin MUST
-clear stored SCTs associated with the origin as well.
+clear stored SCTs and certificate chains associated with the origin as 
+well.
 
 Auditors should treat all SCTs as sensitive data. SCTs received
 directly from an HTTPS client are especially sensitive, because the
@@ -838,7 +841,7 @@ SCT for targeted log client(s). A colluding log and HTTPS server
 operator could therefore be a threat to the privacy of an HTTPS
 client. Given all the other opportunities for HTTPS servers to
 fingerprint clients -- TLS session tickets, HPKP and HSTS headers,
-HTTP Cookies, etc. -- this is acceptable.
+HTTP Cookies, etc. -- this is considered acceptable.
 
 The fingerprinting attack described above would be mitigated by a
 requirement that logs MUST use a deterministic signature scheme when
@@ -851,15 +854,16 @@ this fingerprinting attack altogether. It does make the attack harder
 to pull off without being detected though.
 
 There is another similar fingerprinting attack where an HTTPS server
-tracks a client by using a variation of cert chains. The risk for this
+tracks a client by using a unqiue certificate or a variation of cert 
+chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[XXX any mitigations possible here?\]
 
 ### Privacy for HTTPS clients performing STH Proof Fetching
 
 An HTTPS client performing Proof Fetching should only request proofs
-from a CT log that it accepts SCTs from. An HTTPS client should
-regularly \[TBD how regularly? This has operational implications for
+from a CT log that it accepts SCTs from. An HTTPS client MAY
+regularly \[TBD SHOULD? how regularly? This has operational implications for
 log operators\] request an STH from all logs it is willing to accept,
 even if it has seen no SCTs from that log.
 
@@ -922,7 +926,7 @@ Building such a model is likely impossible without some real world
 data, and requires a given implementation of a policy. To combat this
 attack, suggestions are provided in {{pooling-policy-recommendations}}
 to attempt to minimize it, but follow-up testing with real world
-deployment to improvise the policy will be required.
+deployment to improve the policy will be required.
 
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
 
@@ -944,9 +948,9 @@ Feedback that arrives over such anonymizing networks.
 
 Clients sending feedback to an auditor may prefer to reduce the
 temporal granularity of the history leakage to the auditor by caching
-and delaying their SCT Feedback reports. This elaborated upon in XXX
-Mixing. This strategy is only as effective as the granularity of the
-timestamps embedded in the SCTs and STHs.
+and delaying their SCT Feedback reports. This elaborated upon in 
+{#pooling-policy-recommendations}. This strategy is only as effective 
+as the granularity of the timestamps embedded in the SCTs and STHs.
 
 ### HTTPS Clients as Auditors
 
@@ -978,10 +982,10 @@ established above are obeyed.
 ## Mixing Recommendations {#pooling-policy-recommendations}
 
 In several components of the CT Gossip ecosystem, the recommendation
-is made that data from multiple sources be ingested, mixed, provided
-to a third party, stored for an indeterminate period of time, and
-eventually deleted. The instances of these recommendations in this
-draft are:
+is made that data from multiple sources be ingested, mixed, stored for 
+an indeterminate period of time, provided 9multiple times) to a third 
+party, and eventually deleted. The instances of these recommendations 
+in this draft are:
 
 - When a client receives SCTs during SCT Feedback, it should store the
   SCTs and Certificates for some amount of time, provide some of them
@@ -1048,7 +1052,7 @@ adversary is able to inspect the behavior of the HTTPS client and
 understand how it makes gossip connections.
 
 As an example, if a client, after establishing a TLS connection (and
-receiving an SCT, but not making it's own HTTPS request yet),
+receiving an SCT, but not making its own HTTP request yet),
 immediately opens a second TLS connection for the purpose of gossip -
 the adversary can reliably block this second connection to block
 gossip without affecting normal browsing. For this reason it is
@@ -1061,8 +1065,11 @@ connection, makes a request, receives a response, and then always
 attempts a gossip communication immediately following the first
 response - truncation will allow an attacker to block gossip reliably.
 
-### Responding to possible blocking {#blocking-policy-response}
+For these reasons, we recommend that, if at all possible, clients
+SHOULD send gossip data in an already established TLS session. This
+can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
 
+### Responding to possible blocking {#blocking-policy-response}
 
 \[Not sure here. Maybe this section will get folded up into the above.
 Or maybe it relates to the escape valve. --tjr\]
