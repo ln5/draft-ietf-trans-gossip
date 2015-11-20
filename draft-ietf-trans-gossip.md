@@ -515,14 +515,8 @@ heuristic to detect a shutdown. Instead the client MUST be informed
 about the shutdown from a verifiable source (e.g. a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
-<<<<<<< HEAD
-cannot be resolved to the final STH... 
-
-\[ TODO: Talk about an auditor of last resort. \]
-=======
 cannot be resolved to the final STH, clients should follow the 
 requirements and recommendations set forth in {#blocking-policy-response}.
->>>>>>> ad0f95a... Define the auditor of last resort for STHs, and what to dow ith SCTs (SCT Feedback, or if the webserver doesn't implement it, oh well).
 
 When multiplied by the number of logs from which a client accepts
 STHs, this number of unique STHs grow and the negative privacy
