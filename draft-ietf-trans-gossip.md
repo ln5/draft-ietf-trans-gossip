@@ -435,8 +435,8 @@ providing CT auditors and monitors with STHs from many vantage points,
 making it possible to detect logs that are presenting inconsistent
 views.
 
-HTTPS servers supporting the protocol act as STH pools. HTTPS clients, 
-CT auditors and monitors in the possession of STHs should
+HTTPS servers supporting the protocol act as STH pools. HTTPS clients and
+\[CT auditors and monitors\] in the possession of STHs should
 pollinate STH pools by sending STHs to them, and retrieving new STHs
 to send to other STH pools. CT auditors and monitors should perform
 their auditing and monitoring duties by retrieving STHs from pools.
