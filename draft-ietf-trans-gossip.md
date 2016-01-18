@@ -304,7 +304,7 @@ data SHOULD be sent in an already established TLS session. This makes
 it hard for an attacker to disrupt SCT Feedback without also disturbing 
 ordinary secure browsing (https://). This is discussed more in {{blocking-policy-frustrating}}.
 
-HTTPS servers perform a number of sanity checks on submissions from clients
+HTTPS servers perform a number of sanity checks on feedback from clients
 before storing them:
 
   1. if a bit-wise compare of an SCT plus chain matches a pair already
@@ -323,9 +323,9 @@ should be on pairs of SCT and chain in order to catch different chains
 accompanied by the same SCT. This mis-matched chain information may be
 useful as a diagnostic tool for HTTPS server operators.
 
-Check number 2 is to prevent denial of service attacks where an 
+Check number 2 is to prevent denial of service (DoS) attacks where an
 adversary fills up the store prior to attacking a client (thus 
-preventing the client's submission from being recorded), or an attack
+preventing the client's feedback from being recorded), or an attack
 where the adversary simply attempts to fill up server's storage space.
 
 Check number 3 is to help malfunctioning clients from leaking which
