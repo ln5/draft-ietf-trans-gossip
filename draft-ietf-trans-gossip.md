@@ -671,7 +671,7 @@ attack without any possibility of detection.
 
 If SCT Feedback is not deployed by a webserver, malicious logs will be 
 able to attack all users of the webserver (who do not have a Trusted 
-Auditor relationship) with impunity. Additionally, users who wished to 
+Auditor relationship) with impunity. Additionally, users who wish to
 have the strongest measure of privacy protection (by disabling STH 
 Pollination Proof Fetching and forgoing a Trusted Auditor) could be 
 attacked without risk of detection.
@@ -761,9 +761,9 @@ HTTPS Clients are afforded the greatest chance of detecting an attack
 when they either participate in both SCT Feedback and STH Pollination 
 with Proof Fetching or if they have a Trusted Auditor relationship. 
 (Participating in SCT Feedback is required to prevent a malicious log
-from refusing to ever resolve a SCT to a STH, as put forward in 
+from refusing to ever resolve an SCT to an STH, as put forward in 
 {#actively-malicious-log}). Additionally, participating in SCT
-Feedback enables a HTTPS Client to assist in detecting the exact target 
+Feedback enables an HTTPS Client to assist in detecting the exact target 
 of an attack.
 
 HTTPS Servers that omit SCT Feedback enable malicious logs to carry out 
@@ -791,12 +791,12 @@ all time. The only way to detect this attack is to resolve each view
 of the log to the two most recent STHs and then force the log to present
 a consistency proof. (Which it cannot.) This attack can be detected by 
 Auditors or Monitors participating in STH Pollination, as long as they are
-explicitly build to handle the situation of a log continuously presenting
+explicitly built to handle the situation of a log continuously presenting
 a split view.
 
-In the second attack, the log can sign a SCT, and refuse to ever include 
-it in the tree. (Alternately, it can include it in a branch of the tree and 
-issue a STH, but then abandon that branch.) Whenever someone requests an 
+In the second attack, the log can sign an SCT, and refuse to ever include 
+the certificate that the SCT refers to in the tree. (Alternately, it can include it in a branch of the tree and 
+issue an STH, but then abandon that branch.) Whenever someone requests an 
 inclusion proof for that SCT (or a consistency proof from that STH), the log 
 would respond with an error, and a client may simply regard the response
 as a transient error. This attack can be detected using SCT Feedback, or an 
@@ -1132,40 +1132,40 @@ attempted to share (via SCT Feedback or STH Pollination), but have been
 unable to do so: with every attempt they recieve an error. These 
 situations are:
 
-1. The client has a SCT and certificate, and attempts to retrieve an 
-inclusion proof - but recieves an error on every attempt.
-2. The client has a STH, and attempts to resolve it to a newer STH via
-a consistency proof - but recieves an error on every attempt.
-3. The client has attempted to share a SCT and constructed certificate
-via SCT Feedback - but recieves an error on every attempt.
-4. The client has attempted to share a STH via STH Pollination - but
+1. The client has an SCT and a certificate, and attempts to retrieve an 
+inclusion proof -- but recieves an error on every attempt.
+2. The client has an STH, and attempts to resolve it to a newer STH via
+a consistency proof -- but recieves an error on every attempt.
+3. The client has attempted to share an SCT and constructed certificate
+via SCT Feedback -- but recieves an error on every attempt.
+4. The client has attempted to share an STH via STH Pollination -- but
 recieves an error on every attempt.
 5. The client has attempted to share a specific piece of data with a 
-Trusted Auditor - but recieves an error on every attempt.
+Trusted Auditor -- but recieves an error on every attempt.
 
 In the case of 1 or 2, it is conceivable that the reason for the errors
-is that the log acted improperly, either therough malicious actions or 
+is that the log acted improperly, either through malicious actions or 
 compromise. A proof may not be able to be fetched because it does not 
-exist (and only errors or timeouts occur) - one such situation may arise 
+exist (and only errors or timeouts occur) -- one such situation may arise 
 because of an actively malicious log, as presented in {#actively-malicious-log}.
-This data is especially important to share with the broader Internet to 
+This data is especially important to share with the broader internet to 
 detect this situation.
 
-If a SCT has attempted to be resolved to a STH via an inclusion proof
+If an SCT has attempted to be resolved to an STH via an inclusion proof
 multiple times, and each time has failed, a client SHOULD make every 
 effort to send this SCT via SCT Feedback. However the client MUST NOT
 share the data with any other third party (excepting a Trusted Auditor
 should one exist). 
 
-If a STH has attempted to be resolved to a newer STH via a consistency 
+If an STH has attempted to be resolved to a newer STH via a consistency 
 proof multiple times, and each time has failed, a client MAY share the 
 STH with an "Auditor of Last Resort" even if the STH in question is no 
 longer within the validity window. This auditor may be pre-configured 
-by the client but the client SHOULD permit a user to change or disable 
+by the client SHOULD permit a user to change or disable 
 whom data is sent to.
 
-In the 3rd, 4th, and 5th cases, we assume that the webserver(s) or 
-trusted auditor in question is either experience an operational failure, 
+In the cases 3, 4, and 5, we assume that the webserver(s) or 
+trusted auditor in question is either experiencing an operational failure, 
 or being attacked. In both cases, a client SHOULD retain the data for 
 later submission (subject to Private Browsing or other history-clearing 
 actions taken by the user.)
