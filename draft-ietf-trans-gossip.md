@@ -271,7 +271,7 @@ but not operated by the same individual.
 \]
 
 When the client later reconnects to a server for which it has stored 
-SCTs and constructed certificate chains, it will mostly likely again 
+SCTs and constructed certificate chains, it will most likely again
 receive a set of SCTs and construct a certificate chain. The client 
 SHOULD add new SCTs from known logs (along with the corresponding 
 constructed certificate chain) to its store of SCTs for the server. 
@@ -290,7 +290,7 @@ client's datastore of incriminating evidence. Therefore the client
 SHOULD implement an algorithm that attempts to mitigate flushing attacks.
 Sample guidance for such an algorithm is presented in {{pooling-policy-recommendations}}
 Additionally, to increase the difficulty for malicious servers, the client
-MAY require the server present an unrevoked certificate and/or 
+MAY require that the server presents an unrevoked certificate and/or
 accompanied by a valid SCT.
 
 An SCT MUST NOT be sent to any other HTTPS server than one serving the
@@ -419,7 +419,7 @@ and SHOULD contain the full chain to a root accepted by all of the
 logs in the set of logs issuing all the SCTs in the 'sct\_data'
 element.
 
-\[ TODO: We had discussed the above paragraph, and we definely need to 
+\[ TODO: We have discussed the above paragraph, and we definitely need to
    clarify it. 
 \]
 
