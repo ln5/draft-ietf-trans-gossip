@@ -92,7 +92,7 @@ Additionally, monitors and other log clients need to exchange
 information about monitored logs in order to be able to detect a
 partitioning attack (as described above).
 
-Gossiping about log behavior helps address the problem of
+Gossiping about log behaviour helps address the problem of
 detecting malicious or compromised logs with respect to a partitioning
 attack. We want some side of the partitioned tree, and ideally both
 sides, to see the other side.
