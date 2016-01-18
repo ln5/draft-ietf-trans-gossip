@@ -334,7 +334,7 @@ sites they visit and additionally to prevent DoS attacks.
 Note that an HTTPS server MAY choose to store a submitted SCT and the
 accompanying certificate chain even when the SCT can't be verified
 according to check number 2. This can allow a server to identify 
-interesting certificates absent valid SCTs. The server could choose
+interesting certificates absent valid SCTs. The server could for example choose
 to perform certificate chain validation and store the submission if 
 the chain ends in a trust anchor configured on the server. 
 
@@ -666,7 +666,7 @@ in a privacy preserving manner, most likely through DNS.
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
 only a minority of HTTPS servers deploy it. However, it makes an
 assumption that an HTTPS client performs anonymized Proof Fetching
-(such as the DNS mechanism discussed). Unfotunetly, any manner that is
+(such as the DNS mechanism discussed). Unfortunetly, any manner that is
 anonymous for some (such as clients who use shared DNS services such
 as a large ISP), may not be anonymous for others.
 
@@ -804,7 +804,7 @@ implications for correlative de-anonymisation of clients and
 relationship-mapping or clustering of servers or of clients.
 
 There are, however, certain clients that do not require privacy
-protection. Examples of these clients are web crawlers or robots - but
+protection. Examples of these clients are web crawlers or robots -- but
 even in this case, the method by which these clients crawl the web may
 in fact be considered sensitive information. In general, it is better
 to err on the side of safety, and not assume a client is okay with
@@ -983,7 +983,7 @@ established above are obeyed.
 
 In several components of the CT Gossip ecosystem, the recommendation
 is made that data from multiple sources be ingested, mixed, stored for 
-an indeterminate period of time, provided 9multiple times) to a third 
+an indeterminate period of time, provided (multiple times) to a third
 party, and eventually deleted. The instances of these recommendations 
 in this draft are:
 
