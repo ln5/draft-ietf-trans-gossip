@@ -663,7 +663,7 @@ servers will not deploy SCT Feedback.
 
 It is worthwhile to note that an attacker may be able to prevent 
 detection of an attack on a webserver (in all cases) if SCT 
-Feedback is not implemented. this attack is detailed in {#activly-malicious-log}).
+Feedback is not implemented. This attack is detailed in {#actively-malicious-log}).
 
 If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
@@ -762,7 +762,7 @@ when they either participate in both SCT Feedback and STH Pollination
 with Proof Fetching or if they have a Trusted Auditor relationship. 
 (Participating in SCT Feedback is required to prevent a malicious log
 from refusing to ever resolve a SCT to a STH, as put forward in 
-{#activly-malicious-log}). Additionally, participating in SCT 
+{#actively-malicious-log}). Additionally, participating in SCT
 Feedback enables a HTTPS Client to assist in detecting the exact target 
 of an attack.
 
@@ -780,7 +780,7 @@ those who do not have a Trusted Auditor relationship.
 
 # Security considerations
 
-## Attacks by actively malicious logs {#activly-malicious-log}
+## Attacks by actively malicious logs {#actively-malicious-log}
 
 One of the most powerful attacks possible in the CT ecosystem is a
 trusted log that has actively decided to be malicious. It can carry 
@@ -1147,7 +1147,7 @@ In the case of 1 or 2, it is conceivable that the reason for the errors
 is that the log acted improperly, either therough malicious actions or 
 compromise. A proof may not be able to be fetched because it does not 
 exist (and only errors or timeouts occur) - one such situation may arise 
-because of an actively malicious log, as presented in {#activly-malicious-log}.
+because of an actively malicious log, as presented in {#actively-malicious-log}.
 This data is especially important to share with the broader Internet to 
 detect this situation.
 
