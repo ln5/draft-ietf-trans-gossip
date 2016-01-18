@@ -249,49 +249,49 @@ described in {{feedback-srvaud}}.
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake -- either as part of the leaf certificate,
-in an OCSP response, or via a TLS extension. The client MUST discard
+a set of SCTs as part of the TLS handshake -- either as part of the
+leaf certificate, in an OCSP response, or via a TLS extension. The
+client MUST discard SCTs that are not signed by a log known to the
+client. To be able to provide data via SCT Feedback, the client SHOULD
+store the remaining SCTs together with the certificate chain the
+client constructed.  This certificate chain begins with the
+certificate identified in the SCT, and terminates in a Trust Anchor
+trusted by the client.
 
-SCTs that are not signed by a log known to the client. To be able to 
-provide data via SCT Feedback, the client SHOULD store the remaining 
-SCTs together with the certificate chain the client constructed. 
-This certificate chain begins with the certificate identified in the 
-SCT, and terminates in a Trust Anchor trusted by the client.
-
-Note that if the client stores SCTs and constructed certificate chains, 
-it MUST associate the data with the first-party domain connected to,
-and MUST NOT associate the data with other domain names that may be 
-present in the leaf certificate. This is to prevent a client from
-leaking browsing history to other domains present in the certificate, 
-but not operated by the same individual.
+Note that if the client stores SCTs and constructed certificate
+chains, it MUST associate the data with the first-party domain
+connected to, and MUST NOT associate the data with other domain names
+that may be present in the leaf certificate. This is to prevent a
+client from leaking browsing history to other domains present in the
+certificate, but not operated by the same individual.
 
 \[ Specifically - CloudFlare puts multiple unrelated domains in a single 
    certificate. We can't assume all the domains in a cert are run by the 
-   same entity.
-\]
+   same entity. \]
 
-When the client later reconnects to a server for which it has stored 
+When the client later reconnects to a server for which it has stored
 SCTs and constructed certificate chains, it will most likely again
-receive a set of SCTs and construct a certificate chain. The client 
-SHOULD add new SCTs from known logs (along with the corresponding 
-constructed certificate chain) to its store of SCTs for the server. 
+receive a set of SCTs and construct a certificate chain. The client
+SHOULD add new SCTs from known logs (along with the corresponding
+constructed certificate chain) to its store of SCTs for the server.
 
-To participate in SCT Feedback, the client must also send the collected 
-data back to the server. The client SHOULD send to the server the SCTs 
-and their corresponding constructed certificate chains that it has 
-collected. If the client chooses to do so, it MUST NOT send any SCTs 
-(or constructed certificate chains) that it has just recieved from the 
-server. Doing so would not give the server any new information and it 
-could allow a malicious server to flush the client's datastore of data 
-that provides evidence of an attack. 
+To participate in SCT Feedback, the client must also send the
+collected data back to the server. The client SHOULD send to the
+server the SCTs and their corresponding constructed certificate chains
+that it has collected. If the client chooses to do so, it MUST NOT
+send any SCTs (or constructed certificate chains) that it has just
+recieved from the server. Doing so would not give the server any new
+information and it could allow a malicious server to flush the
+client's datastore of data that provides evidence of an attack.
 
-There are other ways that a malicious server could attempt to flush a 
-client's datastore of incriminating evidence. Therefore the client 
-SHOULD implement an algorithm that attempts to mitigate flushing attacks.
-Sample guidance for such an algorithm is presented in {{pooling-policy-recommendations}}
-Additionally, to increase the difficulty for malicious servers, the client
-MAY require that the server presents an unrevoked certificate and/or
-accompanied by a valid SCT.
+There are other ways that a malicious server could attempt to flush a
+client's datastore of incriminating evidence. Therefore the client
+SHOULD implement an algorithm that attempts to mitigate flushing
+attacks.  Sample guidance for such an algorithm is presented in
+{{pooling-policy-recommendations}} Additionally, to increase the
+difficulty for malicious servers, the client MAY require that the
+server presents an unrevoked certificate and/or accompanied by a valid
+SCT.
 
 An SCT MUST NOT be sent to any other HTTPS server than one serving the
 domain to which the certificate signed by the SCT refers. Not
@@ -312,10 +312,11 @@ HTTPS server at the well-known URL:
 
     https://<domain>/.well-known/ct/v1/sct-feedback
 
-The data sent in the POST is defined in {{feedback-dataformat}}. This 
-data SHOULD be sent in an already established TLS session. This makes 
-it hard for an attacker to disrupt SCT Feedback without also disturbing 
-ordinary secure browsing (https://). This is discussed more in {{blocking-policy-frustrating}}.
+The data sent in the POST is defined in {{feedback-dataformat}}. This
+data SHOULD be sent in an already established TLS session. This makes
+it hard for an attacker to disrupt SCT Feedback without also
+disturbing ordinary secure browsing (https://). This is discussed more
+in {{blocking-policy-frustrating}}.
 
 HTTPS servers perform a number of sanity checks on feedback from clients
 before storing them:
@@ -346,18 +347,18 @@ sites they visit and additionally to prevent DoS attacks.
 
 Note that an HTTPS server MAY choose to store a submitted SCT and the
 accompanying certificate chain even when the SCT can't be verified
-according to check number 2. This can allow a server to identify 
-interesting certificates absent valid SCTs. The server could for example choose
-to perform certificate chain validation and store the submission if 
-the chain ends in a trust anchor configured on the server. 
+according to check number 2. This can allow a server to identify
+interesting certificates absent valid SCTs. The server could for
+example choose to perform certificate chain validation and store the
+submission if the chain ends in a trust anchor configured on the
+server.
 
-To reduce the risk of DoS attacks, the server could also be
-configured to not bother storing known-to-be-good
-(i.e. administratively-vetted) leaf certificates, and only store
-unknown leaf certificates that chain to a known trust anchor. This 
-information may enable a HTTPS server operator to detect attacks or 
-unusual behavior of Certificate Authorities even outside the Certificate 
-Transparency ecosystem.
+To reduce the risk of DoS attacks, the server could also be configured
+to not bother storing known-to-be-good (i.e. administratively-vetted)
+leaf certificates, and only store unknown leaf certificates that chain
+to a known trust anchor. This information may enable a HTTPS server
+operator to detect attacks or unusual behavior of Certificate
+Authorities even outside the Certificate Transparency ecosystem.
 
 ### HTTPS server to auditors {#feedback-srvaud}
 
@@ -603,11 +604,12 @@ corporation to which an employee is connected through a VPN or by
 other similar means. A third might be individuals or smaller groups of
 people running their own services. In such a setting, retrieving
 proofs from that third party could be considered reasonable from a
-privacy perspective. The HTTPS client may also do its own auditing and might
-additionally share SCTs and STHs with the trusted party to contribute
-to herd immunity. Here, the ordinary {{RFC-6962-BIS-09}} protocol is
-sufficient for the client to do the auditing while SCT Feedback and
-STH Pollination can be used in whole or in parts for the gossip part.
+privacy perspective. The HTTPS client may also do its own auditing and
+might additionally share SCTs and STHs with the trusted party to
+contribute to herd immunity. Here, the ordinary {{RFC-6962-BIS-09}}
+protocol is sufficient for the client to do the auditing while SCT
+Feedback and STH Pollination can be used in whole or in parts for the
+gossip part.
 
 Another well established trusted party arrangement on the internet
 today is the relation between internet users and their providers of
@@ -821,11 +823,11 @@ implications for correlative de-anonymisation of clients and
 relationship-mapping or clustering of servers or of clients.
 
 There are, however, certain clients that do not require privacy
-protection. Examples of these clients are web crawlers or robots -- but
-even in this case, the method by which these clients crawl the web may
-in fact be considered sensitive information. In general, it is better
-to err on the side of safety, and not assume a client is okay with
-giving up its privacy.
+protection. Examples of these clients are web crawlers or robots --
+but even in this case, the method by which these clients crawl the web
+may in fact be considered sensitive information. In general, it is
+better to err on the side of safety, and not assume a client is okay
+with giving up its privacy.
 
 ### Privacy and SCTs {#privacy-SCT}
 
@@ -879,10 +881,10 @@ described above. \[XXX any mitigations possible here?\]
 ### Privacy for HTTPS clients performing STH Proof Fetching
 
 An HTTPS client performing Proof Fetching should only request proofs
-from a CT log that it accepts SCTs from. An HTTPS client MAY
-regularly \[TBD SHOULD? how regularly? This has operational implications for
-log operators\] request an STH from all logs it is willing to accept,
-even if it has seen no SCTs from that log.
+from a CT log that it accepts SCTs from. An HTTPS client MAY regularly
+\[TBD SHOULD? how regularly? This has operational implications for log operators\]
+request an STH from all logs it is willing to accept, even if it has
+seen no SCTs from that log.
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
