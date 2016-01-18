@@ -81,7 +81,7 @@ their adoption is not universal.
 
 # Defining the problem
 
-When a log provides different views of the merkle tree to different clients,
+When a log provides different views of the log to different clients
 this is described as a partitioning attack. Each client would be able
 to verify the append-only nature of the log but, in the extreme case,
 each client might see a unique view of the log.
