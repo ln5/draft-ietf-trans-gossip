@@ -249,8 +249,9 @@ described in {{feedback-srvaud}}.
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake, as part of the leaf certificate, 
+a set of SCTs as part of the TLS handshake -- either as part of the leaf certificate,
 in an OCSP response, or via a TLS extension. The client MUST discard
+
 SCTs that are not signed by a log known to the client. To be able to 
 provide data via SCT Feedback, the client SHOULD store the remaining 
 SCTs together with the certificate chain the client constructed. 
