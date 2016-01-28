@@ -414,6 +414,26 @@ by publicly trusted logs, but it chains to a privacy-sensitive local
 trust anchor, the client SHOULD NOT include anything but the leaf
 certificate in the 'x509\_chain' element.
 
+FIXME: what exactly is "publicly trusted logs"?
+
+FIXME: Are we opening up for another information leak by adding rules
+about what to send in sct feedback _that_differs_ from the already
+existing rules about cert chain validation? One bit of information
+comes from the client accepting the tls session or not. Another bit
+comes from whether the client gossips about a certain chain. A server
+should be able to find out what a clients trust store contains by
+sending different cert chains and comparing what comes back in
+gossip. Furthermoe, what about a passive observer? Can they draw any
+conclusions from traffic data, given that they know (almost for sure)
+what the client gets from the server (by connecting there themselves)
+
+TBD: remove the chain alltogether? what is it good for? really in
+scope for gossip?
+
+TODO: add text clearly stating that sending SCT feedback implicitly
+exposes the list of trusted logs, creating links between users with
+the same set of logs.
+
 \[TBD: Be strict about what sct_data may contain or is this sufficiently
 implied by previous sections?\]
 
