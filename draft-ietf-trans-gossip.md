@@ -249,24 +249,29 @@ described in {{feedback-srvaud}}.
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake. The client MUST discard
+a set of SCTs as part of the TLS handshake, including in the server certificate. The client MUST discard
 SCTs that are not signed by a log known to the client and SHOULD store
 the remaining SCTs together with the corresponding certificate chain
 for later use in SCT Feedback.
 
-When the client later reconnects to any HTTPS server for the same
-domain, it again receives a set of SCTs. The client MUST add new SCTs
-from known logs to its store of SCTs for the server. The client MUST
-send to the server any SCTs in the store that are associated with that
-server but which were not received from that server.
+The SCTs stored on the client MUST be keyed by the exact domain name 
+the client contacted. They MUST NOT be sent to any domain related 
+to the original (e.g. if the original domain is sub.example.com they 
+must not be sent to sub.sub.exmaple.com or to example.com.) They MUST
+NOT be sent to any Subject Alternate Names specified in the certificate.
+Disobeying these security requirements will leak user's browing habits 
+cross-domain. In the case of certificates that validate multiple domain
+names, it is expected that the same SCT may be stored multiple times.
+
+When the client later connects to an HTTPS server it again receives a 
+set of SCTs. The client MUST add new SCTs from known logs to its store 
+of SCTs for the individual domain name contacted. The client MUST
+send to the server SCTs in the store that are associated with that
+domain name but which were not received from that server. 
 
 \[TODO: fix the above paragraph -- it is vague and confusing. maybe
   an example including a client caching at most one SCT per host+log
   would clarify\]
-
-\[TODO: define "same domain"\]
-
-Note that the SCT store also contains SCTs received in certificates.
 
 The client MUST NOT send the same set of SCTs to the same server more
 often than TBD.
@@ -280,13 +285,17 @@ be unrevoked (which will be hard for a MitM to sustain)\]
 Refer to {{pooling-policy-recommendations}} for recommendations about
 strategies.
 
-An SCT MUST NOT be sent to any other HTTPS server than one serving the
-domain to which the certificate signed by the SCT refers. Not
+\[TODO: The above sentences that talk about the algorithm will be updated with the pooling recommendation section \]
+
+An SCT MUST NOT be sent to any other HTTPS server than one which 
+is an exact match for the domain the SCT was originally received under. Not
 following this constraint would lead to two types of privacy
 leaks. First, the server receiving the SCT would learn about other
-sites visited by the HTTPS client. Secondly, auditors or monitors
+sites visited by the HTTPS client, as explained above. Secondly, auditors or monitors
 receiving SCTs from the HTTPS server would learn information about the
 other HTTPS servers visited by its clients.
+
+\[TODO: this MUST is a repeat of the above. Do we need to re-iterate this? Probably not, so we can remove this paragraph? \]
 
 If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies
@@ -854,7 +863,7 @@ An SCT contains information that links it to a particular web
 site. Because the client-server relationship is sensitive, gossip
 between clients and servers about unrelated SCTs is risky. Therefore,
 a client with an SCT for a given server should transmit that
-information in only two channels: to a server associated with the SCT
+information in only two channels: to the server associated with the SCT
 itself; and to a trusted CT auditor, if one exists.
 
 ### Privacy in SCT Feedback {#privacy-feedback}
