@@ -411,8 +411,8 @@ administrator or by the user themselves). A local trust anchor is
 potentially privacy-sensitive since it may carry information about the
 specific computer or user. If a certificate is covered by SCTs issued
 by publicly trusted logs, but it chains to a privacy-sensitive local
-trust anchor, the client SHOULD submit it as an 'x509\_chain'
-consisting only of the leaf certificate.
+trust anchor, the client SHOULD NOT include anything but the leaf
+certificate in the 'x509\_chain' element.
 
 \[TBD: Be strict about what sct_data may contain or is this sufficiently
 implied by previous sections?\]
