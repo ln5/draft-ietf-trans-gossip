@@ -213,6 +213,14 @@ There are three separate gossip streams:
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
+# Pre-Loaded vs Locally Added Anchors
+
+Through the document, we refer to both Trust Anchors (Certificate Authorities)
+and Logs. Both Logs and Trust Anchors may be locally added by an administrator.  
+Unless otherwise clarified, in both cases we refer to the set of Trust Anchors 
+and Logs that come pre-loaded and pre-trusted in a piece of client software.
+
+
 # Gossip Mechanisms
 
 ## SCT Feedback
@@ -341,7 +349,7 @@ the chain ends in a trust anchor configured on the server.
 To reduce the risk of DoS attacks, the server could also be
 configured to not bother storing known-to-be-good
 (i.e. administratively-vetted) leaf certificates, and only store
-unknown leaf certificates that chain to a known trust anchor. This 
+unknown leaf certificates that chain to known trust anchors. This 
 information may enable a HTTPS server operator to detect attacks or 
 unusual behavior of Certificate Authorities even outside the Certificate 
 Transparency ecosystem.
@@ -401,29 +409,42 @@ with the following content:
     representation of the binary SCT data as defined in
     {{RFC-6962-BIS-09}} Section 3.3.
 
-The 'x509\_chain' element MUST contain at least the leaf certificate
-and SHOULD contain the full chain to a root accepted by all of the
-logs in the set of logs issuing all the SCTs in the 'sct\_data'
-element.
+The 'x509\_chain' element MUST contain the full chain from the leaf certificate 
+to a trust anchor (either pre-loaded or locally added) accepted by all of the 
+logs in the set of logs issuing all the SCTs in the 'sct\_data' element.
 
-Some clients have trust anchors that are locally added (e.g. by an
-administrator or by the user themselves). A local trust anchor is
-potentially privacy-sensitive since it may carry information about the
-specific computer or user. If a certificate is covered by SCTs issued
-by publicly trusted logs, but it chains to a privacy-sensitive local
-trust anchor, the client SHOULD NOT include anything but the leaf
-certificate in the 'x509\_chain' element.
+\[ 
+  TODO: I'm sorry, I know we discussed this before, but I again take concern with
+  "a trust anchor accepted by all of the logs in the set of logs issuing all 
+    the SCTs in the 'sct\_data' element."
+  The client doesn't know if the log accepts the root it chained to. All it knows is
+  "This is an SCT from a log I trust." and "This is the cert chain I built."
+
+  What was the rational for keeping that phrase in? Shouldn't it just be: 
+  The 'x509\_chain' element MUST contain the full chain from the leaf certificate 
+  to a trust anchor.
+\]
+
+Some clients have trust anchors or logs that are locally added (e.g. by an
+administrator or by the user themselves). These additions are
+potentially privacy-sensitive because they can carry information about the
+specific configuration, computer, or user. 
+
+Certificates validated by locally added trust anchors will commonly have no 
+SCTs associated with them, so in this case no action is needed with respect 
+to CT Gossip. SCTs issued by locally added logs MUST NOT be reported via SCT 
+Feedback.
+
+If a certificate is validated by SCTs issued by publicly trusted logs, but 
+chains to a local trust anchor, the client MAY perfom SCT Feedback 
+for this SCT and certificate chain bundle. Perfoming SCT Feedback may be 
+advantageous for the broader Internet and CT ecosystem, but may also disclose 
+information about the client. If the client elects to omit SCT Feedback, it can 
+still choose to perform STH Pollination after fetching an inclusion proof, 
+as specified in  {{#sth-pollination}}.
 
 \[TBD: Be strict about what sct_data may contain or is this sufficiently
 implied by previous sections?\]
-
-\[TBD: There was discussion about including a few field for
-client->server reporting, which is the exact set and order of
-certificates sent by the HTTPS server to the client. This is
-additional diagnostic information that a HTTPS server could use to
-check it's deployment... but is pretty much useless to CT or gossip.
-Right now we're not including this, but we're polling server operators
-to see if they would welcome this data.\]
 
 ## STH pollination {#sth-pollination}
 
@@ -515,11 +536,17 @@ An HTTPS client will retrieve SCTs from an HTTPS server, and must
 obtain an inclusion proof to an STH in order to verify the promise
 made by the SCT.
 
-An HTTPS client may receive SCT bundled with an inclusion proof to a
+An HTTPS client may also receive SCT bundled with an inclusion proof to a
 historical STH via an unspecified future mechanism. Because this
 historical STH is considered personally identifiable information per
 above, the client must obtain a consistency proof to a more recent
 STH.
+
+A client SHOULD perform proof fetching. A client MUST NOT perform 
+proof fetching for any SCTs or STHs issued by a locally added log. 
+A client MAY fetch an inclusion proof for an SCT (issued by a 
+pre-loaded log) that validates a certificate chaining to a locally 
+added trust anchor.
 
 If a client requested either proof directly from a log or auditor, it
 would reveal the client's browsing habits to a third party. To
@@ -581,8 +608,9 @@ servers is a JSON object {{RFC7159}} with the following content:
 ## Trusted Auditor Stream
 
 HTTPS clients MAY send SCTs and cert chains, as well as STHs, directly
-to auditors. Note that there are privacy implications in doing so,
-these are outlined in {{privacy-SCT}} and
+to auditors. If sent, this data MAY include data that reflects locally 
+added logs or trust anchors. Note that there are privacy implications 
+in doing so, these are outlined in {{privacy-SCT}} and
 {{privacy-trusted-auditors}}.
 
 The most natural trusted auditor arrangement arguably is a web browser
