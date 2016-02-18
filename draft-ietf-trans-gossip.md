@@ -213,6 +213,13 @@ There are three separate gossip streams:
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
+# Pre-Loaded vs Locally Added Anchors
+
+Through the document, we refer to both Trust Anchors (Certificate Authorities)
+and Logs. Both Logs and Trust Anchors may be locally added by an administrator.  
+Unless otherwise clarified, in both cases we refer to the set of Trust Anchors 
+and Logs that come pre-loaded and pre-trusted in a piece of client software.
+
 # Gossip Mechanisms
 
 ## SCT Feedback
@@ -241,22 +248,49 @@ chains to a server multiple times with the assumption that any
 man-in-the-middle attack eventually will cease, and an honest server
 will eventually receive collected malicious SCTs and certificate chains.
 
-HTTPS servers store SCTs and certificate chains received from clients
-and later share them with CT auditors by either posting them to
-auditors or making them available via a well-known URL. This is
-described in {{feedback-srvaud}}.
+HTTPS servers store SCTs and certificate chains received from clients,
+as described in {{feedback-srvop}}. They later share them with CT 
+auditors by either posting them to auditors or making them available 
+via a well-known URL. This is described in {{feedback-srvaud}}.
+
+### SCT Feedback data format {#feedback-dataformat}
+
+The data shared between HTTPS clients and servers, as well as between
+HTTPS servers and CT auditors/monitors, is a JSON array {{RFC7159}}.
+Each item in the array is a JSON object with the following content:
+
+- x509_chain: An array of base64-encoded X.509 certificates. The
+  first element is the end-entity certificate, the second certifies 
+  the first and so on.
+
+- sct_data: An array of objects consisting of the base64
+  representation of the binary SCT data as defined in
+  {{RFC-6962-BIS-09}} Section 3.3.
+
+We will refer to this object as 'sct_feedback'.
+
+The 'x509\_chain' element will always contain at least one element, consisting 
+of the end-entity certificate to which the SCTs correspond. It may also contain 
+a full chain from the leaf certificate to a trust anchor, depending on different 
+circumstances as described below. 
+
+\[TBD: Be strict about what sct_data may contain or is this sufficiently
+implied by previous sections?\]
 
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake, including in the server certificate. The client MUST discard
-SCTs that are not signed by a log known to the client and SHOULD store
-the remaining SCTs together with the corresponding certificate chain
-for later use in SCT Feedback.
+a set of SCTs as part of the TLS handshake - they may come as in the
+server certificate, TLS extension, or OCSP extension. The client MUST 
+discard SCTs that are not signed by a log known to the client and SHOULD 
+store the remaining SCTs together with a constructed, trusted certificate
+chain (terminated in a pre-loaded or locally installed Trust Anchor) 
+in a sct_feedback object or equivalent data structure) for later 
+use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name 
-the client contacted. They MUST NOT be sent to any domain not related 
-to the original (e.g. if the original domain is sub.example.com they 
+the client contacted. They MUST NOT be sent to any domain not matching 
+the original (e.g. if the original domain is sub.example.com they 
 must not be sent to sub.sub.example.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
 In the case of certificates that validate multiple domain
@@ -268,15 +302,22 @@ learn about other sites visited by the HTTPS client. Second, auditors
 and monitors receiving SCTs from the HTTPS server would learn
 information about other HTTPS servers visited by its clients.
 
-When the client later connects to an HTTPS server it again receives a 
-set of SCTs. The client MUST add to its store those SCTs that are issued by known logs
-and associate them with the exact domain name contacted, as described above. The client MUST
-send to the server SCTs in the store that are associated with that
-domain name unless they were received from that server in the current TLS session.
+When the client later connects to the HTTPS server it again receives a 
+set of SCTs and calculates a certificate chain, and again creates a 
+sct_feedback or similar object. If this object does not exactly match 
+an existing object in the store, then the client MUST add this new 
+object to the store, associated with the exact domain name contacted, 
+as described above. An exact comparison is needed to ensure that attacks 
+involving alternate paths are detected - an example of such an attack 
+is described in \[TODO double-CA-compromise attack\]. However, at least 
+one optimization is safe and MAY be performed. If the certificate path 
+exactly matches an existing certificate path, the client may store the 
+union of the SCTs from the two objects in the first (existing) object.
 
-\[TODO: fix the above paragraph -- it is vague and confusing. maybe
-  an example including a client caching at most one SCT per host+log
-  would clarify\]
+After connecting to the HTTPS server the subsequent time, the client MUST
+send to the server sct_feedback objects in the store that are associated 
+with that domain name. It is not necessary to send a sct_feedback object 
+constructed from the current TLS session.
 
 The client MUST NOT send the same set of SCTs to the same server more
 often than TBD.
@@ -292,12 +333,6 @@ strategies.
 
 \[TODO: The above sentences that talk about the algorithm will be updated with the pooling recommendation section \]
 
-If the HTTPS client has configuration options for not sending cookies
-to third parties, SCTs of third parties MUST be treated as cookies
-with respect to this setting. This prevents third party tracking
-through the use of SCTs/certificates, which would bypass the cookie
-policy.
-
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
 
@@ -308,44 +343,116 @@ data SHOULD be sent in an already established TLS session. This makes
 it hard for an attacker to disrupt SCT Feedback without also disturbing 
 ordinary secure browsing (https://). This is discussed more in {{blocking-policy-frustrating}}.
 
-HTTPS servers perform a number of sanity checks on feedback from clients
-before storing them:
+Some clients have trust anchors or logs that are locally added (e.g. by an
+administrator or by the user themselves). These additions are
+potentially privacy-sensitive because they can carry information about the
+specific configuration, computer, or user. 
 
-  1. if a bit-wise compare of an SCT plus chain matches a pair already
-  in the store, this SCT and chain pair MAY be discarded
+Certificates validated by locally added trust anchors will commonly have no 
+SCTs associated with them, so in this case no action is needed with respect 
+to CT Gossip. SCTs issued by locally added logs MUST NOT be reported via SCT 
+Feedback.
 
-  1. if the SCT can't be verified to be a valid SCT for the
-  accompanying leaf cert, issued by a known log, the SCT SHOULD be
-  discarded
+If a certificate is validated by SCTs issued by publicly trusted logs, but 
+chains to a local trust anchor, the client MAY perfom SCT Feedback 
+for this SCT and certificate chain bundle. If it does so, the client MUST
+include the full path of certificates chaining to the local trust anchor in
+the x509\_chain array. Perfoming SCT Feedback in this scenario may be 
+advantageous for the broader Internet and CT ecosystem, but may also disclose 
+information about the client. If the client elects to omit SCT Feedback, it can 
+still choose to perform STH Pollination after fetching an inclusion proof, 
+as specified in  {{#sth-pollination}}.
+
+We require the client to send the full path (or nothing at all) for two 
+reasons. Firstly, it simplifies the operation on the server if there are 
+not two code paths. Secondly, omitting the chain does not actually preserve
+user privacy. The Issuer field in the certificate describes the signing 
+certificate. And if the certificate is being submitted at all, it means the 
+certificate is logged, and has SCTs. This means that the Issuer can be queried
+and obtained from the log - so omitting from the client's submission does
+not actually help user privacy.
+
+If the HTTPS client has configuration options for not sending cookies
+to third parties, SCTs of third parties MUST be treated as cookies
+with respect to this setting. This prevents third party tracking
+through the use of SCTs/certificates, which would bypass the cookie
+policy.
+
+\[ TBD: We're thinking about reversing this decision \]
+
+### HTTPS server operation {#feedback-srvop}
+
+HTTPS servers can be configured (or omit configuration), resulting
+in, broadly, two modes of operation. In the simpler mode, the server
+will only track leaf certificates and SCTs applicable to those 
+leaf certificates. In the more complex mode, the server will confirm 
+the client's path validation and store the certificate path. The 
+latter mode requires more configuration, but is necessary to prevent DoS
+attacks on the server's storage space.  
+
+In the simple mode of operation, upon recieving a submission at the 
+sct-feedback well-known URL, a HTTPS server will perform a set of 
+operations and checks on each sct_feedback object before storing it:
+
+  1. the HTTPS server MAY modify the sct_feedback object, and discard 
+  all items in the x509\_chain array except the first item (which is 
+  the end-entity certificate)
+
+  1. if a bit-wise compare of the sct_feedback object matches
+  one already in the store, this sct_feedback object SHOULD be discarded
 
   1. if the leaf cert is not for a domain for which the server is
   authoritative, the SCT MUST be discarded
 
-Check number 1 is for detecting duplicates and minimizing processing
-and storage by the server. It's important to note that the check
-should be on pairs of SCT and chain in order to catch different chains
-accompanied by the same SCT. This mis-matched chain information may be
-useful as a diagnostic tool for HTTPS server operators.
+  1. if a SCT in the sct_data array can't be verified to be a valid SCT 
+  for the accompanying leaf cert, and issued by a known log, the individual 
+  SCT SHOULD be discarded
 
-Check number 2 is to prevent denial of service (DoS) attacks where an
+The modification in step number 1 is necessary to prevent a malicious client 
+from exhausting the server's storage space. A client can generate their own
+issuing certificate authorities, and create an arbitrary number of chains
+that terminate in an end-entity certificate with an existing SCT. By 
+discarding all but the end-entity certificate, we prevent a simple HTTPS
+server from storing this data. Note that operation in this mode will not
+prevent the attack described in \[TODO double-CA-compromise attack\]. 
+Skipping this step requires additional configuration as described below.
+
+The check in step 2 is for detecting duplicates and minimizing processing
+and storage by the server. As on the client, an exact comparison is 
+needed to ensure that attacks involving alternate paths are detected. 
+Again, at least one optimization is safe and MAY be performed. If the 
+certificate path exactly matches an existing certificate path, the server 
+may store the union of the SCTs from the two objects in the first 
+(existing) object. It should do this after completely the validity check 
+on the SCTs.
+
+The check in step 3 is to help malfunctioning clients from leaking which
+sites they visit. It additionally helps prevent DoS attacks on the server.
+
+\[ TBD: Thinking about building this - how does the SCT Feedback app know
+which sites it's authoritative for? \]
+
+The check in step 4 is to prevent denial of service (DoS) attacks where an
 adversary fills up the store prior to attacking a client (thus 
 preventing the client's feedback from being recorded), or an attack
 where the adversary simply attempts to fill up server's storage space.
 
-Check number 3 is to help malfunctioning clients from leaking which
-sites they visit and additionally to prevent DoS attacks.
+The more advanced server configuration will detect the \[TODO double-CA-compromise attack\]
+attack. In this configuration the server will not modify the sct_feedback
+object prior to performing checks 2, 3, and 4. 
 
-Note that an HTTPS server MAY choose to store a submitted SCT and the
-accompanying certificate chain even when the SCT can't be verified
-according to check number 2. This can allow a server to identify 
-interesting certificates absent valid SCTs. The server could for example choose
-to perform certificate chain validation and store the submission if 
-the chain ends in a trust anchor configured on the server. 
+To prevent a malicious client from filling the server's data store, the 
+HTTPS Server SHOULD perform an additional check:
 
-To reduce the risk of DoS attacks, the server could also be
-configured to not bother storing known-to-be-good
-(i.e. administratively-vetted) leaf certificates, and only store
-unknown leaf certificates that chain to a known trust anchor. This 
+   5. if the x509\_chain consists of an invalid certificate chain, or the
+   culminating trust anchor is not recognized by the server, the server
+   SHOULD modify the sct_feedback object, discarding all items in the 
+   x509\_chain array except the first item
+
+The HTTPS server may choose to omit checks 4 or 5. This will place the 
+server at risk of having its data store filled up by invalid data, but 
+can also allow a server to identify interesting certificate or certificate 
+chains that omit valid SCTs, or do not chain to a trusted root. This 
 information may enable a HTTPS server operator to detect attacks or 
 unusual behavior of Certificate Authorities even outside the Certificate 
 Transparency ecosystem.
@@ -363,22 +470,33 @@ allows an HTTPS server to choose between an active push model or a
 passive pull model.
 
 The data received in a GET of the well-known URL or sent in the POST
-is defined in {{feedback-dataformat}}.
+is defined in {{feedback-dataformat}}. 
 
-HTTPS servers SHOULD share all SCTs and accompanying certificate
-chains they see that pass the checks in {{feedback-clisrv}}. If this
-is an infeasible amount of data, the server may choose to expire
-submissions according to an undefined policy. Suggestions for such a
-policy can be found in {{pooling-policy-recommendations}}.
+HTTPS servers SHOULD share all sct_feedback objects they see that 
+pass the checks in {{feedback-srvop}}. If this is an infeasible 
+amount of data, the server may choose to expire submissions according 
+to an undefined policy. Suggestions for such a policy can be found 
+in {{pooling-policy-recommendations}}.
 
 HTTPS servers MUST NOT share any other data that they may learn from
 the submission of SCT Feedback by HTTPS clients, like the HTTPS client
 IP address or the time of submission.
 
+As described above, HTTPS servers can be configured (or omit 
+configuration), resulting in two modes of operation. In one mode, 
+the x509\_chain array will contain a full certificate chain. This chain may 
+terminate in a trust anchor the auditor may recognize, or it may not.
+(One scenario where this could occur is if the client submitted a 
+chain terminiating in a locally added trust anchor, and the server 
+kept this chain.) In the other mode, the x509\_chain array will
+consist of only a single element, which is the end-entity certificate.
+
 Auditors SHOULD provide the following URL accepting HTTPS POSTing of
 SCT feedback data:
 
     https://<auditor>/ct/v1/sct-feedback
+
+\[ TBD: Should that be .well-known? \]
 
 Auditors SHOULD regularly poll HTTPS servers at the well-known
 collected-sct-feedback URL. The frequency of the polling and how to
@@ -388,46 +506,6 @@ HTTPS clients connecting directly to the auditor. For example, if a
 poll to example.com occurs directly after a client submits an SCT for
 example.com, an adversary observing the auditor can trivially conclude
 the activity of the client.
-
-### SCT Feedback data format {#feedback-dataformat}
-
-The data shared between HTTPS clients and servers, as well as between
-HTTPS servers and CT auditors/monitors, is a JSON object {{RFC7159}}
-with the following content:
-
-- sct_feedback: An array of objects consisting of
-
-  - x509_chain: An array of base64-encoded X.509 certificates. The
-    first element is the end-entity certificate, the second chains to
-    the first and so on.
-
-  - sct_data: An array of objects consisting of the base64
-    representation of the binary SCT data as defined in
-    {{RFC-6962-BIS-09}} Section 3.3.
-
-The 'x509\_chain' element MUST contain at least the leaf certificate
-and SHOULD contain the full chain to a root accepted by all of the
-logs in the set of logs issuing all the SCTs in the 'sct\_data'
-element.
-
-Some clients have trust anchors that are locally added (e.g. by an
-administrator or by the user themselves). A local trust anchor is
-potentially privacy-sensitive since it may carry information about the
-specific computer or user. If a certificate is covered by SCTs issued
-by publicly trusted logs, but it chains to a privacy-sensitive local
-trust anchor, the client SHOULD NOT include anything but the leaf
-certificate in the 'x509\_chain' element.
-
-\[TBD: Be strict about what sct_data may contain or is this sufficiently
-implied by previous sections?\]
-
-\[TBD: There was discussion about including a few field for
-client->server reporting, which is the exact set and order of
-certificates sent by the HTTPS server to the client. This is
-additional diagnostic information that a HTTPS server could use to
-check it's deployment... but is pretty much useless to CT or gossip.
-Right now we're not including this, but we're polling server operators
-to see if they would welcome this data.\]
 
 ## STH pollination {#sth-pollination}
 
@@ -519,11 +597,20 @@ An HTTPS client will retrieve SCTs from an HTTPS server, and must
 obtain an inclusion proof to an STH in order to verify the promise
 made by the SCT.
 
-An HTTPS client may receive SCT bundled with an inclusion proof to a
+An HTTPS client may also receive SCT bundled with an inclusion proof to a
 historical STH via an unspecified future mechanism. Because this
 historical STH is considered personally identifiable information per
 above, the client must obtain a consistency proof to a more recent
 STH.
+
+A client SHOULD perform proof fetching. A client MUST NOT perform 
+proof fetching for any SCTs or STHs issued by a locally added log. 
+A client MAY fetch an inclusion proof for an SCT (issued by a 
+pre-loaded log) that validates a certificate chaining to a locally 
+added trust anchor.
+
+\[ TBD: Linus doesn't like this because we're mandating behavior 
+that is not necessarily unsafe. Is it unsafe? Not sure.\]
 
 If a client requested either proof directly from a log or auditor, it
 would reveal the client's browsing habits to a third party. To
@@ -585,8 +672,9 @@ servers is a JSON object {{RFC7159}} with the following content:
 ## Trusted Auditor Stream
 
 HTTPS clients MAY send SCTs and cert chains, as well as STHs, directly
-to auditors. Note that there are privacy implications in doing so,
-these are outlined in {{privacy-SCT}} and
+to auditors. If sent, this data MAY include data that reflects locally 
+added logs or trust anchors. Note that there are privacy implications 
+in doing so, these are outlined in {{privacy-SCT}} and
 {{privacy-trusted-auditors}}.
 
 The most natural trusted auditor arrangement arguably is a web browser
