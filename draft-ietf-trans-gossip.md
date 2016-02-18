@@ -435,9 +435,9 @@ SCTs associated with them, so in this case no action is needed with respect
 to CT Gossip. SCTs issued by locally added logs MUST NOT be reported via SCT 
 Feedback.
 
-If a certificate is validated by SCTs issued by publicly trusted logs, but 
+If a certificate is validated by SCTs issued by pre-loaded logs, but 
 chains to a local trust anchor, the client MAY perfom SCT Feedback 
-for this SCT and certificate chain bundle. Perfoming SCT Feedback may be 
+for this SCT and certificate chain. Perfoming SCT Feedback may be 
 advantageous for the broader Internet and CT ecosystem, but may also disclose 
 information about the client. If the client elects to omit SCT Feedback, it can 
 still choose to perform STH Pollination after fetching an inclusion proof, 
@@ -536,7 +536,7 @@ An HTTPS client will retrieve SCTs from an HTTPS server, and must
 obtain an inclusion proof to an STH in order to verify the promise
 made by the SCT.
 
-An HTTPS client may also receive SCT bundled with an inclusion proof to a
+An HTTPS client may also receive SCTs bundled with an inclusion proof to a
 historical STH via an unspecified future mechanism. Because this
 historical STH is considered personally identifiable information per
 above, the client must obtain a consistency proof to a more recent
