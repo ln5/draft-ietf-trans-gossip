@@ -264,10 +264,10 @@ cross-domain. In the case of certificates that validate multiple domain
 names, the same SCT may be stored multiple times.
 
 When the client later connects to an HTTPS server it again receives a 
-set of SCTs. The client MUST add new SCTs from known logs to its store 
-of SCTs for the individual domain name contacted. The client MUST
+set of SCTs. The client MUST add to its store those SCTs that are issued by known logs
+and associate them with the exact domain name contacted, as described above. The client MUST
 send to the server SCTs in the store that are associated with that
-domain name but which were not received from that server. 
+domain name unless they were received from that server in the current TLS session.
 
 \[TODO: fix the above paragraph -- it is vague and confusing. maybe
   an example including a client caching at most one SCT per host+log
