@@ -259,9 +259,14 @@ the client contacted. They MUST NOT be sent to any domain not related
 to the original (e.g. if the original domain is sub.example.com they 
 must not be sent to sub.sub.exmaple.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
-Disobeying these security requirements will expose the user's browing habits 
-cross-domain. In the case of certificates that validate multiple domain
-names, the same SCT may be stored multiple times.
+In the case of certificates that validate multiple domain
+names, the same SCT is expected to be stored multiple times.
+
+Not following these constraints would increase the risk for two types
+of privacy breaches. First, the HTTPS server receiving the SCT would
+learn about other sites visited by the HTTPS client. Second, auditors
+and monitors receiving SCTs from the HTTPS server would learn
+information about other HTTPS servers visited by its clients.
 
 When the client later connects to an HTTPS server it again receives a 
 set of SCTs. The client MUST add to its store those SCTs that are issued by known logs
@@ -286,16 +291,6 @@ Refer to {{pooling-policy-recommendations}} for recommendations about
 strategies.
 
 \[TODO: The above sentences that talk about the algorithm will be updated with the pooling recommendation section \]
-
-An SCT MUST NOT be sent to any other HTTPS server than one which 
-is an exact match for the domain the SCT was originally received under. Not
-following this constraint would lead to two types of privacy
-leaks. First, the server receiving the SCT would learn about other
-sites visited by the HTTPS client, as explained above. Secondly, auditors or monitors
-receiving SCTs from the HTTPS server would learn information about the
-other HTTPS servers visited by its clients.
-
-\[TODO: this MUST is a repeat of the above. Do we need to re-iterate this? Probably not, so we can remove this paragraph? \]
 
 If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies
