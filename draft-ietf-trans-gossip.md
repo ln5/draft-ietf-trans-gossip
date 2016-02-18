@@ -255,13 +255,13 @@ the remaining SCTs together with the corresponding certificate chain
 for later use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name 
-the client contacted. They MUST NOT be sent to any domain related 
+the client contacted. They MUST NOT be sent to any domain not related 
 to the original (e.g. if the original domain is sub.example.com they 
 must not be sent to sub.sub.exmaple.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
-Disobeying these security requirements will leak user's browing habits 
+Disobeying these security requirements will expose the user's browing habits 
 cross-domain. In the case of certificates that validate multiple domain
-names, it is expected that the same SCT may be stored multiple times.
+names, the same SCT may be stored multiple times.
 
 When the client later connects to an HTTPS server it again receives a 
 set of SCTs. The client MUST add new SCTs from known logs to its store 
