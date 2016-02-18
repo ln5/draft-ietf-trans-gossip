@@ -257,7 +257,7 @@ for later use in SCT Feedback.
 The SCTs stored on the client MUST be keyed by the exact domain name 
 the client contacted. They MUST NOT be sent to any domain not related 
 to the original (e.g. if the original domain is sub.example.com they 
-must not be sent to sub.sub.exmaple.com or to example.com.) They MUST
+must not be sent to sub.sub.example.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
 In the case of certificates that validate multiple domain
 names, the same SCT is expected to be stored multiple times.
