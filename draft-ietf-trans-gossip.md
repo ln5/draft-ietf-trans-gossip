@@ -1312,127 +1312,127 @@ We present the follow pseudocode as a concrete outline of our suggestion. We def
 
 The SCT class contains data pertaining specifically to the SCT itself.
 
-class SCT 
-{
-  uint32 proof_failure_count
-  bool   has_been_resolved_to_sth
-  byte[] data
-}
+    class SCT 
+    {
+      uint32 proof_failure_count
+      bool   has_been_resolved_to_sth
+      byte[] data
+    }
 
 The SCT bundle will contain the trusted certificate chain the HTTPS client built (chaining to a trusted root certificate.) It also contains the list of associated SCTs, the exact domain it is applicable to, and metadata pertaining to how often it has been reported to the server. 
 
-class SCTBundle
-{
-  X509[] certificate_chain
-  SCT[]  sct_list
-  string domain
-  uint32 num_reports_to_server
-
-  def equals(sct_bundle) {
-    if(sct_bundle.domain != this.domain) return false
-    if(sct_bundle.certificate_chain != this.certificate_chain) return false
-    if(sct_bundle.sct_list != this.sct_list) return false
-
-    return true
-  }
-  def approx_equals(sct_bundle) {
-    if(sct_bundle.domain != this.domain) return false
-    if(sct_bundle.certificate_chain != this.certificate_chain) return false
-
-    return true
-  }
-
-  def insert_scts(sct[] sct_list) {
-    this.sct_list.union(sct_list)
-    num_reports_to_server = 0
-  }
-
-  def has_been_fully_resolved_to_sths() {
-    foreach(s : this.sct_list) {
-      if(!s.has_been_resolved_to_sth)
-        return false
+    class SCTBundle
+    {
+      X509[] certificate_chain
+      SCT[]  sct_list
+      string domain
+      uint32 num_reports_to_server
+      
+      def equals(sct_bundle) {
+        if(sct_bundle.domain != this.domain) return false
+        if(sct_bundle.certificate_chain != this.certificate_chain) return false
+        if(sct_bundle.sct_list != this.sct_list) return false
+        
+        return true
+      }
+      def approx_equals(sct_bundle) {
+        if(sct_bundle.domain != this.domain) return false
+        if(sct_bundle.certificate_chain != this.certificate_chain) return false
+        
+        return true
+      }
+      
+      def insert_scts(sct[] sct_list) {
+        this.sct_list.union(sct_list)
+        num_reports_to_server = 0
+      }
+      
+      def has_been_fully_resolved_to_sths() {
+        foreach(s : this.sct_list) {
+          if(!s.has_been_resolved_to_sth)
+            return false
+        }
+        return true
+      }
+      
+      def max_proof_failure_count() {
+        uint32 max
+        foreach(s : this.sct_list) {
+          if(s.proof_failure_count > max)
+            max = proof_failure_count
+        }
+        return max
+      }
     }
-    return true
-  }
-
-  def max_proof_failure_count() {
-    uint32 max
-    foreach(s : this.sct_list) {
-      if(s.proof_failure_count > max)
-        max = proof_failure_count
-    }
-    return max
-  }
-}
 
 We suppose a large data structure is used, such as a hashmap - indexed by the domain name. For each domain, the structure will contain a data structure that holds the SCTBundles seen for that domain, as well as encapsulating some logic relating to SCT Feedback for that particular domain. 
 
-class SCTStore
-{
-  string   domain
-  datetime last_contact_for_domain
-  uint32   num_submissions_attempted
-  uint32   num_submissions_succeeded
-  SCTBundle[] observed_records
-
-  //  Upon performing a successful connection to a HTTPS Server, 
-  //  the HTTPS Client calls this fundle with a SCTBundle constructed
-  //  from that certificate path and SCTs
-  def insert(SCTBundle b) {
-    foreach(e in this.observed_records) {
-      if(e.equals(b))
-        return
-      else if(e.approx_equals(b)) {
-        e.insert_scts(b.sct_list)
-        return
+    class SCTStore
+    {
+      string   domain
+      datetime last_contact_for_domain
+      uint32   num_submissions_attempted
+      uint32   num_submissions_succeeded
+      SCTBundle[] observed_records
+      
+      //  Upon performing a successful connection to a HTTPS Server, 
+      //  the HTTPS Client calls this fundle with a SCTBundle constructed
+      //  from that certificate path and SCTs
+      def insert(SCTBundle b) {
+        foreach(e in this.observed_records) {
+          if(e.equals(b))
+            return
+          else if(e.approx_equals(b)) {
+            e.insert_scts(b.sct_list)
+            return
+          }
+        }
+        this.observed_records.insert(b)
+      }
+      
+      //  When it is time to perform SCT Feedback, the HTTPS Client
+      //  calls this function to get a selection of SCTBundles to send 
+      //  as feedback
+      def get_gossip_selection() {
+        if(len(observed_records) > MAC_SCT_RECORDS_TO_GOSSIP) {
+          indexes = set()
+          modulus = len(observed_records)
+          while(len(indexes) < MAC_SCT_RECORDS_TO_GOSSIP) {
+            r = randomInt() % modulus
+            if(r not in indexes)
+              indexes.insert(r)
+          }
+          
+          return_selection = []
+          foreach(i in indexes) {
+            return_selection.insert(this.observed_records[i])
+          }
+          
+          return return_selection
+        }
+        else
+          return this.observed_records
       }
     }
-    this.observed_records.insert(b)
-  }
-
-  //  When it is time to perform SCT Feedback, the HTTPS Client
-  //  calls this function to get a selection of SCTBundles to send 
-  //  as feedback
-  def get_gossip_selection() {
-    if(len(observed_records) > MAC_SCT_RECORDS_TO_GOSSIP) {
-      indexes = set()
-      modulus = len(observed_records)
-      while(len(indexes) < MAC_SCT_RECORDS_TO_GOSSIP) {
-        r = randomInt() % modulus
-        if(r not in indexes)
-          indexes.insert(r)
-      }
-
-      return_selection = []
-      foreach(i in indexes) {
-        return_selection.insert(this.observed_records[i])
-      }
-
-      return return_selection
-    }
-    else
-      return this.observed_records
-  }
-}
 
 We also suggest a function that can be called periodically in the background, iterating through all SCTStore objects in the large hashmap (here called 'all_sct_stores') and removing old data.
 
-def clear_old_data()
-{
-  foreach(storeEntry : all_sct_stores)
-  {
-    if(storeEntry.num_submissions_succeeded == 0 &&
-       storeEntry.num_submissions_attempted > MIN_SCT_ATTEMPTS_FOR_DOMAIN_TO_BE_IGNORED)
+    def clear_old_data()
     {
-      all_sct_stores.remove(storeEntry)
+      foreach(storeEntry : all_sct_stores)
+      {
+        if(storeEntry.num_submissions_succeeded == 0 &&
+           storeEntry.num_submissions_attempted > MIN_SCT_ATTEMPTS_FOR_DOMAIN_TO_BE_IGNORED)
+        {
+          all_sct_stores.remove(storeEntry)
+        }
+        else if(storeEntry.num_submissions_succeeded > 0 &&
+                now() - storeEntry.last_contact_for_domain > TIME_UNTIL_OLD_SCTDATA_ERASED)
+        {
+          all_sct_stores.remove(storeEntry)
+        }
+      }
     }
-    else if(storeEntry.num_submissions_succeeded > 0 &&
-            now() - storeEntry.last_contact_for_domain > TIME_UNTIL_OLD_SCTDATA_ERASED)
-    {
-      all_sct_stores.remove(storeEntry)
-    }
-  }
-}
 
 ##### SCT Deletion Procedure
 
@@ -1440,51 +1440,51 @@ The SCT Deletion procedure is more complicated than the respective STH procedure
 
 The following pseudocode would be included in the SCTStore class, and called with the result of get_gossip_selection() after the SCT Feedback has been sent (successfully) to the server. We also note that the first experimental algorithm from above is included in the pseudocode as an illustration.
 
-//  This function is called after successfully providing SCT Feedback
-//  to a server. It is passed the feedback sent to the server, which
-//  is the output of get_gossip_selection()
-def after_submit_to_server(SCTBundle[] submittedBundles)
-{
-  foreach(bundle : submittedBundles) 
-  {
-    if(proof_fetching_enabled) {
-      if(!bundle.has_been_fully_resolved_to_sths()) {
-        foreach(s : bundle.sct_list) {
-          if(!s.has_been_resolved_to_sth) {
-            queue_inclusion_proof(sct, inclusion_proof_calback)
+    //  This function is called after successfully providing SCT Feedback
+    //  to a server. It is passed the feedback sent to the server, which
+    //  is the output of get_gossip_selection()
+    def after_submit_to_server(SCTBundle[] submittedBundles)
+    {
+      foreach(bundle : submittedBundles) 
+      {
+        if(proof_fetching_enabled) {
+          if(!bundle.has_been_fully_resolved_to_sths()) {
+            foreach(s : bundle.sct_list) {
+              if(!s.has_been_resolved_to_sth) {
+                queue_inclusion_proof(sct, inclusion_proof_calback)
+              }
+            }
+          }
+          
+          if(run_ct_gossip_experiment_one) {
+            if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
+               bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
+              maybe_delete(bundle)
+            } 
+          }
+          else { //Do not run experiment
+            if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
+              maybe_delete(bundle)
+            }
+          } 
+        } 
+        else {//proof fetching not enabled
+          if(bundle.num_reports_to_server > (MIN_SCT_REPORTS_TO_SERVER * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
+            maybe_delete(bundle)
           }
         }
       }
+    }
 
-      if(run_ct_gossip_experiment_one) {
-        if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
-           bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
-          maybe_delete(bundle)
-        } 
-      }
-      else { //Do not run experiment
-        if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
-          maybe_delete(bundle)
-        }
-      } 
-    } 
-    else {//proof fetching not enabled
-      if(bundle.num_reports_to_server > (MIN_SCT_REPORTS_TO_SERVER * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
-        maybe_delete(bundle)
+    //  This function a callback after an inclusion proof has been retrieved
+    def inclusion_proof_calback(inclusion_proof, original_sct, error) 
+    {
+      if(!error) {
+        insert_to_sth_datastore(inclusion_proof.new_sth)  
+      } else {
+        original_sct.proof_failure_count++
       }
     }
-  }
-}
-
-//  This function a callback after an inclusion proof has been retrieved
-def inclusion_proof_calback(inclusion_proof, original_sct, error) 
-{
-  if(!error) {
-    insert_to_sth_datastore(inclusion_proof.new_sth)  
-  } else {
-    original_sct.proof_failure_count++
-  }
-}
 
 ##### STH Data Structures
 STH Store
