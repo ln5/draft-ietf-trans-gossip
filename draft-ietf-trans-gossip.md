@@ -254,9 +254,9 @@ SCTs that are not signed by a log known to the client and SHOULD store
 the remaining SCTs together with the corresponding certificate chain
 for later use in SCT Feedback.
 
-The SCTs stored on the client MUST be keyed by the exact domain name 
-the client contacted. They MUST NOT be sent to any domain not related 
-to the original (e.g. if the original domain is sub.example.com they 
+The SCTs stored on the client MUST be keyed by the exact domain name
+the client contacted. They MUST NOT be sent to any domain not related
+to the original (e.g. if the original domain is sub.example.com they
 must not be sent to sub.sub.example.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
 In the case of certificates that validate multiple domain
@@ -268,7 +268,7 @@ learn about other sites visited by the HTTPS client. Second, auditors
 and monitors receiving SCTs from the HTTPS server would learn
 information about other HTTPS servers visited by its clients.
 
-When the client later connects to an HTTPS server it again receives a 
+When the client later connects to an HTTPS server it again receives a
 set of SCTs. The client MUST add to its store those SCTs that are issued by known logs
 and associate them with the exact domain name contacted, as described above. The client MUST
 send to the server SCTs in the store that are associated with that
@@ -303,9 +303,9 @@ HTTPS server at the well-known URL:
 
     https://<domain>/.well-known/ct/v1/sct-feedback
 
-The data sent in the POST is defined in {{feedback-dataformat}}. This 
-data SHOULD be sent in an already established TLS session. This makes 
-it hard for an attacker to disrupt SCT Feedback without also disturbing 
+The data sent in the POST is defined in {{feedback-dataformat}}. This
+data SHOULD be sent in an already established TLS session. This makes
+it hard for an attacker to disrupt SCT Feedback without also disturbing
 ordinary secure browsing (https://). This is discussed more in {{blocking-policy-frustrating}}.
 
 HTTPS servers perform a number of sanity checks on feedback from clients
@@ -328,7 +328,7 @@ accompanied by the same SCT. This mis-matched chain information may be
 useful as a diagnostic tool for HTTPS server operators.
 
 Check number 2 is to prevent denial of service (DoS) attacks where an
-adversary fills up the store prior to attacking a client (thus 
+adversary fills up the store prior to attacking a client (thus
 preventing the client's feedback from being recorded), or an attack
 where the adversary simply attempts to fill up server's storage space.
 
@@ -337,17 +337,17 @@ sites they visit and additionally to prevent DoS attacks.
 
 Note that an HTTPS server MAY choose to store a submitted SCT and the
 accompanying certificate chain even when the SCT can't be verified
-according to check number 2. This can allow a server to identify 
+according to check number 2. This can allow a server to identify
 interesting certificates absent valid SCTs. The server could for example choose
-to perform certificate chain validation and store the submission if 
-the chain ends in a trust anchor configured on the server. 
+to perform certificate chain validation and store the submission if
+the chain ends in a trust anchor configured on the server.
 
 To reduce the risk of DoS attacks, the server could also be
 configured to not bother storing known-to-be-good
 (i.e. administratively-vetted) leaf certificates, and only store
-unknown leaf certificates that chain to a known trust anchor. This 
-information may enable a HTTPS server operator to detect attacks or 
-unusual behavior of Certificate Authorities even outside the Certificate 
+unknown leaf certificates that chain to a known trust anchor. This
+information may enable a HTTPS server operator to detect attacks or
+unusual behavior of Certificate Authorities even outside the Certificate
 Transparency ecosystem.
 
 ### HTTPS server to auditors {#feedback-srvaud}
@@ -450,10 +450,10 @@ well-known URL:
 
     https://<domain>/.well-known/ct/v1/sth-pollination
 
-The data sent in the POST is defined in {{sth-pollination-dataformat}}. 
-This data SHOULD be sent in an already established TLS session. This 
-makes it hard for an attacker to disrupt STH gossiping without also 
-disturbing ordinary secure browsing (https://). This is discussed more 
+The data sent in the POST is defined in {{sth-pollination-dataformat}}.
+This data SHOULD be sent in an already established TLS session. This
+makes it hard for an attacker to disrupt STH gossiping without also
+disturbing ordinary secure browsing (https://). This is discussed more
 in {{blocking-policy-frustrating}}.
 
 The response contains zero or more STHs in the same format, described
@@ -501,7 +501,7 @@ heuristic to detect a shutdown. Instead the client MUST be informed
 about the shutdown from a verifiable source (e.g. a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
-cannot be resolved to the final STH, clients should follow the 
+cannot be resolved to the final STH, clients should follow the
 requirements and recommendations set forth in {#blocking-policy-response}.
 
 When multiplied by the number of logs from which a client accepts
@@ -541,11 +541,23 @@ http://www.certificate-transparency.org/august-2015-newsletter\]
 Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
 
+Even when using a privacy-preserving layer between the client and the
+log (or log cache) - certain observations may be made about an 
+anonymous client or general user behavior depending on how proofs are 
+fetched. For example, if a client fetched all proofs outstanding at once, 
+a log would know that SCTs or STHs recieved around the same time are more 
+likely to come from a particular client. This could potentially go so far
+as to correlate of activity at different times to a single client. In 
+aggregate the data could reveal what sites are commonly visited 
+together. HTTPS clients SHOULD use a strategy of proof fetching that 
+attempts to obfuscate these patterns. A suggestion of such a policy can 
+be found in {{proof-fetching-recommendations}}.
+
 Resolving either SCTs and STHs may result in errors. These errors
-may be routine downtime or other transient errors, or they may be 
+may be routine downtime or other transient errors, or they may be
 indicative of an attack. Clients should follow the requirements and
 recommendations set forth in {#blocking-policy-response} when handling
-these errors in order to give the CT ecosystem the greatest chance of 
+these errors in order to give the CT ecosystem the greatest chance of
 detecting and responding to a compromise.
 
 ### STH Pollination without Proof Fetching
@@ -646,19 +658,19 @@ These configuration needs, and the simple fact that it would require
 some deployment of software, means that some percentage of HTTPS
 servers will not deploy SCT Feedback.
 
-It is worthwhile to note that an attacker may be able to prevent 
-detection of an attack on a webserver (in all cases) if SCT 
+It is worthwhile to note that an attacker may be able to prevent
+detection of an attack on a webserver (in all cases) if SCT
 Feedback is not implemented. This attack is detailed in {#actively-malicious-log}).
 
 If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-If SCT Feedback is not deployed by a webserver, malicious logs will be 
-able to attack all users of the webserver (who do not have a Trusted 
+If SCT Feedback is not deployed by a webserver, malicious logs will be
+able to attack all users of the webserver (who do not have a Trusted
 Auditor relationship) with impunity. Additionally, users who wish to
-have the strongest measure of privacy protection (by disabling STH 
-Pollination Proof Fetching and forgoing a Trusted Auditor) could be 
+have the strongest measure of privacy protection (by disabling STH
+Pollination Proof Fetching and forgoing a Trusted Auditor) could be
 attacked without risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
@@ -743,24 +755,24 @@ HTTPS Clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
 HTTPS Clients are afforded the greatest chance of detecting an attack
-when they either participate in both SCT Feedback and STH Pollination 
-with Proof Fetching or if they have a Trusted Auditor relationship. 
+when they either participate in both SCT Feedback and STH Pollination
+with Proof Fetching or if they have a Trusted Auditor relationship.
 (Participating in SCT Feedback is required to prevent a malicious log
-from refusing to ever resolve an SCT to an STH, as put forward in 
+from refusing to ever resolve an SCT to an STH, as put forward in
 {#actively-malicious-log}). Additionally, participating in SCT
-Feedback enables an HTTPS Client to assist in detecting the exact target 
+Feedback enables an HTTPS Client to assist in detecting the exact target
 of an attack.
 
-HTTPS Servers that omit SCT Feedback enable malicious logs to carry out 
-attacks without risk of detection. If these servers are targeted 
-specifically, even if the attack is detected, without SCT Feedback they 
-may never learn that they were specifically targeted. HTTPS servers 
-without SCT Feedback do gain some measure of herd immunity, but only 
-because their clients participate in STH Pollination (with Proof 
+HTTPS Servers that omit SCT Feedback enable malicious logs to carry out
+attacks without risk of detection. If these servers are targeted
+specifically, even if the attack is detected, without SCT Feedback they
+may never learn that they were specifically targeted. HTTPS servers
+without SCT Feedback do gain some measure of herd immunity, but only
+because their clients participate in STH Pollination (with Proof
 Fetching) or have a Trusted Auditor Relationship.
 
-When HTTPS Servers omit SCT feedback, it allows their users to be 
-attacked without detection by a malicious log; the vulnerable users are 
+When HTTPS Servers omit SCT feedback, it allows their users to be
+attacked without detection by a malicious log; the vulnerable users are
 those who do not have a Trusted Auditor relationship.
 
 # Security considerations
@@ -768,23 +780,23 @@ those who do not have a Trusted Auditor relationship.
 ## Attacks by actively malicious logs {#actively-malicious-log}
 
 One of the most powerful attacks possible in the CT ecosystem is a
-trusted log that has actively decided to be malicious. It can carry 
+trusted log that has actively decided to be malicious. It can carry
 out an attack in two ways:
 
-In the first attack, the log can present a split view of the log for 
-all time. The only way to detect this attack is to resolve each view 
+In the first attack, the log can present a split view of the log for
+all time. The only way to detect this attack is to resolve each view
 of the log to the two most recent STHs and then force the log to present
-a consistency proof. (Which it cannot.) This attack can be detected by 
+a consistency proof. (Which it cannot.) This attack can be detected by
 Auditors or Monitors participating in STH Pollination, as long as they are
 explicitly built to handle the situation of a log continuously presenting
 a split view.
 
-In the second attack, the log can sign an SCT, and refuse to ever include 
-the certificate that the SCT refers to in the tree. (Alternately, it can include it in a branch of the tree and 
-issue an STH, but then abandon that branch.) Whenever someone requests an 
-inclusion proof for that SCT (or a consistency proof from that STH), the log 
+In the second attack, the log can sign an SCT, and refuse to ever include
+the certificate that the SCT refers to in the tree. (Alternately, it can include it in a branch of the tree and
+issue an STH, but then abandon that branch.) Whenever someone requests an
+inclusion proof for that SCT (or a consistency proof from that STH), the log
 would respond with an error, and a client may simply regard the response
-as a transient error. This attack can be detected using SCT Feedback, or an 
+as a transient error. This attack can be detected using SCT Feedback, or an
 Auditor of Last Resort, as presented in {#blocking-policy-response}.
 
 ## Censorship/Blocking considerations
@@ -866,7 +878,7 @@ itself; and to a trusted CT auditor, if one exists.
 SCTs introduce yet another mechanism for HTTPS servers to store state
 on an HTTPS client, and potentially track users. HTTPS clients which
 allow users to clear history or cookies associated with an origin MUST
-clear stored SCTs and certificate chains associated with the origin as 
+clear stored SCTs and certificate chains associated with the origin as
 well.
 
 Auditors should treat all SCTs as sensitive data. SCTs received
@@ -896,7 +908,7 @@ this fingerprinting attack altogether. It does make the attack harder
 to pull off without being detected though.
 
 There is another similar fingerprinting attack where an HTTPS server
-tracks a client by using a unqiue certificate or a variation of cert 
+tracks a client by using a unqiue certificate or a variation of cert
 chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[XXX any mitigations possible here?\]
@@ -990,8 +1002,8 @@ Feedback that arrives over such anonymizing networks.
 
 Clients sending feedback to an auditor may prefer to reduce the
 temporal granularity of the history leakage to the auditor by caching
-and delaying their SCT Feedback reports. This elaborated upon in 
-{#pooling-policy-recommendations}. This strategy is only as effective 
+and delaying their SCT Feedback reports. This elaborated upon in
+{#pooling-policy-recommendations}. This strategy is only as effective
 as the granularity of the timestamps embedded in the SCTs and STHs.
 
 ### HTTPS Clients as Auditors
@@ -1021,12 +1033,97 @@ Clients, HTTPS Servers, and Auditors. It is not a requirement for
 technique of implementation, so long as privacy considerations
 established above are obeyed.
 
-## Mixing Recommendations {#pooling-policy-recommendations}
+## Blocking Recommendations {#blocking-policy-recommendations}
+
+### Frustrating blocking {#blocking-policy-frustrating}
+
+When making gossip connections to HTTPS Servers or Trusted Auditors,
+it is desirable to minimize the plaintext metadata in the connection
+that can be used to identify the connection as a gossip connection and
+therefore be of interest to block. Additionally, introducing some
+randomness into client behavior may be important - we assume that the
+adversary is able to inspect the behavior of the HTTPS client and
+understand how it makes gossip connections.
+
+As an example, if a client, after establishing a TLS connection (and
+receiving an SCT, but not making its own HTTP request yet),
+immediately opens a second TLS connection for the purpose of gossip -
+the adversary can reliably block this second connection to block
+gossip without affecting normal browsing. For this reason it is
+recommended to run the gossip protocols over an existing connection to
+the server, making use of connection multiplexing such as HTTP
+Keep-Alives or SPDY.
+
+Truncation is also a concern -if a client always establishes a TLS
+connection, makes a request, receives a response, and then always
+attempts a gossip communication immediately following the first
+response - truncation will allow an attacker to block gossip reliably.
+
+For these reasons, we recommend that, if at all possible, clients
+SHOULD send gossip data in an already established TLS session. This
+can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
+
+### Responding to possible blocking {#blocking-policy-response}
+In some cirsumstances a client may have a piece of data that they have
+attempted to share (via SCT Feedback or STH Pollination), but have been
+unable to do so: with every attempt they recieve an error. These
+situations are:
+
+1. The client has an SCT and a certificate, and attempts to retrieve an
+inclusion proof -- but recieves an error on every attempt.
+2. The client has an STH, and attempts to resolve it to a newer STH via
+a consistency proof -- but recieves an error on every attempt.
+3. The client has attempted to share an SCT and constructed certificate
+via SCT Feedback -- but recieves an error on every attempt.
+4. The client has attempted to share an STH via STH Pollination -- but
+recieves an error on every attempt.
+5. The client has attempted to share a specific piece of data with a
+Trusted Auditor -- but recieves an error on every attempt.
+
+In the case of 1 or 2, it is conceivable that the reason for the errors
+is that the log acted improperly, either through malicious actions or
+compromise. A proof may not be able to be fetched because it does not
+exist (and only errors or timeouts occur) -- one such situation may arise
+because of an actively malicious log, as presented in {#actively-malicious-log}.
+This data is especially important to share with the broader internet to
+detect this situation.
+
+If an SCT has attempted to be resolved to an STH via an inclusion proof
+multiple times, and each time has failed, a client SHOULD make every
+effort to send this SCT via SCT Feedback. However the client MUST NOT
+share the data with any other third party (excepting a Trusted Auditor
+should one exist).
+
+If an STH has attempted to be resolved to a newer STH via a consistency
+proof multiple times, and each time has failed, a client MAY share the
+STH with an "Auditor of Last Resort" even if the STH in question is no
+longer within the validity window. This auditor may be pre-configured
+by the client SHOULD permit a user to change or disable
+whom data is sent to.
+
+In the cases 3, 4, and 5, we assume that the webserver(s) or
+trusted auditor in question is either experiencing an operational failure,
+or being attacked. In both cases, a client SHOULD retain the data for
+later submission (subject to Private Browsing or other history-clearing
+actions taken by the user.)
+
+## Proof Fetching Recommendations {#proof-fetching-recommendations}
+
+Proof fetching (both inclusion proofs and consistency proofs) should be performed at random time intervals. If proof fetching occured all at once, in a flurry of activity - a log would know that SCTs or STHs recieved around the same time are more likely to come from a particular client. While proof fetching is required to be done in a manner that attempts to be anonymous from the perspective of the log - the correlation of activity to a single client would still reveal patterns of user behavior we wish to keep confidential. These patterns could be recognizable as a single user, or could reveal what sites are commonly visited together in the aggregate.
+
+There is an advantage to performing proof fetching within the STH-issuance time interval for a log. When a client recieves a STH from a log that matches a STH the client already has - the duplicate STH can be discarded. Exploiting this optimization can turn a large number of STHs into a single one.
+
+\[ TBD: What other recommendations do we want to make here?
+        We can talk more about the inadequecies of DNS...
+        The first paragraph is 80% identical between here and above
+\]
+
+## Record Distribution Recommendations {#pooling-policy-recommendations}
 
 In several components of the CT Gossip ecosystem, the recommendation
-is made that data from multiple sources be ingested, mixed, stored for 
+is made that data from multiple sources be ingested, mixed, stored for
 an indeterminate period of time, provided (multiple times) to a third
-party, and eventually deleted. The instances of these recommendations 
+party, and eventually deleted. The instances of these recommendations
 in this draft are:
 
 - When a client receives SCTs during SCT Feedback, it should store the
@@ -1062,98 +1159,337 @@ via proof fetching, but it is under no obligation to do so.
 
 These requirements should be met, but the general problem of
 aggregating multiple pieces of data, choosing when and how many to
-release, and when to remove is shared. This problem has been
+release, and when to remove them is shared. This problem has been
 previously been considered in the case of Mix Networks and Remailers,
 including papers such as \[X\], \[Y\], and \[Z\].
 
+There are several concerns to be addressed in this area, outlined 
+below.  
+
+### Mixing Algorithm
+
+When SCTs or STHs are recorded by a participant in CT Gossip, it is important that they are included in a pool that will randomly shuffle them before they are used (either in proof fetching or sent to a server/trusted auditor). This shuffling must use a cryptographically secure random number generator and an appropriate shuffling algorithm, such as the Fisher-Yates Shuffle.
+
+Shuffling is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predicable shuffling algorithm (or no shuffling at all, such as a FIFO queue), an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
+
+Although most important for servers, shuffling is still strongly recommended for clients and Trusted Auditors.  The above attack can still occur for these entities, although the cicumstances are less straightforward. For clients, an attacker could observe their behavior, note when they recieve a STH from a server, and use javascript to cause a network connection at the correct time to force a client to disclose the specific STH. Trusted Auditors are stewards of sensitive client data. If an attacker had the ability to observe the activities of a Trusted Auditor (perhaps by being a log, or another auditor), they could perform the same attack - noting the disclosure of data from a client to the Trusted Auditor, and then correlating a later disclosure from the Trusted Auditor as coming from that client.
+
+The recommendations for mixing are to use a secure shuffling algorithm (such as Fisher-Yates), a cryptographically secure random number generator,  to ensure that in some fashion a datastore be marked 'dirty' upon item insertion, and at least one shuffle operation occurs on a dirty datastore before data is retrieved from it for use. 
+
+### Flushing Attacks
+
+A flushing attack is an attempt by an adversary to flush a particular piece of data from a pool. In the CT Gossip ecosystem, an attacker may have performed an attack and left evidence of a compromised log on a client or server. They would be interested in flushing that data - tricking the target into gossiping or pollinating the incrimindating evidence with only attacker-controlled clients or servers.
+
+Servers are most vulnerable to flushing attacks, as they release records to anonymous connections. An attacker can perform a Sybil attack - connecting to the server hundreds or thousands of times in an attempt to trigger repeated release of a record, and then deletion.
+
+Clients are vulnerable to flushing attacks targetting STHs, as these can be given to any cooperating server. It would be more difficult to perform a flushing attack against SCTs, as the server must be authenticated - but it should not be ruled impossible. A Trusted Auditor may also be vulnerable to flushing attacks if it does not perform auditing operations itself.
+
+Flushing attacks are defended against using non-determinism and dummy messages. The goal is to ensure that an adversary does not know for certain if the data in question has been released or not, and if it has been deleted or not. 
+
+
+### The Deletion Algorithm
+
+No entity in CT Gossip is required to delete SCTs or STHs at any time, except to respect user's wishes such as private browsing mode or clearing history. However, requiring infinite storage space is not a desirable characteristic in a protocol, so deletion is expected.  
+
+While deletion of SCTs and STHs will occur - proof fetching can ensure that any misbehavior from a log will still be detected, even after the direct evidence from the attack is deleted. Proof fetching ensures that if a log presents a split for a client, they must maintain that split view in perpetuity. An inclusion proof from a SCT to a STH does not erase the evidence - the new STH is evidence itself. A consistency proof from that STH to a new one likewise - the new STH is every bit as incriminating as the first.  (Client behavior in the situation where a SCT or STH cannot be resolved is suggested in {{blocking-policy-response}}.) Because of this property, we recommend that if a client is performing proof fetching, that they make every effort to not delete a SCT or STH until it has been successfully resolved to a new STH via a proof. 
+
+When it is time to delete a record, it is important that the decision to do so not be done deterministicly. Introducing non-determinism in the decision is absolutely necessary to prevent an adversary from knowing with certainty that the record has been successfully flushed from a target. Therefore, we speak of making a record 'elligible for deletion' and then being processed by the 'deletion algorithm'.  Making a record elligible for deletion simply means that it will have the deletion algorithm run. The deletion algorithm will use a probability based system and a secure random number generator to determine if the record will be deleted. 
+
+Although the deletion algorithm is specifically designed to be non-deterministic, if the record has been resolved via proof to a new STH - the record may be safely deleted, so long as the new STH is retained. 
+
+The actual deletion algorithm may be \[STATISTICS HERE\]. \[Something as simple as 'Pick an integer securely between 1 and 10. If it's greater than 7, delete the record.' Or something more complicated. \]
+
+#### Experimental Algorithms
+
+More complex algorithms could be inserted at any step. Three examples are illustrated:
+
+SCTs are not elligible to be submitted to an Auditor of Last Resort - therefore, it is more important that they be resolved to STHs and reported via SCT feedback. If fetching an inclusion proof regurally fails for a particular SCT, one can require it be reported more times than normal via SCT Feedback before becomning elligible for deletion.
+
+Before an item is made elligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back giving the client it's observed remote IP address), and/or until a specified time interval has passed. This strategy could be employed always, or only when the client has disabled proof fetching and/or the auditor of last resort - as those two mechanisms when used together will enable a client to report most attacks. 
+
+Before an item is made elligible for deletion by a server, the server could aim to make it difficult for an attacker to flush the pool by requiring release of the record to a diversity of IP addresses. The server could attempt to do so by recording the client IP addresses a STH or SCT was released to - perhaps continually XORing the IP address into a uint32, while incrementing a counter. Once the counter reaches a minimum number, and the IP address tracker has a Hamming Weight of 16 +/- 2 - the record is now elligible for deletion. (It is not deleted immediately, because this would be a predictable algorithm, but the entry becomes elligible and will have the deletion algorithm run). But with the availability of anonyminity networks and globally active attackers - it is not clear if this approach adds anything beyond complexity.
+
+#### Concrete Recommendations
+
+The recommendations for deletion are:
+- If proof fetching is enabled, do not delete an item until it has had a proof resolved to a new STH.
+- If proof fetching continually fails for a SCT, do not make the item ellgible for deletion the SCT until it has been released, multiple times, via SCT Feedback
+- If proof fetching continually fails for a STH, do not make the item elligible for deletion until it has been queued for release to an auditor of last resort
+- Use a probability based system, with a cryptographically secure random number generator, to determine if an item should be deleted
+
+We present the follow pseudocode as a concrete outline of our suggestion. We define maybe_delete() as the statictical deletion algorithm, which uses a \[statistical adjectives \] based system to delete, or not delete, the record. 
+
+##### SCT Data Structures
+
+The SCT class contains data pertaining specifically to the SCT itself.
+
+class SCT 
+{
+  uint32 proof_failure_count
+  bool   has_been_resolved_to_sth
+  byte[] data
+}
+
+The SCT bundle will contain the trusted certificate chain the HTTPS client built (chaining to a trusted root certificate.) It also contains the list of associated SCTs, the exact domain it is applicable to, and metadata pertaining to how often it has been reported to the server. 
+
+class SCTBundle
+{
+  X509[] certificate_chain
+  SCT[]  sct_list
+  string domain
+  uint32 num_reports_to_server
+
+  def equals(sct_bundle) {
+    if(sct_bundle.domain != this.domain) return false
+    if(sct_bundle.certificate_chain != this.certificate_chain) return false
+    if(sct_bundle.sct_list != this.sct_list) return false
+
+    return true
+  }
+  def approx_equals(sct_bundle) {
+    if(sct_bundle.domain != this.domain) return false
+    if(sct_bundle.certificate_chain != this.certificate_chain) return false
+
+    return true
+  }
+
+  def insert_scts(sct[] sct_list) {
+    this.sct_list.union(sct_list)
+    num_reports_to_server = 0
+  }
+
+  def has_been_fully_resolved_to_sths() {
+    foreach(s : this.sct_list) {
+      if(!s.has_been_resolved_to_sth)
+        return false
+    }
+    return true
+  }
+
+  def max_proof_failure_count() {
+    uint32 max
+    foreach(s : this.sct_list) {
+      if(s.proof_failure_count > max)
+        max = proof_failure_count
+    }
+    return max
+  }
+}
+
+We suppose a large data structure is used, such as a hashmap - indexed by the domain name. For each domain, the structure will contain a data structure that holds the SCTBundles seen for that domain, as well as encapsulating some logic relating to SCT Feedback for that particular domain. 
+
+class SCTStore
+{
+  string   domain
+  datetime last_contact_for_domain
+  uint32   num_submissions_attempted
+  uint32   num_submissions_succeeded
+  SCTBundle[] observed_records
+
+  //  Upon performing a successful connection to a HTTPS Server, 
+  //  the HTTPS Client calls this fundle with a SCTBundle constructed
+  //  from that certificate path and SCTs
+  def insert(SCTBundle b) {
+    foreach(e in this.observed_records) {
+      if(e.equals(b))
+        return
+      else if(e.approx_equals(b)) {
+        e.insert_scts(b.sct_list)
+        return
+      }
+    }
+    this.observed_records.insert(b)
+  }
+
+  //  When it is time to perform SCT Feedback, the HTTPS Client
+  //  calls this function to get a selection of SCTBundles to send 
+  //  as feedback
+  def get_gossip_selection() {
+    if(len(observed_records) > MAC_SCT_RECORDS_TO_GOSSIP) {
+      indexes = set()
+      modulus = len(observed_records)
+      while(len(indexes) < MAC_SCT_RECORDS_TO_GOSSIP) {
+        r = randomInt() % modulus
+        if(r not in indexes)
+          indexes.insert(r)
+      }
+
+      return_selection = []
+      foreach(i in indexes) {
+        return_selection.insert(this.observed_records[i])
+      }
+
+      return return_selection
+    }
+    else
+      return this.observed_records
+  }
+}
+
+We also suggest a function that can be called periodically in the background, iterating through all SCTStore objects in the large hashmap (here called 'all_sct_stores') and removing old data.
+
+def clear_old_data()
+{
+  foreach(storeEntry : all_sct_stores)
+  {
+    if(storeEntry.num_submissions_succeeded == 0 &&
+       storeEntry.num_submissions_attempted > MIN_SCT_ATTEMPTS_FOR_DOMAIN_TO_BE_IGNORED)
+    {
+      all_sct_stores.remove(storeEntry)
+    }
+    else if(storeEntry.num_submissions_succeeded > 0 &&
+            now() - storeEntry.last_contact_for_domain > TIME_UNTIL_OLD_SCTDATA_ERASED)
+    {
+      all_sct_stores.remove(storeEntry)
+    }
+  }
+}
+
+##### SCT Deletion Procedure
+
+The SCT Deletion procedure is more complicated than the respective STH procedure. This is because a server may elect not to participate in SCT Feedback, and this must be accounted for by being more conservative in sending SCT reports.  
+
+The following pseudocode would be included in the SCTStore class, and called with the result of get_gossip_selection() after the SCT Feedback has been sent (successfully) to the server. We also note that the first experimental algorithm from above is included in the pseudocode as an illustration.
+
+//  This function is called after successfully providing SCT Feedback
+//  to a server. It is passed the feedback sent to the server, which
+//  is the output of get_gossip_selection()
+def after_submit_to_server(SCTBundle[] submittedBundles)
+{
+  foreach(bundle : submittedBundles) 
+  {
+    if(proof_fetching_enabled) {
+      if(!bundle.has_been_fully_resolved_to_sths()) {
+        foreach(s : bundle.sct_list) {
+          if(!s.has_been_resolved_to_sth) {
+            queue_inclusion_proof(sct, inclusion_proof_calback)
+          }
+        }
+      }
+
+      if(run_ct_gossip_experiment_one) {
+        if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
+           bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
+          maybe_delete(bundle)
+        } 
+      }
+      else { //Do not run experiment
+        if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
+          maybe_delete(bundle)
+        }
+      } 
+    } 
+    else {//proof fetching not enabled
+      if(bundle.num_reports_to_server > (MIN_SCT_REPORTS_TO_SERVER * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
+        maybe_delete(bundle)
+      }
+    }
+  }
+}
+
+//  This function a callback after an inclusion proof has been retrieved
+def inclusion_proof_calback(inclusion_proof, original_sct, error) 
+{
+  if(!error) {
+    insert_to_sth_datastore(inclusion_proof.new_sth)  
+  } else {
+    original_sct.proof_failure_count++
+  }
+}
+
+##### STH Data Structures
+STH Store
+
+class STHStore
+{
+
+}
+
+The STH data store will be a heavily used data structure in a HTTPS client, as it will be used for connections to all servers. Therefore, we define two STH stores, which enables us to read heavily from one while no modifications are made to it, and insert and shuffle the second store without blocking reads from the first. For simplicity, the code is presented without locking constructions which would be needed.
+
+get_active_sth_store() {
+    if(store_a_active)
+      return sth_store_a
+    else
+      return sth_store_b
+}
+
+switch_active_store() {
+  if(store_a_active)
+    shuffle(sth_store_b)
+  else
+    shuffle(sth_store_a)
+
+  store_a_active = !store_a_active;
+
+  foreach(d in queued_deletes) {
+    if(store_a_active)
+      sth_store_b.remove_if_present(sth)
+    else
+      sth_store_a.remove_if_present(sth)
+  }
+  queued_deletes.empty()
+}
+
+def insert_to_sth_datastore(sth) {
+  if(store_a_active)
+    sth_store_b.insert(sth)
+  else
+    sth_store_a.insert(sth)
+}
+
+def delete_from_sth_datastore(sth) {
+  if(store_a_active)
+    sth_store_b.remove_if_present(sth)
+  else
+    sth_store_a.remove_if_present(sth)
+
+  queued_deletes.insert(sth)
+}
+
+
+##### STH Deletion Procedure
+
+[[[The STH Deletion Procedure is run ]]]
+
+def sth_(sth) {
+  if(proof_fetching_enabled) {
+    if(!sth.has_been_queued_for_proof) {
+      queue_consistency_proof(sth, consistency_proof_callback)
+    }
+
+    if(sth.proof_failure_count > MAX_PROOF_ATTEMPTS) {
+      if(auditor_of_last_resort_enabled)
+        queue_sth_for_auditor_of_last_resort(sth)
+      maybe_delete(sth)
+    } 
+  }
+  else { //proof fetching not enabled
+    if(sth.num_reports_to_server > MIN_STH_REPORT_TO_SERVER) {
+      maybe_delete(sth)
+    }
+  }
+}
+
+def consistency_proof_callback(consistency_proof, original_sth, error) {
+  if(!error) {
+    insert_to_sth_datastore(consistency_proof.current_sth)
+    delete_now(consistency_proof.original_sth)
+  } else {
+    original_sth.proof_failure_count++
+  }
+}
+
+
+### A comprehnsive algorithm recommendation
+
 Certain common recommendations can be made:
 
-- When choosing how many times to release data before expiring it from
-  a cache, use a random number chosen from a distribution, rather than
-  a fixed number. This prevents an adversary from knowing with
-  certainty that it has successfully flushed a cache of a potentially
-  incriminating piece of data.
 
 - \[TODO Enumerating the problems of different types of mixes vs Cottrell Mix\]
-- \[TODO Integrating the IP address into the algorithm for releasing data\]
-- \[TODO Prefer aggregating multiple piece of data into a single STH when
-  possible\]
-- \[TODO The importance of Flushing Attacks, and tying in network
-  connection, and time interval\]
 
-## Blocking Recommendations {#blocking-policy-recommendations}
 
-### Frustrating blocking {#blocking-policy-frustrating}
 
-When making gossip connections to HTTPS Servers or Trusted Auditors,
-it is desirable to minimize the plaintext metadata in the connection
-that can be used to identify the connection as a gossip connection and
-therefore be of interest to block. Additionally, introducing some
-randomness into client behavior may be important - we assume that the
-adversary is able to inspect the behavior of the HTTPS client and
-understand how it makes gossip connections.
-
-As an example, if a client, after establishing a TLS connection (and
-receiving an SCT, but not making its own HTTP request yet),
-immediately opens a second TLS connection for the purpose of gossip -
-the adversary can reliably block this second connection to block
-gossip without affecting normal browsing. For this reason it is
-recommended to run the gossip protocols over an existing connection to
-the server, making use of connection multiplexing such as HTTP
-Keep-Alives or SPDY.
-
-Truncation is also a concern -if a client always establishes a TLS
-connection, makes a request, receives a response, and then always
-attempts a gossip communication immediately following the first
-response - truncation will allow an attacker to block gossip reliably.
-
-For these reasons, we recommend that, if at all possible, clients
-SHOULD send gossip data in an already established TLS session. This
-can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
-
-### Responding to possible blocking {#blocking-policy-response}
-In some cirsumstances a client may have a piece of data that they have
-attempted to share (via SCT Feedback or STH Pollination), but have been 
-unable to do so: with every attempt they recieve an error. These 
-situations are:
-
-1. The client has an SCT and a certificate, and attempts to retrieve an 
-inclusion proof -- but recieves an error on every attempt.
-2. The client has an STH, and attempts to resolve it to a newer STH via
-a consistency proof -- but recieves an error on every attempt.
-3. The client has attempted to share an SCT and constructed certificate
-via SCT Feedback -- but recieves an error on every attempt.
-4. The client has attempted to share an STH via STH Pollination -- but
-recieves an error on every attempt.
-5. The client has attempted to share a specific piece of data with a 
-Trusted Auditor -- but recieves an error on every attempt.
-
-In the case of 1 or 2, it is conceivable that the reason for the errors
-is that the log acted improperly, either through malicious actions or 
-compromise. A proof may not be able to be fetched because it does not 
-exist (and only errors or timeouts occur) -- one such situation may arise 
-because of an actively malicious log, as presented in {#actively-malicious-log}.
-This data is especially important to share with the broader internet to 
-detect this situation.
-
-If an SCT has attempted to be resolved to an STH via an inclusion proof
-multiple times, and each time has failed, a client SHOULD make every 
-effort to send this SCT via SCT Feedback. However the client MUST NOT
-share the data with any other third party (excepting a Trusted Auditor
-should one exist). 
-
-If an STH has attempted to be resolved to a newer STH via a consistency 
-proof multiple times, and each time has failed, a client MAY share the 
-STH with an "Auditor of Last Resort" even if the STH in question is no 
-longer within the validity window. This auditor may be pre-configured 
-by the client SHOULD permit a user to change or disable 
-whom data is sent to.
-
-In the cases 3, 4, and 5, we assume that the webserver(s) or 
-trusted auditor in question is either experiencing an operational failure, 
-or being attacked. In both cases, a client SHOULD retain the data for 
-later submission (subject to Private Browsing or other history-clearing 
-actions taken by the user.)
 
 
 # IANA considerations
