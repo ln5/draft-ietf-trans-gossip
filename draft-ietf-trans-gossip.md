@@ -1168,13 +1168,13 @@ below.
 
 ### Mixing Algorithm
 
-When SCTs or STHs are recorded by a participant in CT Gossip, it is important that they are included in a pool that will randomly shuffle them before they are used (either in proof fetching or sent to a server/trusted auditor). This shuffling must use a cryptographically secure random number generator and an appropriate shuffling algorithm, such as the Fisher-Yates Shuffle.
+When SCTs or STHs are recorded by a participant in CT Gossip, it is important that they are selected from the datastore in a non-deterministic fashion.
 
-Shuffling is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predicable shuffling algorithm (or no shuffling at all, such as a FIFO queue), an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
+This is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predicable ordering algorithm, an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
 
-Although most important for servers, shuffling is still strongly recommended for clients and Trusted Auditors.  The above attack can still occur for these entities, although the cicumstances are less straightforward. For clients, an attacker could observe their behavior, note when they recieve a STH from a server, and use javascript to cause a network connection at the correct time to force a client to disclose the specific STH. Trusted Auditors are stewards of sensitive client data. If an attacker had the ability to observe the activities of a Trusted Auditor (perhaps by being a log, or another auditor), they could perform the same attack - noting the disclosure of data from a client to the Trusted Auditor, and then correlating a later disclosure from the Trusted Auditor as coming from that client.
+Although most important for servers, random ordering is still strongly recommended for clients and Trusted Auditors.  The above attack can still occur for these entities, although the cicumstances are less straightforward. For clients, an attacker could observe their behavior, note when they recieve a STH from a server, and use javascript to cause a network connection at the correct time to force a client to disclose the specific STH. Trusted Auditors are stewards of sensitive client data. If an attacker had the ability to observe the activities of a Trusted Auditor (perhaps by being a log, or another auditor), they could perform the same attack - noting the disclosure of data from a client to the Trusted Auditor, and then correlating a later disclosure from the Trusted Auditor as coming from that client.
 
-The recommendations for mixing are to use a secure shuffling algorithm (such as Fisher-Yates), a cryptographically secure random number generator,  to ensure that in some fashion a datastore be marked 'dirty' upon item insertion, and at least one shuffle operation occurs on a dirty datastore before data is retrieved from it for use. 
+Random ordering can be ensured by several mechanisms. A datastore can be shuffled, using a secure shuffling algorithm such as Fisher-Yates. Alternately, a series of random indexes into the data store can be selected (if a collision occurs, a new index is selected.) A cryptographyically secure random number generator must be used in either case. If shuffling is performed, the datastore must be marked 'dirty' upon item insertion, and at least one shuffle operation occurs on a dirty datastore before data is retrieved from it for use. 
 
 ### Flushing Attacks
 
@@ -1199,6 +1199,8 @@ Although the deletion algorithm is specifically designed to be non-deterministic
 
 The actual deletion algorithm may be \[STATISTICS HERE\]. \[Something as simple as 'Pick an integer securely between 1 and 10. If it's greater than 7, delete the record.' Or something more complicated. \]
 
+\[TODO Enumerating the problems of different types of mixes vs Cottrell Mix\]
+
 #### Experimental Algorithms
 
 More complex algorithms could be inserted at any step. Three examples are illustrated:
@@ -1211,20 +1213,162 @@ Before an item is made elligible for deletion by a server, the server could aim 
 
 #### Concrete Recommendations
 
-The recommendations for deletion are:
-- If proof fetching is enabled, do not delete an item until it has had a proof resolved to a new STH.
-- If proof fetching continually fails for a SCT, do not make the item ellgible for deletion the SCT until it has been released, multiple times, via SCT Feedback
+The recommendations for behavior are:
+- If proof fetching is enabled, do not delete an SCT until it has had a proof resolved to a STH.
+- If proof fetching continually fails for a SCT, do not make the item eligible for deletion the SCT until it has been released, multiple times, via SCT Feedback
 - If proof fetching continually fails for a STH, do not make the item elligible for deletion until it has been queued for release to an auditor of last resort
 - Use a probability based system, with a cryptographically secure random number generator, to determine if an item should be deleted
+- Select items from the datastores by selecting random indexes into the datastore. Use a cryptographically secure random number generator.
 
-We present the follow pseudocode as a concrete outline of our suggestion. We define maybe_delete() as the statictical deletion algorithm, which uses a \[statistical adjectives \] based system to delete, or not delete, the record. 
+\[TBD: More? \]
+
+We present the follow pseudocode as a concrete outline of our suggestion. 
+
+##### STH Data Structures
+
+The STH class contains data pertaining specifically to the STH itself.
+
+    class STH
+    {
+      uint32   proof_attempts
+      uint32   proof_failure_count
+      uint32   num_reports_to_server
+      datetime sth_age
+      byte[]   data
+    }
+
+The broader STH store itself would contain all the STHs known by a client. This simplistic view of the class does not take into account the complicated locking that would likely be required for a data structure being accessed by multiple threads.  One thing to note about this pseudocode is that it aggressively removes STHs once they have been resolved to a newer STH. The only STHs in the store are ones that have never been resolved to a newer STH - either because proof fetching has failed or because the STH is considered too new to request a proof for.
+
+    class STHStore
+    {
+      STH[] sth_list
+
+      //  This function is run after receiving a set of STHs from
+      //  a server in response to a pollination submission
+      def insert(STH[] new_sths) {
+        foreach(new : new_sths) {
+          if(this.sth_list.contains(new))
+            return
+          this.sth_list.insert(new)
+        }
+      }
+
+      //  This function is called to possibly delete the given STH 
+      //  from the data store
+      def delete_maybe(STH s) {
+        //Perform statistical test and see if I should delete this bundle
+      }
+
+      //  This function is called to (certainly) delete the given STH
+      //  from the data store
+      def delete_now(STH s) {
+        this.sth_list.remove(s)
+      }
+
+      //  When it is time to perform STH Pollination, the HTTPS Client
+      //  calls this function to get a selection of STHs to send as
+      //  feedback
+      def get_pollination_selection() {
+        if(len(this.sth_list) < MAX_STH_TO_GOSSIP)
+          return this.sth_list
+        else {
+          indexes = set()
+          modulus = len(this.sth_list)
+          while(len(indexes) < MAX_STH_TO_GOSSIP) {
+            r = randomInt() % modulus
+            if(r not in indexes && 
+               now() - this.sth_list[i].age < ONE_WEEK)
+              indexes.insert(r)
+          }
+
+          return_selection = []
+          foreach(i in indexes) {
+            return_selection.insert(this.sth_list[i])
+          }
+          return return_selection
+        }
+      }
+    }
+
+
+We also suggest a function that can be called periodically in the background, iterating through the STH store, performing a cleaning operation and queuing consistency proofs. This function can live as a member functions of the STHStore class.
+
+    def clean_list() {
+      foreach(sth : this.sth_list) {
+
+        if(now() - sth.age > ONE_WEEK) {
+          if(proof_fetching_enabled && 
+             auditor_of_last_resort_enabled &&
+             (sth.proof_failure_count / sth.proof_attempts) > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
+            queue_sth_for_auditor_of_last_resort(sth)
+            delete_maybe(sth)
+          } else {
+            delete_now(sth)
+          }
+        }
+
+        else if(proof_fetching_enabled &&
+                now() - sth.age > TWO_DAYS &&
+                now() - sth.age > LOG_MMD) {
+          sth.proof_attempts++
+          queue_consistency_proof(sth, consistency_proof_callback)
+        }
+      }
+    }
+
+##### STH Deletion Procedure
+
+The STH Deletion Procedure is run after successfully submitting a list of STHs to a server during pollination. The following pseudocode would be included in the STHStore class, and called with the result of get_pollination_selection(), after the STHs have been (successfully) sent to the server.
+
+    //  This function is called after successfully pollinating STHs
+    //  to a server. It is passed the STHs sent to the server, which
+    //  is the output of get_gossip_selection()
+    def after_submit_to_server(STH[] sth_list) 
+    {
+      foreach(sth : sth_list)
+      {
+        sth.num_reports_to_server++
+
+        if(proof_fetching_enabled) {
+          if(now() - sth.age > LOG_MMD) {
+            sth.proof_attempts++
+            queue_consistency_proof(sth, consistency_proof_callback)
+          }
+
+          if(auditor_of_last_resort_enabled &&
+             sth.proof_failure_count > MIN_PROOF_ATTEMPTS_CONSIDERED_SUSPICIOUS &&
+             (sth.proof_failure_count / sth.proof_attempts) > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
+              queue_sth_for_auditor_of_last_resort(sth)
+          }
+        }
+        else { //proof fetching not enabled
+          if(sth.num_reports_to_server > MIN_STH_REPORT_TO_SERVER) {
+            delete_maybe(sth)
+          }
+        }
+      }
+    }
+
+    def consistency_proof_callback(consistency_proof, original_sth, error) {
+      if(!error) {
+        insert(consistency_proof.current_sth)
+        delete_now(consistency_proof.original_sth)
+      } else {
+        original_sth.proof_failure_count++
+      }
+    }
 
 ##### SCT Data Structures
+
+TBD TBD
+- If proof fetching is enabled, do not delete an SCT until it has had a proof resolved to a STH.
+TKTK
 
 The SCT class contains data pertaining specifically to the SCT itself.
 
     class SCT 
     {
+      uint32 proof_attempts
       uint32 proof_failure_count
       bool   has_been_resolved_to_sth
       byte[] data
@@ -1308,7 +1452,7 @@ We suppose a large data structure is used, such as a hashmap - indexed by the do
         if(len(observed_records) > MAC_SCT_RECORDS_TO_GOSSIP) {
           indexes = set()
           modulus = len(observed_records)
-          while(len(indexes) < MAC_SCT_RECORDS_TO_GOSSIP) {
+          while(len(indexes) < MAX_SCT_RECORDS_TO_GOSSIP) {
             r = randomInt() % modulus
             if(r not in indexes)
               indexes.insert(r)
@@ -1323,6 +1467,14 @@ We suppose a large data structure is used, such as a hashmap - indexed by the do
         }
         else
           return this.observed_records
+      }
+
+      def delete_maybe(SCTBundle b) {
+        //Perform statistical test and see if I should delete this bundle
+      }
+
+      def delete_now(SCTBundle b) {
+        this.observed_records.remove(b)
       }
     }
 
@@ -1358,26 +1510,30 @@ The following pseudocode would be included in the SCTStore class, and called wit
     {
       foreach(bundle : submittedBundles) 
       {
+        bundle.num_reports_to_server++
+        
         if(proof_fetching_enabled) {
           if(!bundle.has_been_fully_resolved_to_sths()) {
             foreach(s : bundle.sct_list) {
               if(!s.has_been_resolved_to_sth) {
+                s.proof_attempts++
                 queue_inclusion_proof(sct, inclusion_proof_calback)
               }
             }
           }
-          
-          if(run_ct_gossip_experiment_one) {
-            if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
-               bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
-              maybe_delete(bundle)
+          else {
+            if(run_ct_gossip_experiment_one) {
+              if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
+                 bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
+                maybe_delete(bundle)
+              } 
+            }
+            else { //Do not run experiment
+              if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
+                maybe_delete(bundle)
+              }
             } 
           }
-          else { //Do not run experiment
-            if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
-              maybe_delete(bundle)
-            }
-          } 
         } 
         else {//proof fetching not enabled
           if(bundle.num_reports_to_server > (MIN_SCT_REPORTS_TO_SERVER * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
@@ -1391,105 +1547,12 @@ The following pseudocode would be included in the SCTStore class, and called wit
     def inclusion_proof_calback(inclusion_proof, original_sct, error) 
     {
       if(!error) {
+        original_Sct.has_been_resolved_to_sth = True
         insert_to_sth_datastore(inclusion_proof.new_sth)  
       } else {
         original_sct.proof_failure_count++
       }
     }
-
-##### STH Data Structures
-STH Store
-
-class STHStore
-{
-
-}
-
-The STH data store will be a heavily used data structure in a HTTPS client, as it will be used for connections to all servers. Therefore, we define two STH stores, which enables us to read heavily from one while no modifications are made to it, and insert and shuffle the second store without blocking reads from the first. For simplicity, the code is presented without locking constructions which would be needed.
-
-get_active_sth_store() {
-    if(store_a_active)
-      return sth_store_a
-    else
-      return sth_store_b
-}
-
-switch_active_store() {
-  if(store_a_active)
-    shuffle(sth_store_b)
-  else
-    shuffle(sth_store_a)
-
-  store_a_active = !store_a_active;
-
-  foreach(d in queued_deletes) {
-    if(store_a_active)
-      sth_store_b.remove_if_present(sth)
-    else
-      sth_store_a.remove_if_present(sth)
-  }
-  queued_deletes.empty()
-}
-
-def insert_to_sth_datastore(sth) {
-  if(store_a_active)
-    sth_store_b.insert(sth)
-  else
-    sth_store_a.insert(sth)
-}
-
-def delete_from_sth_datastore(sth) {
-  if(store_a_active)
-    sth_store_b.remove_if_present(sth)
-  else
-    sth_store_a.remove_if_present(sth)
-
-  queued_deletes.insert(sth)
-}
-
-
-##### STH Deletion Procedure
-
-[[[The STH Deletion Procedure is run ]]]
-
-def sth_(sth) {
-  if(proof_fetching_enabled) {
-    if(!sth.has_been_queued_for_proof) {
-      queue_consistency_proof(sth, consistency_proof_callback)
-    }
-
-    if(sth.proof_failure_count > MAX_PROOF_ATTEMPTS) {
-      if(auditor_of_last_resort_enabled)
-        queue_sth_for_auditor_of_last_resort(sth)
-      maybe_delete(sth)
-    } 
-  }
-  else { //proof fetching not enabled
-    if(sth.num_reports_to_server > MIN_STH_REPORT_TO_SERVER) {
-      maybe_delete(sth)
-    }
-  }
-}
-
-def consistency_proof_callback(consistency_proof, original_sth, error) {
-  if(!error) {
-    insert_to_sth_datastore(consistency_proof.current_sth)
-    delete_now(consistency_proof.original_sth)
-  } else {
-    original_sth.proof_failure_count++
-  }
-}
-
-
-### A comprehnsive algorithm recommendation
-
-Certain common recommendations can be made:
-
-
-- \[TODO Enumerating the problems of different types of mixes vs Cottrell Mix\]
-
-
-
 
 
 # IANA considerations
