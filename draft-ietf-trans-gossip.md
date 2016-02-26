@@ -1143,7 +1143,7 @@ recommended to run the gossip protocols over an existing connection to
 the server, making use of connection multiplexing such as HTTP
 Keep-Alives or SPDY.
 
-Truncation is also a concern -if a client always establishes a TLS
+Truncation is also a concern - if a client always establishes a TLS
 connection, makes a request, receives a response, and then always
 attempts a gossip communication immediately following the first
 response - truncation will allow an attacker to block gossip reliably.
@@ -1153,6 +1153,7 @@ SHOULD send gossip data in an already established TLS session. This
 can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
 
 ### Responding to possible blocking {#blocking-policy-response}
+
 In some cirsumstances a client may have a piece of data that they have
 attempted to share (via SCT Feedback or STH Pollination), but have been
 unable to do so: with every attempt they recieve an error. These
@@ -1187,14 +1188,17 @@ If an STH has attempted to be resolved to a newer STH via a consistency
 proof multiple times, and each time has failed, a client MAY share the
 STH with an "Auditor of Last Resort" even if the STH in question is no
 longer within the validity window. This auditor may be pre-configured
-by the client SHOULD permit a user to change or disable
-whom data is sent to.
+in the client, but the client SHOULD permit a user to disable the 
+functionality or change whom data is sent to. The Auditor of Last Resort
+itself represents a point of failure, so if implemented, it should 
+connect using public key pinning and not considered an item delivered
+until it recieves a confirmation.
 
 In the cases 3, 4, and 5, we assume that the webserver(s) or
 trusted auditor in question is either experiencing an operational failure,
 or being attacked. In both cases, a client SHOULD retain the data for
 later submission (subject to Private Browsing or other history-clearing
-actions taken by the user.)
+actions taken by the user.) This is elaborated upon more in {#pooling-policy-recommendations}.
 
 ## Proof Fetching Recommendations {#proof-fetching-recommendations}
 
@@ -1216,8 +1220,8 @@ party, and eventually deleted. The instances of these recommendations
 in this draft are:
 
 - When a client receives SCTs during SCT Feedback, it should store the
-  SCTs and Certificates for some amount of time, provide some of them
-  back to the server at some point, and eventually remove them from
+  SCTs and Certificate Chain for some amount of time, provide some of them
+  back to the server at some point, and may eventually remove them from
   its store
 
 - When a client receives STHs during STH Pollination, it should store
@@ -1243,21 +1247,21 @@ Each of these instances have specific requirements for user privacy,
 and each have options that may not be invoked. As one example, a HTTPS
 client should not mix SCTs from server A with SCTs from server B and
 release server B's SCTs to Server A. As another example, a HTTPS
-server may choose to resolve several STHs to a single more current STH
+server may choose to resolve STHs to a single more current STH
 via proof fetching, but it is under no obligation to do so.
 
 These requirements should be met, but the general problem of
 aggregating multiple pieces of data, choosing when and how many to
 release, and when to remove them is shared. This problem has been
 previously been considered in the case of Mix Networks and Remailers,
-including papers such as \[X\], \[Y\], and \[Z\].
+including papers such as "From a Trickle to a Flood: Active Attacks on Several Mix Types", \[Y\], and \[Z\].
 
 There are several concerns to be addressed in this area, outlined 
 below.  
 
 ### Mixing Algorithm
 
-When SCTs or STHs are recorded by a participant in CT Gossip, it is important that they are selected from the datastore in a non-deterministic fashion.
+When SCTs or STHs are recorded by a participant in CT Gossip and later used, it is important that they are selected from the datastore in a non-deterministic fashion.
 
 This is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predicable ordering algorithm, an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
 
@@ -1267,20 +1271,23 @@ Random ordering can be ensured by several mechanisms. A datastore can be shuffle
 
 ### Flushing Attacks
 
-A flushing attack is an attempt by an adversary to flush a particular piece of data from a pool. In the CT Gossip ecosystem, an attacker may have performed an attack and left evidence of a compromised log on a client or server. They would be interested in flushing that data - tricking the target into gossiping or pollinating the incrimindating evidence with only attacker-controlled clients or servers.
+A flushing attack is an attempt by an adversary to flush a particular piece of data from a pool. In the CT Gossip ecosystem, an attacker may have performed an attack and left evidence of a compromised log on a client or server. They would be interested in flushing that data - tricking the target into gossiping or pollinating the incrimindating evidence with only attacker-controlled clients or servers with the hope they trick the target into deleting it.
 
-Servers are most vulnerable to flushing attacks, as they release records to anonymous connections. An attacker can perform a Sybil attack - connecting to the server hundreds or thousands of times in an attempt to trigger repeated release of a record, and then deletion.
+Servers are most vulnerable to flushing attacks, as they release records to anonymous connections. An attacker can perform a Sybil attack - connecting to the server hundreds or thousands of times in an attempt to trigger repeated release of a record, and then deletion. For this reason, servers must be especially aggressive about retaining data for a longer period of time.
 
-Clients are vulnerable to flushing attacks targetting STHs, as these can be given to any cooperating server. It would be more difficult to perform a flushing attack against SCTs, as the server must be authenticated - but it should not be ruled impossible. A Trusted Auditor may also be vulnerable to flushing attacks if it does not perform auditing operations itself.
+Clients are vulnerable to flushing attacks targetting STHs, as these can be given to any cooperating server and an attacker can generally induce connections to random servers using javascript. It would be more difficult to perform a flushing attack against SCTs, as the target server must be authenticated (and an attacker impersonating an authentic server presents a recursive problem for the attacker). Nonetheless, flushing SCTs should not be ruled impossible. A Trusted Auditor may also be vulnerable to flushing attacks if it does not perform auditing operations itself.
 
 Flushing attacks are defended against using non-determinism and dummy messages. The goal is to ensure that an adversary does not know for certain if the data in question has been released or not, and if it has been deleted or not. 
 
+\[ TBD: At present, we do not have any support for dummy messages. Do we want to define a dummy message that clients and servers alike know to ignore?  Will HTTP Compression leak the presence of >1 dummy messages? 
+
+Is it sufficient to define a dummy message as _anything_ with an invalid siganture? This would negatively impact SCT Feedback servers that log all things just in case they're interesting. \] 
 
 ### The Deletion Algorithm
 
 No entity in CT Gossip is required to delete SCTs or STHs at any time, except to respect user's wishes such as private browsing mode or clearing history. However, requiring infinite storage space is not a desirable characteristic in a protocol, so deletion is expected.  
 
-While deletion of SCTs and STHs will occur - proof fetching can ensure that any misbehavior from a log will still be detected, even after the direct evidence from the attack is deleted. Proof fetching ensures that if a log presents a split for a client, they must maintain that split view in perpetuity. An inclusion proof from a SCT to a STH does not erase the evidence - the new STH is evidence itself. A consistency proof from that STH to a new one likewise - the new STH is every bit as incriminating as the first.  (Client behavior in the situation where a SCT or STH cannot be resolved is suggested in {{blocking-policy-response}}.) Because of this property, we recommend that if a client is performing proof fetching, that they make every effort to not delete a SCT or STH until it has been successfully resolved to a new STH via a proof. 
+While deletion of SCTs and STHs will occur - proof fetching can ensure that any misbehavior from a log will still be detected, even after the direct evidence from the attack is deleted. Proof fetching ensures that if a log presents a split view for a client, they must maintain that split view in perpetuity. An inclusion proof from a SCT to a STH does not erase the evidence - the new STH is evidence itself. A consistency proof from that STH to a new one likewise - the new STH is every bit as incriminating as the first.  (Client behavior in the situation where a SCT or STH cannot be resolved is suggested in {{blocking-policy-response}}.) Because of this property, we recommend that if a client is performing proof fetching, that they make every effort to not delete a SCT or STH until it has been successfully resolved to a new STH via a proof. 
 
 When it is time to delete a record, it is important that the decision to do so not be done deterministicly. Introducing non-determinism in the decision is absolutely necessary to prevent an adversary from knowing with certainty that the record has been successfully flushed from a target. Therefore, we speak of making a record 'elligible for deletion' and then being processed by the 'deletion algorithm'.  Making a record elligible for deletion simply means that it will have the deletion algorithm run. The deletion algorithm will use a probability based system and a secure random number generator to determine if the record will be deleted. 
 
@@ -1296,7 +1303,7 @@ More complex algorithms could be inserted at any step. Three examples are illust
 
 SCTs are not elligible to be submitted to an Auditor of Last Resort - therefore, it is more important that they be resolved to STHs and reported via SCT feedback. If fetching an inclusion proof regurally fails for a particular SCT, one can require it be reported more times than normal via SCT Feedback before becomning elligible for deletion.
 
-Before an item is made elligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back giving the client it's observed remote IP address), and/or until a specified time interval has passed. This strategy could be employed always, or only when the client has disabled proof fetching and/or the auditor of last resort - as those two mechanisms when used together will enable a client to report most attacks. 
+Before an item is made elligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back providing the client with it's observed public IP address). The HTTPS client could also require reporting over a timespan - e.g. it must be reported at least N time, M weeks apart. This strategy could be employed always, or only when the client has disabled proof fetching and the auditor of last resort - as those two mechanisms (when used together) will enable a client to report most attacks. 
 
 Before an item is made elligible for deletion by a server, the server could aim to make it difficult for an attacker to flush the pool by requiring release of the record to a diversity of IP addresses. The server could attempt to do so by recording the client IP addresses a STH or SCT was released to - perhaps continually XORing the IP address into a uint32, while incrementing a counter. Once the counter reaches a minimum number, and the IP address tracker has a Hamming Weight of 16 +/- 2 - the record is now elligible for deletion. (It is not deleted immediately, because this would be a predictable algorithm, but the entry becomes elligible and will have the deletion algorithm run). But with the availability of anonyminity networks and globally active attackers - it is not clear if this approach adds anything beyond complexity.
 
@@ -1306,6 +1313,7 @@ The recommendations for behavior are:
 - If proof fetching is enabled, do not delete an SCT until it has had a proof resolved to a STH.
 - If proof fetching continually fails for a SCT, do not make the item eligible for deletion the SCT until it has been released, multiple times, via SCT Feedback
 - If proof fetching continually fails for a STH, do not make the item elligible for deletion until it has been queued for release to an auditor of last resort
+- Do not dequeue entries to an auditor of last report if reporting fails - keep the items queued until they have been successfully sent
 - Use a probability based system, with a cryptographically secure random number generator, to determine if an item should be deleted
 - Select items from the datastores by selecting random indexes into the datastore. Use a cryptographically secure random number generator.
 
@@ -1321,23 +1329,23 @@ The STH class contains data pertaining specifically to the STH itself.
     {
       uint32   proof_attempts
       uint32   proof_failure_count
-      uint32   num_reports_to_server
+      uint32   num_reports_to_thirdparty
       datetime sth_age
       byte[]   data
     }
 
-The broader STH store itself would contain all the STHs known by a client. This simplistic view of the class does not take into account the complicated locking that would likely be required for a data structure being accessed by multiple threads.  One thing to note about this pseudocode is that it aggressively removes STHs once they have been resolved to a newer STH. The only STHs in the store are ones that have never been resolved to a newer STH - either because proof fetching has failed or because the STH is considered too new to request a proof for.
+The broader STH store itself would contain all the STHs known by an entity participating in STH Pollination (either client or server). This simplistic view of the class does not take into account the complicated locking that would likely be required for a data structure being accessed by multiple threads.  One thing to note about this pseudocode is that it aggressively removes STHs once they have been resolved to a newer STH (if proof fetching is configured). The only STHs in the store are ones that have never been resolved to a newer STH - either because proof fetching does not occur, has failed, or because the STH is considered too new to request a proof for. It seems less likely that servers will perform proof fetching - therefore it would be recommended that the various constants in use be increased considerably to ensure STHs are pollinated more aggressively.
 
     class STHStore
     {
       STH[] sth_list
 
       //  This function is run after receiving a set of STHs from
-      //  a server in response to a pollination submission
+      //  a third party in response to a pollination submission
       def insert(STH[] new_sths) {
         foreach(new : new_sths) {
           if(this.sth_list.contains(new))
-            return
+            continue
           this.sth_list.insert(new)
         }
       }
@@ -1386,6 +1394,7 @@ We also suggest a function that can be called periodically in the background, it
       foreach(sth : this.sth_list) {
 
         if(now() - sth.age > ONE_WEEK) {
+          //STH is too old, we must remove it
           if(proof_fetching_enabled && 
              auditor_of_last_resort_enabled &&
              (sth.proof_failure_count / sth.proof_attempts) > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
@@ -1407,16 +1416,16 @@ We also suggest a function that can be called periodically in the background, it
 
 ##### STH Deletion Procedure
 
-The STH Deletion Procedure is run after successfully submitting a list of STHs to a server during pollination. The following pseudocode would be included in the STHStore class, and called with the result of get_pollination_selection(), after the STHs have been (successfully) sent to the server.
+The STH Deletion Procedure is run after successfully submitting a list of STHs to a third party during pollination. The following pseudocode would be included in the STHStore class, and called with the result of get_pollination_selection(), after the STHs have been (successfully) sent to the third party.
 
     //  This function is called after successfully pollinating STHs
-    //  to a server. It is passed the STHs sent to the server, which
-    //  is the output of get_gossip_selection()
-    def after_submit_to_server(STH[] sth_list) 
+    //  to a third party. It is passed the STHs sent to the third 
+    //  party, which is the output of get_gossip_selection()
+    def after_submit_to_thirdparty(STH[] sth_list) 
     {
       foreach(sth : sth_list)
       {
-        sth.num_reports_to_server++
+        sth.num_reports_to_thirdparty++
 
         if(proof_fetching_enabled) {
           if(now() - sth.age > LOG_MMD) {
@@ -1431,7 +1440,7 @@ The STH Deletion Procedure is run after successfully submitting a list of STHs t
           }
         }
         else { //proof fetching not enabled
-          if(sth.num_reports_to_server > MIN_STH_REPORT_TO_SERVER) {
+          if(sth.num_reports_to_thirdparty > MIN_STH_REPORTS_TO_THIRDPARTY) {
             delete_maybe(sth)
           }
         }
@@ -1450,7 +1459,7 @@ The STH Deletion Procedure is run after successfully submitting a list of STHs t
 ##### SCT Data Structures
 
 TBD TBD
-- If proof fetching is enabled, do not delete an SCT until it has had a proof resolved to a STH.
+This section is not well abstracted to be used for both servers and clients.
 TKTK
 
 The SCT class contains data pertaining specifically to the SCT itself.
@@ -1463,14 +1472,14 @@ The SCT class contains data pertaining specifically to the SCT itself.
       byte[] data
     }
 
-The SCT bundle will contain the trusted certificate chain the HTTPS client built (chaining to a trusted root certificate.) It also contains the list of associated SCTs, the exact domain it is applicable to, and metadata pertaining to how often it has been reported to the server. 
+The SCT bundle will contain the trusted certificate chain the HTTPS client built (chaining to a trusted root certificate.) It also contains the list of associated SCTs, the exact domain it is applicable to, and metadata pertaining to how often it has been reported to the third party. 
 
     class SCTBundle
     {
       X509[] certificate_chain
       SCT[]  sct_list
       string domain
-      uint32 num_reports_to_server
+      uint32 num_reports_to_thirdparty
       
       def equals(sct_bundle) {
         if(sct_bundle.domain != this.domain) return false
@@ -1488,7 +1497,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       
       def insert_scts(sct[] sct_list) {
         this.sct_list.union(sct_list)
-        num_reports_to_server = 0
+        num_reports_to_thirdparty = 0
       }
       
       def has_been_fully_resolved_to_sths() {
@@ -1519,11 +1528,17 @@ We suppose a large data structure is used, such as a hashmap - indexed by the do
       uint32   num_submissions_succeeded
       SCTBundle[] observed_records
       
-      //  Upon performing a successful connection to a HTTPS Server, 
-      //  the HTTPS Client calls this fundle with a SCTBundle constructed
+      //  This function is called after recieving a SCTBundle.
+      //  For Clients, this is after a successful connection to a 
+      //  HTTPS Server, calling this function with a SCTBundle constructed
       //  from that certificate path and SCTs
+      //  For Servers, this is after receiving SCT Feedback
       def insert(SCTBundle b) {
         foreach(e in this.observed_records) {
+          if(operator_is_server) {
+            if(!passes_validity_checks(bundle))
+              return
+          }
           if(e.equals(b))
             return
           else if(e.approx_equals(b)) {
@@ -1565,6 +1580,11 @@ We suppose a large data structure is used, such as a hashmap - indexed by the do
       def delete_now(SCTBundle b) {
         this.observed_records.remove(b)
       }
+
+      def passes_validity_checks(SCTBundle b) {
+        //  This function performs the validity checks specified in
+        //  {{feedback-srvop}}
+      }
     }
 
 We also suggest a function that can be called periodically in the background, iterating through all SCTStore objects in the large hashmap (here called 'all_sct_stores') and removing old data.
@@ -1588,19 +1608,19 @@ We also suggest a function that can be called periodically in the background, it
 
 ##### SCT Deletion Procedure
 
-The SCT Deletion procedure is more complicated than the respective STH procedure. This is because a server may elect not to participate in SCT Feedback, and this must be accounted for by being more conservative in sending SCT reports.  
+The SCT Deletion procedure is more complicated than the respective STH procedure. This is because servers may elect not to participate in SCT Feedback, and this must be accounted for by being more conservative in sending SCT reports to them.  
 
 The following pseudocode would be included in the SCTStore class, and called with the result of get_gossip_selection() after the SCT Feedback has been sent (successfully) to the server. We also note that the first experimental algorithm from above is included in the pseudocode as an illustration.
 
     //  This function is called after successfully providing SCT Feedback
     //  to a server. It is passed the feedback sent to the server, which
     //  is the output of get_gossip_selection()
-    def after_submit_to_server(SCTBundle[] submittedBundles)
+    def after_submit_to_thirdparty(SCTBundle[] submittedBundles)
     {
       foreach(bundle : submittedBundles) 
       {
-        bundle.num_reports_to_server++
-        
+        bundle.num_reports_to_thirdparty++
+
         if(proof_fetching_enabled) {
           if(!bundle.has_been_fully_resolved_to_sths()) {
             foreach(s : bundle.sct_list) {
@@ -1612,20 +1632,20 @@ The following pseudocode would be included in the SCTStore class, and called wit
           }
           else {
             if(run_ct_gossip_experiment_one) {
-              if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER &&
-                 bundle.num_reports_to_server * 1.5 > bundle.max_proof_failure_count()) {
+              if(bundle.num_reports_to_thirdparty > MIN_SCT_REPORTS_TO_THIRDPARTY &&
+                 bundle.num_reports_to_thirdparty * 1.5 > bundle.max_proof_failure_count()) {
                 maybe_delete(bundle)
               } 
             }
             else { //Do not run experiment
-              if(bundle.num_reports_to_server > MIN_SCT_REPORTS_TO_SERVER) {
+              if(bundle.num_reports_to_thirdparty > MIN_SCT_REPORTS_TO_THIRDPARTY) {
                 maybe_delete(bundle)
               }
             } 
           }
         } 
         else {//proof fetching not enabled
-          if(bundle.num_reports_to_server > (MIN_SCT_REPORTS_TO_SERVER * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
+          if(bundle.num_reports_to_thirdparty > (MIN_SCT_REPORTS_TO_THIRDPARTY * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
             maybe_delete(bundle)
           }
         }
