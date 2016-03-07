@@ -67,7 +67,7 @@ submitted certificates within the time period stipulated by MMD.
 
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
-information about the logs and their operations, but not to leak any
+information about the logs and their operations, but not to expose any
 additional information about the operation of any of the other
 participants. Privacy of consumers of log information (in particular,
 of web browsers and other TLS clients) should not be undermined by
@@ -101,7 +101,7 @@ Disseminating information about a log poses a potential threat to the
 privacy of end users. Some data of interest (e.g. SCTs) is linkable
 to specific log entries and thereby to specific websites, which makes
 sharing them with others a privacy concern. Gossiping about this data
-has to take privacy considerations into account in order not to leak
+has to take privacy considerations into account in order not to expose
 associations between users of the log (e.g., web browsers) and
 certificate holders (e.g., web sites). Even sharing STHs (which do not
 link to specific log entries) can be problematic -- user tracking by
@@ -332,7 +332,7 @@ adversary fills up the store prior to attacking a client (thus
 preventing the client's feedback from being recorded), or an attack
 where the adversary simply attempts to fill up server's storage space.
 
-Check number 3 is to help malfunctioning clients from leaking which
+Check number 3 is to help malfunctioning clients from exposing which
 sites they visit and additionally to prevent DoS attacks.
 
 Note that an HTTPS server MAY choose to store a submitted SCT and the
@@ -681,17 +681,17 @@ in a privacy preserving manner, most likely through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
 only a minority of HTTPS servers deploy it. However, it makes an
-assumption that an HTTPS client performs anonymized Proof Fetching
-(such as the DNS mechanism discussed). Unfortunetly, any manner that is
+assumption that an HTTPS client performs Proof Fetching
+(such as the DNS mechanism discussed). Unfortunately, any manner that is
 anonymous for some (such as clients who use shared DNS services such
 as a large ISP), may not be anonymous for others.
 
-For instance, DNS leaks a considerable amount of information
+For instance, DNS requests expose a considerable amount of sensitive information
 (including what data is already present in the cache) in plaintext
 over the network. For this reason, some percentage of HTTPS clients
 may choose to not enable the Proof Fetching component of STH
 Pollination. (Although they can still request and send STHs among
-participating HTTPS servers, as mentioned earlier this affords them no
+participating HTTPS servers, even when this affords them no
 direct benefit.)
 
 If STH Pollination was the only mechanism deployed, users that disable
@@ -911,7 +911,7 @@ even if it has seen no SCTs from that log.
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
-DNS is a mechanism currently discussed. DNS leaks data in plaintext
+DNS is a mechanism currently discussed. DNS exposes data in plaintext
 over the network (including what sites the user is visiting and what
 sites they have previously visited) - thus it may not be suitable for
 some.
@@ -973,14 +973,14 @@ deployment to improve the policy will be required.
 ### Trusted Auditors for HTTPS Clients {#privacy-trusted-auditors}
 
 Some HTTPS clients may choose to use a trusted auditor. This trust
-relationship leaks a large amount of information from the client to
+relationship exposes a large amount of information about the client to
 the auditor. In particular, it will identify the web sites that the
 client has visited to the auditor. Some clients may already share this
 information to a third party, for example, when using a server to
 synchronize browser history across devices in a server-visible way, or
 when doing DNS lookups through a trusted DNS resolver. For clients
 with such a relationship already established, sending SCTs to a
-trusted auditor run by the same organization does not appear to leak
+trusted auditor run by the same organization does not appear to expose
 any additional information to the trusted third party.
 
 Clients who wish to contact an auditor without associating their
@@ -989,8 +989,8 @@ Tor to submit SCT Feedback to the auditor. Auditors SHOULD accept SCT
 Feedback that arrives over such anonymizing networks.
 
 Clients sending feedback to an auditor may prefer to reduce the
-temporal granularity of the history leakage to the auditor by caching
-and delaying their SCT Feedback reports. This elaborated upon in 
+temporal granularity of the history exposure to the auditor by caching
+and delaying their SCT Feedback reports. This is elaborated upon in 
 {#pooling-policy-recommendations}. This strategy is only as effective 
 as the granularity of the timestamps embedded in the SCTs and STHs.
 
@@ -999,11 +999,11 @@ as the granularity of the timestamps embedded in the SCTs and STHs.
 Some HTTPS Clients may choose to act as Auditors themselves. A Client
 taking on this role needs to consider the following:
 
-- an Auditing HTTPS Client potentially leaks their history to the logs
+- an Auditing HTTPS Client potentially exposes its history to the logs
   that they query. Querying the log through a cache or a proxy with
-  many other users may avoid this leakage, but may leak information to
+  many other users may avoid this exposure, but may expose information to
   the cache or proxy, in the same way that an non-Auditing HTTPS
-  Client leaks information to a trusted auditor.
+  Client exposes information to a trusted auditor.
 
 - an effective Auditor needs a strategy about what to do in the event
   that it discovers misbehavior from a log. Misbehavior from a log
