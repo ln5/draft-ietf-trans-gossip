@@ -280,8 +280,8 @@ implied by previous sections?\]
 ### HTTPS client to server {#feedback-clisrv}
 
 When an HTTPS client connects to an HTTPS server, the client receives
-a set of SCTs as part of the TLS handshake - they may come as in the
-server certificate, TLS extension, or OCSP extension. The client MUST 
+a set of SCTs as part of the TLS handshake. SCTs are included in the TLS
+handshake using one or more of the three mechanisms descrbied in {{RFC-6962-BIS-09}} section 3.4 -- in the server certificate, in a TLS extension, or in an OCSP extension. The client MUST
 discard SCTs that are not signed by a log known to the client and SHOULD 
 store the remaining SCTs together with a constructed, trusted certificate
 chain (terminated in a pre-loaded or locally installed Trust Anchor) 
@@ -290,7 +290,7 @@ use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name 
 the client contacted. They MUST NOT be sent to any domain not matching 
-the original (e.g. if the original domain is sub.example.com they 
+the original domain (e.g. if the original domain is sub.example.com they 
 must not be sent to sub.sub.example.com or to example.com.) They MUST
 NOT be sent to any Subject Alternate Names specified in the certificate.
 In the case of certificates that validate multiple domain
@@ -353,7 +353,7 @@ SCTs associated with them, so in this case no action is needed with respect
 to CT Gossip. SCTs issued by locally added logs MUST NOT be reported via SCT 
 Feedback.
 
-If a certificate is validated by SCTs issued by publicly trusted logs, but 
+If a certificate is validated by SCTs that are issued by publicly trusted logs, but 
 chains to a local trust anchor, the client MAY perfom SCT Feedback 
 for this SCT and certificate chain bundle. If it does so, the client MUST
 include the full path of certificates chaining to the local trust anchor in
@@ -387,12 +387,12 @@ in, broadly, two modes of operation. In the simpler mode, the server
 will only track leaf certificates and SCTs applicable to those 
 leaf certificates. In the more complex mode, the server will confirm 
 the client's path validation and store the certificate path. The 
-latter mode requires more configuration, but is necessary to prevent DoS
+latter mode requires more configuration, but is necessary to prevent denial of service (DoS)
 attacks on the server's storage space.  
 
 In the simple mode of operation, upon recieving a submission at the 
 sct-feedback well-known URL, a HTTPS server will perform a set of 
-operations and checks on each sct_feedback object before storing it:
+operations, checking on each sct_feedback object before storing it:
 
   1. the HTTPS server MAY modify the sct_feedback object, and discard 
   all items in the x509\_chain array except the first item (which is 
@@ -423,7 +423,7 @@ needed to ensure that attacks involving alternate paths are detected.
 Again, at least one optimization is safe and MAY be performed. If the 
 certificate path exactly matches an existing certificate path, the server 
 may store the union of the SCTs from the two objects in the first 
-(existing) object. It should do this after completely the validity check 
+(existing) object. It should do this after completing the validity check 
 on the SCTs.
 
 The check in step 3 is to help malfunctioning clients from leaking which
@@ -432,10 +432,10 @@ sites they visit. It additionally helps prevent DoS attacks on the server.
 \[ TBD: Thinking about building this - how does the SCT Feedback app know
 which sites it's authoritative for? \]
 
-The check in step 4 is to prevent denial of service (DoS) attacks where an
+The check in step 4 is to prevent DoS attacks where an
 adversary fills up the store prior to attacking a client (thus 
 preventing the client's feedback from being recorded), or an attack
-where the adversary simply attempts to fill up server's storage space.
+where an adversary simply attempts to fill up server's storage space.
 
 The more advanced server configuration will detect the \[TODO double-CA-compromise attack\]
 attack. In this configuration the server will not modify the sct_feedback
@@ -591,13 +591,14 @@ clients. This concern is discussed upon in
 
 ### HTTPS Clients and Proof Fetching {#clients-proof-fetching}
 
-There are two types of proofs a client may retrieve.
+There are two types of proofs a client may retrieve; inclusion proofs
+and consistency proofs.
 
 An HTTPS client will retrieve SCTs from an HTTPS server, and must
 obtain an inclusion proof to an STH in order to verify the promise
 made by the SCT.
 
-An HTTPS client may also receive SCT bundled with an inclusion proof to a
+An HTTPS client may also receive an SCT bundled with an inclusion proof to a
 historical STH via an unspecified future mechanism. Because this
 historical STH is considered personally identifiable information per
 above, the client must obtain a consistency proof to a more recent
@@ -610,7 +611,7 @@ pre-loaded log) that validates a certificate chaining to a locally
 added trust anchor.
 
 \[ TBD: Linus doesn't like this because we're mandating behavior 
-that is not necessarily unsafe. Is it unsafe? Not sure.\]
+that is not necessarily safe. Is it unsafe? Not sure.\]
 
 If a client requested either proof directly from a log or auditor, it
 would reveal the client's browsing habits to a third party. To
