@@ -361,7 +361,7 @@ the x509\_chain array. Perfoming SCT Feedback in this scenario may be
 advantageous for the broader Internet and CT ecosystem, but may also disclose 
 information about the client. If the client elects to omit SCT Feedback, it can 
 still choose to perform STH Pollination after fetching an inclusion proof, 
-as specified in  {{#sth-pollination}}.
+as specified in  {{sth-pollination}}.
 
 We require the client to send the full path (or nothing at all) for two 
 reasons. Firstly, it simplifies the operation on the server if there are 
