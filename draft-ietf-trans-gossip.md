@@ -213,6 +213,10 @@ There are three separate gossip streams:
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
+It is worthwhile to note that when a HTTPS Client, auditor, or monitor
+interacts with a log, they may equivalently interact with a log mirror
+or cache that replicates the log.
+
 # Gossip Mechanisms
 
 ## SCT Feedback
@@ -542,7 +546,7 @@ Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
 
 Even when using a privacy-preserving layer between the client and the
-log (or log cache) - certain observations may be made about an 
+log - certain observations may be made about an 
 anonymous client or general user behavior depending on how proofs are 
 fetched. For example, if a client fetched all outstanding proofs at once, 
 a log would know that SCTs or STHs recieved around the same time are more 
