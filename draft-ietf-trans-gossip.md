@@ -632,7 +632,7 @@ to anonymously retrieve a proof from an auditor or log.
 Even when using a privacy-preserving layer between the client and the
 log (or log cache) - certain observations may be made about an 
 anonymous client or general user behavior depending on how proofs are 
-fetched. For example, if a client fetched all proofs outstanding at once, 
+fetched. For example, if a client fetched all outstanding proofs at once, 
 a log would know that SCTs or STHs recieved around the same time are more 
 likely to come from a particular client. This could potentially go so far
 as to correlate of activity at different times to a single client. In 
@@ -1252,7 +1252,7 @@ via proof fetching, but it is under no obligation to do so.
 
 These requirements should be met, but the general problem of
 aggregating multiple pieces of data, choosing when and how many to
-release, and when to remove them is shared. This problem has been
+release, and when to remove them is shared. This problem has
 previously been considered in the case of Mix Networks and Remailers,
 including papers such as "From a Trickle to a Flood: Active Attacks on Several Mix Types", \[Y\], and \[Z\].
 
@@ -1263,15 +1263,15 @@ below.
 
 When SCTs or STHs are recorded by a participant in CT Gossip and later used, it is important that they are selected from the datastore in a non-deterministic fashion.
 
-This is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predicable ordering algorithm, an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
+This is most important for servers, as they can be queried for SCTs and STHs anonymously. If the server used a predictable ordering algorithm, an attacker could exploit the predictability to learn information about a client. One such method would be by observing the (encrypted) traffic to a server. When a client of interest connects, the attacker makes a note. They observe more clients connecting, and predicts at what point the client-of-interest's data will be disclosed, and ensures that they query the server at that point.
 
-Although most important for servers, random ordering is still strongly recommended for clients and Trusted Auditors.  The above attack can still occur for these entities, although the cicumstances are less straightforward. For clients, an attacker could observe their behavior, note when they recieve a STH from a server, and use javascript to cause a network connection at the correct time to force a client to disclose the specific STH. Trusted Auditors are stewards of sensitive client data. If an attacker had the ability to observe the activities of a Trusted Auditor (perhaps by being a log, or another auditor), they could perform the same attack - noting the disclosure of data from a client to the Trusted Auditor, and then correlating a later disclosure from the Trusted Auditor as coming from that client.
+Although most important for servers, random ordering is still strongly recommended for clients and Trusted Auditors.  The above attack can still occur for these entities, although the circumstances are less straightforward. For clients, an attacker could observe their behavior, note when they recieve a STH from a server, and use javascript to cause a network connection at the correct time to force a client to disclose the specific STH. Trusted Auditors are stewards of sensitive client data. If an attacker had the ability to observe the activities of a Trusted Auditor (perhaps by being a log, or another auditor), they could perform the same attack - noting the disclosure of data from a client to the Trusted Auditor, and then correlating a later disclosure from the Trusted Auditor as coming from that client.
 
 Random ordering can be ensured by several mechanisms. A datastore can be shuffled, using a secure shuffling algorithm such as Fisher-Yates. Alternately, a series of random indexes into the data store can be selected (if a collision occurs, a new index is selected.) A cryptographyically secure random number generator must be used in either case. If shuffling is performed, the datastore must be marked 'dirty' upon item insertion, and at least one shuffle operation occurs on a dirty datastore before data is retrieved from it for use. 
 
 ### Flushing Attacks
 
-A flushing attack is an attempt by an adversary to flush a particular piece of data from a pool. In the CT Gossip ecosystem, an attacker may have performed an attack and left evidence of a compromised log on a client or server. They would be interested in flushing that data - tricking the target into gossiping or pollinating the incrimindating evidence with only attacker-controlled clients or servers with the hope they trick the target into deleting it.
+A flushing attack is an attempt by an adversary to flush a particular piece of data from a pool. In the CT Gossip ecosystem, an attacker may have performed an attack and left evidence of a compromised log on a client or server. They would be interested in flushing that data - tricking the target into gossiping or pollinating the incriminating evidence with only attacker-controlled clients or servers with the hope they trick the target into deleting it.
 
 Servers are most vulnerable to flushing attacks, as they release records to anonymous connections. An attacker can perform a Sybil attack - connecting to the server hundreds or thousands of times in an attempt to trigger repeated release of a record, and then deletion. For this reason, servers must be especially aggressive about retaining data for a longer period of time.
 
@@ -1287,7 +1287,7 @@ Is it sufficient to define a dummy message as _anything_ with an invalid sigantu
 
 No entity in CT Gossip is required to delete SCTs or STHs at any time, except to respect user's wishes such as private browsing mode or clearing history. However, requiring infinite storage space is not a desirable characteristic in a protocol, so deletion is expected.  
 
-While deletion of SCTs and STHs will occur - proof fetching can ensure that any misbehavior from a log will still be detected, even after the direct evidence from the attack is deleted. Proof fetching ensures that if a log presents a split view for a client, they must maintain that split view in perpetuity. An inclusion proof from a SCT to a STH does not erase the evidence - the new STH is evidence itself. A consistency proof from that STH to a new one likewise - the new STH is every bit as incriminating as the first.  (Client behavior in the situation where a SCT or STH cannot be resolved is suggested in {{blocking-policy-response}}.) Because of this property, we recommend that if a client is performing proof fetching, that they make every effort to not delete a SCT or STH until it has been successfully resolved to a new STH via a proof. 
+While deletion of SCTs and STHs will occur, proof fetching can ensure that any misbehavior from a log will still be detected, even after the direct evidence from the attack is deleted. Proof fetching ensures that if a log presents a split view for a client, they must maintain that split view in perpetuity. An inclusion proof from a SCT to a STH does not erase the evidence - the new STH is evidence itself. A consistency proof from that STH to a new one likewise - the new STH is every bit as incriminating as the first.  (Client behavior in the situation where a SCT or STH cannot be resolved is suggested in {{blocking-policy-response}}.) Because of this property, we recommend that if a client is performing proof fetching, that they make every effort to not delete a SCT or STH until it has been successfully resolved to a new STH via a proof. 
 
 When it is time to delete a record, it is important that the decision to do so not be done deterministicly. Introducing non-determinism in the decision is absolutely necessary to prevent an adversary from knowing with certainty that the record has been successfully flushed from a target. Therefore, we speak of making a record 'elligible for deletion' and then being processed by the 'deletion algorithm'.  Making a record elligible for deletion simply means that it will have the deletion algorithm run. The deletion algorithm will use a probability based system and a secure random number generator to determine if the record will be deleted. 
 
@@ -1301,25 +1301,25 @@ The actual deletion algorithm may be \[STATISTICS HERE\]. \[Something as simple 
 
 More complex algorithms could be inserted at any step. Three examples are illustrated:
 
-SCTs are not elligible to be submitted to an Auditor of Last Resort - therefore, it is more important that they be resolved to STHs and reported via SCT feedback. If fetching an inclusion proof regurally fails for a particular SCT, one can require it be reported more times than normal via SCT Feedback before becomning elligible for deletion.
+SCTs are not elligible to be submitted to an Auditor of Last Resort - therefore, it is more important that they be resolved to STHs and reported via SCT feedback. If fetching an inclusion proof regularly fails for a particular SCT, one can require it be reported more times than normal via SCT Feedback before becoming elligible for deletion.
 
 Before an item is made elligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back providing the client with it's observed public IP address). The HTTPS client could also require reporting over a timespan - e.g. it must be reported at least N time, M weeks apart. This strategy could be employed always, or only when the client has disabled proof fetching and the auditor of last resort - as those two mechanisms (when used together) will enable a client to report most attacks. 
 
-Before an item is made elligible for deletion by a server, the server could aim to make it difficult for an attacker to flush the pool by requiring release of the record to a diversity of IP addresses. The server could attempt to do so by recording the client IP addresses a STH or SCT was released to - perhaps continually XORing the IP address into a uint32, while incrementing a counter. Once the counter reaches a minimum number, and the IP address tracker has a Hamming Weight of 16 +/- 2 - the record is now elligible for deletion. (It is not deleted immediately, because this would be a predictable algorithm, but the entry becomes elligible and will have the deletion algorithm run). But with the availability of anonyminity networks and globally active attackers - it is not clear if this approach adds anything beyond complexity.
+Before an item is made elligible for deletion by a server, the server could aim to make it difficult for an attacker to flush the pool by requiring release of the record to a diversity of IP addresses. The server could attempt to do so by recording the client IP addresses a STH or SCT was released to - perhaps continually XORing the IP address into a uint32, while incrementing a counter. Once the counter reaches a minimum number, and the IP address tracker has a Hamming Weight of 16 +/- 2 - the record is now elligible for deletion. (It is not deleted immediately, because this would be a predictable algorithm, but the entry becomes elligible and will have the deletion algorithm run). But with the availability of anonymity networks and globally active attackers, it is not clear if this approach adds anything beyond complexity.
 
 #### Concrete Recommendations
 
 The recommendations for behavior are:
-- If proof fetching is enabled, do not delete an SCT until it has had a proof resolved to a STH.
-- If proof fetching continually fails for a SCT, do not make the item eligible for deletion the SCT until it has been released, multiple times, via SCT Feedback
+- If proof fetching is enabled, do not delete an SCT until it has had a proof resolving it to a STH.
+- If proof fetching continually fails for a SCT, do not make the item eligible for deletion of the SCT until it has been released, multiple times, via SCT Feedback
 - If proof fetching continually fails for a STH, do not make the item elligible for deletion until it has been queued for release to an auditor of last resort
-- Do not dequeue entries to an auditor of last report if reporting fails - keep the items queued until they have been successfully sent
+- Do not dequeue entries to an auditor of last resort if reporting fails - keep the items queued until they have been successfully sent
 - Use a probability based system, with a cryptographically secure random number generator, to determine if an item should be deleted
 - Select items from the datastores by selecting random indexes into the datastore. Use a cryptographically secure random number generator.
 
 \[TBD: More? \]
 
-We present the follow pseudocode as a concrete outline of our suggestion. 
+We present the following pseudocode as a concrete outline of our suggestion. 
 
 ##### STH Data Structures
 
