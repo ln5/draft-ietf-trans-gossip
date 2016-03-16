@@ -1220,8 +1220,6 @@ SCTs are not eligible to be submitted to an Auditor of Last Resort - therefore, 
 
 Before an item is made eligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back providing the client with it's observed public IP address). The HTTPS client could also require reporting over a timespan - e.g. it must be reported at least N time, M weeks apart. This strategy could be employed always, or only when the client has disabled proof fetching and the auditor of last resort - as those two mechanisms (when used together) will enable a client to report most attacks. 
 
-Before an item is made eligible for deletion by a server, the server could aim to make it difficult for an attacker to flush the pool by requiring release of the record to a diversity of IP addresses. The server could attempt to do so by recording the client IP addresses a STH or SCT was released to - perhaps continually XORing the IP address into a uint32, while incrementing a counter. Once the counter reaches a minimum number, and the IP address tracker has a Hamming Weight of 16 +/- 2 - the record is now eligible for deletion. (It is not deleted immediately, because this would be a predictable algorithm, but the entry becomes eligible and will have the deletion algorithm run). But with the availability of anonymity networks and globally active attackers, it is not clear if this approach adds anything beyond complexity.
-
 #### Concrete Recommendations
 
 The recommendations for behavior are:
