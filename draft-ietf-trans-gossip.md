@@ -1284,8 +1284,8 @@ The broader STH store itself would contain all the STHs known by an entity parti
           modulus = len(this.sth_list)
           while(len(indexes) < MAX_STH_TO_GOSSIP) {
             r = randomInt() % modulus
-            if(r not in indexes && 
-               now() - this.sth_list[i].age < ONE_WEEK)
+            if(r not in indexes
+               && now() - this.sth_list[i].age < ONE_WEEK)
               indexes.insert(r)
           }
 
@@ -1306,9 +1306,10 @@ We also suggest a function that can be called periodically in the background, it
 
         if(now() - sth.age > ONE_WEEK) {
           //STH is too old, we must remove it
-          if(proof_fetching_enabled && 
-             auditor_of_last_resort_enabled &&
-             (sth.proof_failure_count / sth.proof_attempts) > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
+          if(proof_fetching_enabled
+             && auditor_of_last_resort_enabled
+             && (sth.proof_failure_count / sth.proof_attempts)
+                > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
             queue_sth_for_auditor_of_last_resort(sth)
             delete_maybe(sth)
           } else {
@@ -1316,9 +1317,9 @@ We also suggest a function that can be called periodically in the background, it
           }
         }
 
-        else if(proof_fetching_enabled &&
-                now() - sth.age > TWO_DAYS &&
-                now() - sth.age > LOG_MMD) {
+        else if(proof_fetching_enabled
+                && now() - sth.age > TWO_DAYS
+                && now() - sth.age > LOG_MMD) {
           sth.proof_attempts++
           queue_consistency_proof(sth, consistency_proof_callback)
         }
@@ -1344,21 +1345,26 @@ The STH Deletion Procedure is run after successfully submitting a list of STHs t
             queue_consistency_proof(sth, consistency_proof_callback)
           }
 
-          if(auditor_of_last_resort_enabled &&
-             sth.proof_failure_count > MIN_PROOF_ATTEMPTS_CONSIDERED_SUSPICIOUS &&
-             (sth.proof_failure_count / sth.proof_attempts) > MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
+          if(auditor_of_last_resort_enabled
+             && sth.proof_failure_count >
+                MIN_PROOF_ATTEMPTS_CONSIDERED_SUSPICIOUS
+             && (sth.proof_failure_count / sth.proof_attempts) >
+                MIN_PROOF_FAILURE_RATIO_CONSIDERED_SUSPICIOUS) {
               queue_sth_for_auditor_of_last_resort(sth)
           }
         }
         else { //proof fetching not enabled
-          if(sth.num_reports_to_thirdparty > MIN_STH_REPORTS_TO_THIRDPARTY) {
+          if(sth.num_reports_to_thirdparty
+             > MIN_STH_REPORTS_TO_THIRDPARTY) {
             delete_maybe(sth)
           }
         }
       }
     }
 
-    def consistency_proof_callback(consistency_proof, original_sth, error) {
+    def consistency_proof_callback(consistency_proof,
+                                   original_sth,
+                                   error) {
       if(!error) {
         insert(consistency_proof.current_sth)
         delete_now(consistency_proof.original_sth)
@@ -1393,15 +1399,20 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       uint32 num_reports_to_thirdparty
       
       def equals(sct_bundle) {
-        if(sct_bundle.domain != this.domain) return false
-        if(sct_bundle.certificate_chain != this.certificate_chain) return false
-        if(sct_bundle.sct_list != this.sct_list) return false
+        if(sct_bundle.domain != this.domain) 
+          return false
+        if(sct_bundle.certificate_chain != this.certificate_chain)
+          return false
+        if(sct_bundle.sct_list != this.sct_list) 
+          return false
         
         return true
       }
       def approx_equals(sct_bundle) {
-        if(sct_bundle.domain != this.domain) return false
-        if(sct_bundle.certificate_chain != this.certificate_chain) return false
+        if(sct_bundle.domain != this.domain)
+          return false
+        if(sct_bundle.certificate_chain != this.certificate_chain)
+          return false
         
         return true
       }
@@ -1429,7 +1440,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       }
     }
 
-We suppose a large data structure is used, such as a hashmap - indexed by the domain name. For each domain, the structure will contain a data structure that holds the SCTBundles seen for that domain, as well as encapsulating some logic relating to SCT Feedback for that particular domain. 
+We suppose a large data structure is used, such as a hashmap, indexed by the domain name. For each domain, the structure will contain a data structure that holds the SCTBundles seen for that domain, as well as encapsulating some logic relating to SCT Feedback for that particular domain. 
 
     class SCTStore
     {
@@ -1504,13 +1515,15 @@ We also suggest a function that can be called periodically in the background, it
     {
       foreach(storeEntry : all_sct_stores)
       {
-        if(storeEntry.num_submissions_succeeded == 0 &&
-           storeEntry.num_submissions_attempted > MIN_SCT_ATTEMPTS_FOR_DOMAIN_TO_BE_IGNORED)
+        if(storeEntry.num_submissions_succeeded == 0
+           && storeEntry.num_submissions_attempted
+              > MIN_SCT_ATTEMPTS_FOR_DOMAIN_TO_BE_IGNORED)
         {
           all_sct_stores.remove(storeEntry)
         }
-        else if(storeEntry.num_submissions_succeeded > 0 &&
-                now() - storeEntry.last_contact_for_domain > TIME_UNTIL_OLD_SCTDATA_ERASED)
+        else if(storeEntry.num_submissions_succeeded > 0
+                && now() - storeEntry.last_contact_for_domain
+                   > TIME_UNTIL_OLD_SCTDATA_ERASED)
         {
           all_sct_stores.remove(storeEntry)
         }
@@ -1543,20 +1556,25 @@ The following pseudocode would be included in the SCTStore class, and called wit
           }
           else {
             if(run_ct_gossip_experiment_one) {
-              if(bundle.num_reports_to_thirdparty > MIN_SCT_REPORTS_TO_THIRDPARTY &&
-                 bundle.num_reports_to_thirdparty * 1.5 > bundle.max_proof_failure_count()) {
+              if(bundle.num_reports_to_thirdparty
+                 > MIN_SCT_REPORTS_TO_THIRDPARTY
+                 && bundle.num_reports_to_thirdparty * 1.5
+                    > bundle.max_proof_failure_count()) {
                 maybe_delete(bundle)
               } 
             }
             else { //Do not run experiment
-              if(bundle.num_reports_to_thirdparty > MIN_SCT_REPORTS_TO_THIRDPARTY) {
+              if(bundle.num_reports_to_thirdparty
+                 > MIN_SCT_REPORTS_TO_THIRDPARTY) {
                 maybe_delete(bundle)
               }
             } 
           }
         } 
         else {//proof fetching not enabled
-          if(bundle.num_reports_to_thirdparty > (MIN_SCT_REPORTS_TO_THIRDPARTY * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
+          if(bundle.num_reports_to_thirdparty
+             > (MIN_SCT_REPORTS_TO_THIRDPARTY 
+                * NO_PROOF_FETCHING_REPORT_INCREASE_FACTOR)) {
             maybe_delete(bundle)
           }
         }
