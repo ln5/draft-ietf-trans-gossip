@@ -337,6 +337,30 @@ strategies.
 
 \[TODO: The above sentences that talk about the algorithm will be updated with the pooling recommendation section \]
 
+Because SCTs can be used as a tracking mechanism (see {{privacy-feedback}}), 
+they deserve special treatment when they are received (and provided) to 
+domains that are loaded as subresources from an origin domain -- these 
+domains are commonly called 'third party domains'. A HTTPS Client SHOULD
+store SCT Feedback using a 'double-keying' approach, which isolates third 
+party domains by the first party domain. This is described in XXX. Gossip 
+would be performed normally for third party domains only when the user 
+revisits the first party domain. In lieu of 'double-keying', a HTTPS Client 
+MAY treat SCT Feedback in the same manner it treats other security mechanisms 
+that can enable tracking (such as HSTS and HPKP.) 
+
+\[
+
+XXX is currently https://www.torproject.org/projects/torbrowser/design/#identifier-linkability
+How should it be references? Do we need to copy this out into another document? An appendix?
+
+\]
+
+If the HTTPS client has configuration options for not sending cookies
+to third parties, SCTs of third parties MUST be treated as cookies
+with respect to this setting. This prevents third party tracking
+through the use of SCTs/certificates, which would bypass the cookie
+policy.
+
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
 
