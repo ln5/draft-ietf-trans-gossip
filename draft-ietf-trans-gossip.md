@@ -442,7 +442,7 @@ issuing certificate authorities, and create an arbitrary number of chains
 that terminate in an end-entity certificate with an existing SCT. By 
 discarding all but the end-entity certificate, we prevent a simple HTTPS
 server from storing this data. Note that operation in this mode will not
-prevent the attack described in \[TODO double-CA-compromise attack\]. 
+prevent the attack described in {{dual-ca-compromise}}. 
 Skipping this step requires additional configuration as described below.
 
 The check in step 2 is for detecting duplicates and minimizing processing
@@ -915,6 +915,42 @@ inclusion proof for that SCT (or a consistency proof from that STH), the log
 would respond with an error, and a client may simply regard the response
 as a transient error. This attack can be detected using SCT Feedback, or an
 Auditor of Last Resort, as presented in {#blocking-policy-response}.
+
+## Dual-CA Compromise {#dual-ca-compromise}
+
+XXX describes an attack possible by an adversary who compromises two 
+Certificate Authorites and a Log. This attack is difficult to defend 
+against in the CT ecosystem, and XXX describes a few approaches to doing 
+so. We note that Gossip is not intended to defend against this attack, 
+but can in certain modes. 
+
+Defending against the Dual-CA Compromise attack requires SCT Feedback, 
+and explicitly requires the server to save full certificate chains 
+(described in {{feedback-srvop}} as the 'complex' configuration.) After
+Auditors receive the full certificate chains from servers; they must 
+compare the chain built by clients to the chain supplied by the log.
+If the chains differ significantly, the Auditor can raise a concern.
+
+\[
+What does 'differ significantly' mean?  We should provide guidance.
+I *think* the correct algorithm to raise a concern is:
+
+If one chain is not a subset of the other
+AND
+If the root certificates on the chain are different
+THEN It's suspicious.
+
+Justification:
+Cross-Signatures could result in a different org being treated as the 'root', 
+  but in this case, one chain would be a subset of the other.
+Intermediate swapping (e.g. different signature algorithms) could result in
+  different chains, but the root would be the same.
+
+(Hitting both those cases at once would cause a false positive though.)
+
+What did I miss?
+
+\]
 
 ## Censorship/Blocking considerations
 
