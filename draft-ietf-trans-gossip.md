@@ -744,7 +744,46 @@ interface. An informal writeup of such a protocol can be found at XXX.
 
 ### Trusted Auditor data format
 
-\[TBD specify something here or leave this for others?\]
+Trusted Auditors expose a REST API at the fixed URI:
+
+  https://<auditor>/ct/v1/trusted-auditor
+
+Submissions are made by sending a HTTP POST request, with the body of
+the POST a JSON object. Upon successful receipt the Trusted Auditor 
+returns a 200 OK. 
+
+The JSON object consists of two top-level keys: 'sct_feedback'
+and 'sths'.  The 'sct-feedback' value is an array of JSON Objects as 
+defined in {{feedback-dataformat}}. The 'sths' value is an array of STHs
+as defined in {{sth-pollination-dataformat}}. As shown here:
+
+{
+ 'sct_feedback' :
+    [
+      {
+        'x509_chain' : 
+          [ 
+            '----BEGIN CERTIFICATE---\n
+             AAA...',
+            '----BEGIN CERTIFICATE---\n
+             AAA...', 
+             ...
+          ],
+        'sct_data' :
+          [
+            'AAA...', 
+            'AAA...', 
+            ...
+          ]
+      }, ...
+    ],
+  'sths' :
+    [
+      'AAA...', 
+      'AAA...', 
+      ...
+    ]
+}
 
 # 3-Method Ecosystem
 
