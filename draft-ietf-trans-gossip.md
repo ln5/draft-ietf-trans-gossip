@@ -1208,7 +1208,7 @@ actions taken by the user.) This is elaborated upon more in {#pooling-policy-rec
 
 Proof fetching (both inclusion proofs and consistency proofs) should be performed at random time intervals. If proof fetching occured all at once, in a flurry of activity - a log would know that SCTs or STHs recieved around the same time are more likely to come from a particular client. While proof fetching is required to be done in a manner that attempts to be anonymous from the perspective of the log - the correlation of activity to a single client would still reveal patterns of user behavior we wish to keep confidential. These patterns could be recognizable as a single user, or could reveal what sites are commonly visited together in the aggregate.
 
-There is an advantage to performing proof fetching within the STH-issuance time interval for a log. When a client recieves a STH from a log that matches a STH the client already has - the duplicate STH can be discarded. Exploiting this optimization can turn a large number of STHs into a single one.
+There is an advantage to performing proof fetching within the STH-issuance time interval for a log. When a client recieves a STH from a log that matches a STH the client already has - the duplicate STH can be discarded. Exploiting this optimization, by fetching all proofs that are outstanding within a single STH-issuance time, can turn a large number of STHs into a single one. 
 
 \[ TBD: What other recommendations do we want to make here?
         We can talk more about the inadequecies of DNS...
