@@ -1541,8 +1541,8 @@ We suppose a large data structure is used, such as a hashmap, indexed by the dom
       
       //  This function is called after recieving a SCTBundle.
       //  For Clients, this is after a successful connection to a 
-      //  HTTPS Server, calling this function with a SCTBundle constructed
-      //  from that certificate path and SCTs
+      //  HTTPS Server, calling this function with a SCTBundle
+      //  constructed from that certificate path and SCTs
       //  For Servers, this is after receiving SCT Feedback
       def insert(SCTBundle b) {
         if(operator_is_server) {
