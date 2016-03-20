@@ -271,14 +271,14 @@ Each item in the array is a JSON object with the following content:
   representation of the binary SCT data as defined in
   {{RFC-6962-BIS-09}} Section 3.3.
 
-We will refer to this object as 'sct_feedback'.
+We will refer to this object as 'sct\_feedback'.
 
-The 'x509\_chain' element will always contain at least one element, consisting 
+The x509\_chain element will always contain at least one element, consisting 
 of the end-entity certificate to which the SCTs correspond. It may also contain 
 a full chain from the leaf certificate to a trust anchor, depending on different 
 circumstances as described below. 
 
-\[TBD: Be strict about what sct_data may contain or is this sufficiently
+\[TBD: Be strict about what sct\_data may contain or is this sufficiently
 implied by previous sections?\]
 
 ### HTTPS client to server {#feedback-clisrv}
@@ -289,7 +289,7 @@ handshake using one or more of the three mechanisms descrbied in {{RFC-6962-BIS-
 discard SCTs that are not signed by a log known to the client and SHOULD 
 store the remaining SCTs together with a constructed, trusted certificate
 chain (terminated in a pre-loaded or locally installed Trust Anchor) 
-in a sct_feedback object or equivalent data structure) for later 
+in a sct\_feedback object or equivalent data structure) for later 
 use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name 
@@ -308,7 +308,7 @@ information about other HTTPS servers visited by its clients.
 
 If the client later connects to the same HTTPS server again it again receives a 
 set of SCTs and calculates a certificate chain, and again creates a 
-sct_feedback or similar object. If this object does not exactly match 
+sct\_feedback or similar object. If this object does not exactly match 
 an existing object in the store, then the client MUST add this new 
 object to the store, associated with the exact domain name contacted, 
 as described above. An exact comparison is needed to ensure that attacks 
@@ -318,10 +318,10 @@ one optimization is safe and MAY be performed. If the certificate path
 exactly matches an existing certificate path, the client may store the 
 union of the SCTs from the two objects in the first (existing) object.
 
-If the client does connect to the same HTTPS server a subsequent time, it MUST
-send to the server sct_feedback objects in the store that are associated 
-with that domain name. It is not necessary to send a sct_feedback object 
-constructed from the current TLS session.
+If the client does connect to the same HTTPS server a subsequent time,
+it MUST send to the server sct_feedback objects in the store that are
+associated with that domain name. It is not necessary to send a
+sct_feedback object constructed from the current TLS session.
 
 The client MUST NOT send the same set of SCTs to the same server more
 often than TBD.
@@ -420,19 +420,19 @@ attacks on the server's storage space.
 
 In the simple mode of operation, upon recieving a submission at the 
 sct-feedback well-known URL, a HTTPS server will perform a set of 
-operations, checking on each sct_feedback object before storing it:
+operations, checking on each sct\_feedback object before storing it:
 
-  1. the HTTPS server MAY modify the sct_feedback object, and discard 
+  1. the HTTPS server MAY modify the sct\_feedback object, and discard 
   all items in the x509\_chain array except the first item (which is 
   the end-entity certificate)
 
-  1. if a bit-wise compare of the sct_feedback object matches
-  one already in the store, this sct_feedback object SHOULD be discarded
+  1. if a bit-wise compare of the sct\_feedback object matches
+  one already in the store, this sct\_feedback object SHOULD be discarded
 
   1. if the leaf cert is not for a domain for which the server is
   authoritative, the SCT MUST be discarded
 
-  1. if a SCT in the sct_data array can't be verified to be a valid SCT 
+  1. if a SCT in the sct\_data array can't be verified to be a valid SCT 
   for the accompanying leaf cert, and issued by a known log, the individual 
   SCT SHOULD be discarded
 
@@ -466,7 +466,7 @@ preventing the client's feedback from being recorded), or an attack
 where an adversary simply attempts to fill up server's storage space.
 
 The more advanced server configuration will detect the \[TODO double-CA-compromise attack\]
-attack. In this configuration the server will not modify the sct_feedback
+attack. In this configuration the server will not modify the sct\_feedback
 object prior to performing checks 2, 3, and 4. 
 
 To prevent a malicious client from filling the server's data store, the 
@@ -474,7 +474,7 @@ HTTPS Server SHOULD perform an additional check:
 
    5. if the x509\_chain consists of an invalid certificate chain, or the
    culminating trust anchor is not recognized by the server, the server
-   SHOULD modify the sct_feedback object, discarding all items in the 
+   SHOULD modify the sct\_feedback object, discarding all items in the 
    x509\_chain array except the first item
 
 The HTTPS server may choose to omit checks 4 or 5. This will place the 
@@ -500,7 +500,7 @@ passive pull model.
 The data received in a GET of the well-known URL or sent in the POST
 is defined in {{feedback-dataformat}}. 
 
-HTTPS servers SHOULD share all sct_feedback objects they see that 
+HTTPS servers SHOULD share all sct\_feedback objects they see that 
 pass the checks in {{feedback-srvop}}. If this is an infeasible 
 amount of data, the server may choose to expire submissions according 
 to an undefined policy. Suggestions for such a policy can be found 
@@ -752,8 +752,8 @@ Submissions are made by sending a HTTPS POST request, with the body of
 the POST in a JSON object. Upon successful receipt the Trusted Auditor 
 returns 200 OK. 
 
-The JSON object consists of two top-level keys: 'sct_feedback'
-and 'sths'.  The 'sct_feedback' value is an array of JSON objects as 
+The JSON object consists of two top-level keys: 'sct\_feedback'
+and 'sths'.  The 'sct\_feedback' value is an array of JSON objects as 
 defined in {{feedback-dataformat}}. The 'sths' value is an array of STHs
 as defined in {{sth-pollination-dataformat}}.
 
@@ -1517,7 +1517,7 @@ We also suggest a function that can be called periodically in the background, it
 
 ##### STH Deletion Procedure
 
-The STH Deletion Procedure is run after successfully submitting a list of STHs to a third party during pollination. The following pseudocode would be included in the STHStore class, and called with the result of get_pollination_selection(), after the STHs have been (successfully) sent to the third party.
+The STH Deletion Procedure is run after successfully submitting a list of STHs to a third party during pollination. The following pseudocode would be included in the STHStore class, and called with the result of get\_pollination\_selection(), after the STHs have been (successfully) sent to the third party.
 
     //  This function is called after successfully pollinating STHs
     //  to a third party. It is passed the STHs sent to the third 
@@ -1698,7 +1698,7 @@ We suppose a large data structure is used, such as a hashmap, indexed by the dom
       }
     }
 
-We also suggest a function that can be called periodically in the background, iterating through all SCTStore objects in the large hashmap (here called 'all_sct_stores') and removing old data.
+We also suggest a function that can be called periodically in the background, iterating through all SCTStore objects in the large hashmap (here called 'all\_sct\_stores') and removing old data.
 
     def clear_old_data()
     {
@@ -1723,7 +1723,7 @@ We also suggest a function that can be called periodically in the background, it
 
 The SCT Deletion procedure is more complicated than the respective STH procedure. This is because servers may elect not to participate in SCT Feedback, and this must be accounted for by being more conservative in sending SCT reports to them.  
 
-The following pseudocode would be included in the SCTStore class, and called with the result of get_gossip_selection() after the SCT Feedback has been sent (successfully) to the server. We also note that the first experimental algorithm from above is included in the pseudocode as an illustration.
+The following pseudocode would be included in the SCTStore class, and called with the result of get\_gossip\_selection() after the SCT Feedback has been sent (successfully) to the server. We also note that the first experimental algorithm from above is included in the pseudocode as an illustration.
 
     //  This function is called after successfully providing SCT Feedback
     //  to a server. It is passed the feedback sent to the server, which
