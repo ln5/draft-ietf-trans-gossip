@@ -1330,7 +1330,7 @@ The STH class contains data pertaining specifically to the STH itself.
       uint32   proof_attempts
       uint32   proof_failure_count
       uint32   num_reports_to_thirdparty
-      datetime sth_age
+      datetime timestamp
       byte[]   data
     }
 
@@ -1374,7 +1374,7 @@ The broader STH store itself would contain all the STHs known by an entity parti
           while(len(indexes) < MAX_STH_TO_GOSSIP) {
             r = randomInt() % modulus
             if(r not in indexes
-               && now() - this.sth_list[i].age < ONE_WEEK)
+               && now() - this.sth_list[i].timestamp < ONE_WEEK)
               indexes.insert(r)
           }
 
@@ -1393,7 +1393,7 @@ We also suggest a function that can be called periodically in the background, it
     def clean_list() {
       foreach(sth : this.sth_list) {
 
-        if(now() - sth.age > ONE_WEEK) {
+        if(now() - sth.timestamp > ONE_WEEK) {
           //STH is too old, we must remove it
           if(proof_fetching_enabled
              && auditor_of_last_resort_enabled
@@ -1407,8 +1407,8 @@ We also suggest a function that can be called periodically in the background, it
         }
 
         else if(proof_fetching_enabled
-                && now() - sth.age > TWO_DAYS
-                && now() - sth.age > LOG_MMD) {
+                && now() - sth.timestamp > TWO_DAYS
+                && now() - sth.timestamp > LOG_MMD) {
           sth.proof_attempts++
           queue_consistency_proof(sth, consistency_proof_callback)
         }
@@ -1429,7 +1429,7 @@ The STH Deletion Procedure is run after successfully submitting a list of STHs t
         sth.num_reports_to_thirdparty++
 
         if(proof_fetching_enabled) {
-          if(now() - sth.age > LOG_MMD) {
+          if(now() - sth.timestamp > LOG_MMD) {
             sth.proof_attempts++
             queue_consistency_proof(sth, consistency_proof_callback)
           }
