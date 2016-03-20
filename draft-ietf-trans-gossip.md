@@ -317,11 +317,11 @@ creates a sct\_feedback or similar object. If this object does not
 exactly match an existing object in the store, then the client MUST
 add this new object to the store, associated with the exact domain
 name contacted, as described above. An exact comparison is needed to
-ensure that attacks involving alternate paths are detected - an
+ensure that attacks involving alternate chains are detected - an
 example of such an attack is described in
 \[TODO double-CA-compromise attack\]. However, at least one
-optimization is safe and MAY be performed. If the certificate path
-exactly matches an existing certificate path, the client may store the
+optimization is safe and MAY be performed. If the certificate cain
+exactly matches an existing certificate chain, the client may store the
 union of the SCTs from the two objects in the first (existing) object.
 
 If the client does connect to the same HTTPS server a subsequent time,
@@ -395,7 +395,7 @@ be reported via SCT Feedback.
 If a certificate is validated by SCTs that are issued by publicly
 trusted logs, but chains to a local trust anchor, the client MAY
 perfom SCT Feedback for this SCT and certificate chain bundle. If it
-does so, the client MUST include the full path of certificates
+does so, the client MUST include the full chain of certificates
 chaining to the local trust anchor in the x509\_chain array. Perfoming
 SCT Feedback in this scenario may be advantageous for the broader
 Internet and CT ecosystem, but may also disclose information about the
@@ -403,7 +403,7 @@ client. If the client elects to omit SCT Feedback, it can still choose
 to perform STH Pollination after fetching an inclusion proof, as
 specified in {{sth-pollination}}.
 
-We require the client to send the full path (or nothing at all) for
+We require the client to send the full chain (or nothing at all) for
 two reasons. Firstly, it simplifies the operation on the server if
 there are not two code paths. Secondly, omitting the chain does not
 actually preserve user privacy. The Issuer field in the certificate
@@ -419,7 +419,7 @@ HTTPS servers can be configured (or omit configuration), resulting in,
 broadly, two modes of operation. In the simpler mode, the server will
 only track leaf certificates and SCTs applicable to those leaf
 certificates. In the more complex mode, the server will confirm the
-client's path validation and store the certificate path. The latter
+client's chain validation and store the certificate chain. The latter
 mode requires more configuration, but is necessary to prevent denial
 of service (DoS) attacks on the server's storage space.
 
@@ -453,10 +453,10 @@ additional configuration as described below.
 
 The check in step 2 is for detecting duplicates and minimizing
 processing and storage by the server. As on the client, an exact
-comparison is needed to ensure that attacks involving alternate paths
+comparison is needed to ensure that attacks involving alternate chains
 are detected. Again, at least one optimization is safe and MAY be
-performed. If the certificate path exactly matches an existing
-certificate path, the server may store the union of the SCTs from the
+performed. If the certificate chain exactly matches an existing
+certificate chain, the server may store the union of the SCTs from the
 two objects in the first (existing) object. It should do this after
 completing the validity check on the SCTs.
 
@@ -1808,7 +1808,7 @@ domain.
       //  This function is called after recieving a SCTBundle.
       //  For Clients, this is after a successful connection to a
       //  HTTPS Server, calling this function with a SCTBundle
-      //  constructed from that certificate path and SCTs
+      //  constructed from that certificate chain and SCTs
       //  For Servers, this is after receiving SCT Feedback
       def insert(SCTBundle b) {
         if(operator_is_server) {
