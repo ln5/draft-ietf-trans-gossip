@@ -1343,7 +1343,7 @@ The broader STH store itself would contain all the STHs known by an entity parti
       //  This function is run after receiving a set of STHs from
       //  a third party in response to a pollination submission
       def insert(STH[] new_sths) {
-        foreach(new : new_sths) {
+        foreach(new in new_sths) {
           if(this.sth_list.contains(new))
             continue
           this.sth_list.insert(new)
@@ -1391,7 +1391,7 @@ The broader STH store itself would contain all the STHs known by an entity parti
 We also suggest a function that can be called periodically in the background, iterating through the STH store, performing a cleaning operation and queuing consistency proofs. This function can live as a member functions of the STHStore class.
 
     def clean_list() {
-      foreach(sth : this.sth_list) {
+      foreach(sth in this.sth_list) {
 
         if(now() - sth.timestamp > ONE_WEEK) {
           //STH is too old, we must remove it
@@ -1424,7 +1424,7 @@ The STH Deletion Procedure is run after successfully submitting a list of STHs t
     //  party, which is the output of get_gossip_selection()
     def after_submit_to_thirdparty(STH[] sth_list) 
     {
-      foreach(sth : sth_list)
+      foreach(sth in sth_list)
       {
         sth.num_reports_to_thirdparty++
 
@@ -1512,7 +1512,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       }
       
       def has_been_fully_resolved_to_sths() {
-        foreach(s : this.sct_list) {
+        foreach(s in this.sct_list) {
           if(!s.has_been_resolved_to_sth)
             return false
         }
@@ -1521,7 +1521,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       
       def max_proof_failure_count() {
         uint32 max
-        foreach(s : this.sct_list) {
+        foreach(s in this.sct_list) {
           if(s.proof_failure_count > max)
             max = proof_failure_count
         }
@@ -1602,7 +1602,7 @@ We also suggest a function that can be called periodically in the background, it
 
     def clear_old_data()
     {
-      foreach(storeEntry : all_sct_stores)
+      foreach(storeEntry in all_sct_stores)
       {
         if(storeEntry.num_submissions_succeeded == 0
            && storeEntry.num_submissions_attempted
@@ -1630,13 +1630,13 @@ The following pseudocode would be included in the SCTStore class, and called wit
     //  is the output of get_gossip_selection()
     def after_submit_to_thirdparty(SCTBundle[] submittedBundles)
     {
-      foreach(bundle : submittedBundles) 
+      foreach(bundle in submittedBundles) 
       {
         bundle.num_reports_to_thirdparty++
 
         if(proof_fetching_enabled) {
           if(!bundle.has_been_fully_resolved_to_sths()) {
-            foreach(s : bundle.sct_list) {
+            foreach(s in bundle.sct_list) {
               if(!s.has_been_resolved_to_sth) {
                 s.proof_attempts++
                 queue_inclusion_proof(sct, inclusion_proof_calback)
