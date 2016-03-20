@@ -927,7 +927,7 @@ but can in certain modes.
 Defending against the Dual-CA Compromise attack requires SCT Feedback, 
 and explicitly requires the server to save full certificate chains 
 (described in {{feedback-srvop}} as the 'complex' configuration.) After
-Auditors receive the full certificate chains from servers; they must 
+Auditors receive the full certificate chains from servers, they must 
 compare the chain built by clients to the chain supplied by the log.
 If the chains differ significantly, the Auditor can raise a concern.
 
@@ -937,7 +937,7 @@ I *think* the correct algorithm to raise a concern is:
 
 If one chain is not a subset of the other
 AND
-If the root certificates on the chain are different
+If the root certificates of the chains are different
 THEN It's suspicious.
 
 Justification:
@@ -949,7 +949,6 @@ Intermediate swapping (e.g. different signature algorithms) could result in
 (Hitting both those cases at once would cause a false positive though.)
 
 What did I miss?
-
 \]
 
 ## Censorship/Blocking considerations
