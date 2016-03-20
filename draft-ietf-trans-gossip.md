@@ -1581,7 +1581,8 @@ The following pseudocode would be included in the SCTStore class, and called wit
       }
     }
 
-    // This function is a callback invoked after an inclusion proof has been retrieved
+    // This function is a callback invoked after an inclusion proof
+    // has been retrieved
     def inclusion_proof_callback(inclusion_proof, original_sct, error) 
     {
       if(!error) {
