@@ -306,7 +306,7 @@ learn about other sites visited by the HTTPS client. Second, auditors
 and monitors receiving SCTs from the HTTPS server would learn
 information about other HTTPS servers visited by its clients.
 
-When the client later connects to the HTTPS server it again receives a 
+If the client later connects to the same HTTPS server again it again receives a 
 set of SCTs and calculates a certificate chain, and again creates a 
 sct_feedback or similar object. If this object does not exactly match 
 an existing object in the store, then the client MUST add this new 
@@ -318,7 +318,7 @@ one optimization is safe and MAY be performed. If the certificate path
 exactly matches an existing certificate path, the client may store the 
 union of the SCTs from the two objects in the first (existing) object.
 
-After connecting to the HTTPS server the subsequent time, the client MUST
+If the client does connect to the same HTTPS server a subsequent time, it MUST
 send to the server sct_feedback objects in the store that are associated 
 with that domain name. It is not necessary to send a sct_feedback object 
 constructed from the current TLS session.
