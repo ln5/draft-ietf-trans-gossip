@@ -1419,7 +1419,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       
       def insert_scts(sct[] sct_list) {
         this.sct_list.union(sct_list)
-        num_reports_to_thirdparty = 0
+        this.num_reports_to_thirdparty = 0
       }
       
       def has_been_fully_resolved_to_sths() {
@@ -1431,7 +1431,7 @@ The SCT bundle will contain the trusted certificate chain the HTTPS client built
       }
       
       def max_proof_failure_count() {
-        uint32 max
+        uint32 max = 0
         foreach(s in this.sct_list) {
           if(s.proof_failure_count > max)
             max = proof_failure_count
