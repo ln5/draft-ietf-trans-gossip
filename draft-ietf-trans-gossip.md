@@ -275,11 +275,9 @@ Each item in the array is a JSON object with the following content:
 
 We will refer to this object as 'sct\_feedback'.
 
-The x509\_chain element will always contain at least one element,
-consisting of the end-entity certificate to which the SCTs
-correspond. It may also contain a full chain from the leaf certificate
-to a trust anchor, depending on different circumstances as described
-below.
+The x509\_chain element always contains at least one element. It also
+always contains a full chain from a leaf certificate to a self-signed
+trust anchor.
 
 \[TBD: Be strict about what sct\_data may contain or is this sufficiently
 implied by previous sections?\]
