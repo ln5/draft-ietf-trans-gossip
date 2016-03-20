@@ -1216,7 +1216,7 @@ More complex algorithms could be inserted at any step. Three examples are illust
 
 SCTs are not eligible to be submitted to an Auditor of Last Resort - therefore, it is more important that they be resolved to STHs and reported via SCT feedback. If fetching an inclusion proof regularly fails for a particular SCT, one can require it be reported more times than normal via SCT Feedback before becoming eligible for deletion.
 
-Before an item is made eligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item ellgible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back providing the client with it's observed public IP address). The HTTPS client could also require reporting over a timespan - e.g. it must be reported at least N time, M weeks apart. This strategy could be employed always, or only when the client has disabled proof fetching and the auditor of last resort - as those two mechanisms (when used together) will enable a client to report most attacks. 
+Before an item is made eligible for deletion by a client, the client could aim to make it difficult for a point-in-time attacker to flush the pool by not making an item eligible for deletion until the client has moved networks (as seen by either the local IP address, or a report-back providing the client with its observed public IP address). The HTTPS client could also require reporting over a timespan - e.g. it must be reported at least N time, M weeks apart. This strategy could be employed always, or only when the client has disabled proof fetching and the auditor of last resort - as those two mechanisms (when used together) will enable a client to report most attacks. 
 
 #### Concrete Recommendations
 
@@ -1550,7 +1550,7 @@ The following pseudocode would be included in the SCTStore class, and called wit
             foreach(s in bundle.sct_list) {
               if(!s.has_been_resolved_to_sth) {
                 s.proof_attempts++
-                queue_inclusion_proof(sct, inclusion_proof_calback)
+                queue_inclusion_proof(sct, inclusion_proof_callback)
               }
             }
           }
@@ -1581,11 +1581,11 @@ The following pseudocode would be included in the SCTStore class, and called wit
       }
     }
 
-    //  This function a callback after an inclusion proof has been retrieved
-    def inclusion_proof_calback(inclusion_proof, original_sct, error) 
+    // This function is a callback invoked after an inclusion proof has been retrieved
+    def inclusion_proof_callback(inclusion_proof, original_sct, error) 
     {
       if(!error) {
-        original_Sct.has_been_resolved_to_sth = True
+        original_sct.has_been_resolved_to_sth = True
         insert_to_sth_datastore(inclusion_proof.new_sth)  
       } else {
         original_sct.proof_failure_count++
