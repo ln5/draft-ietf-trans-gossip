@@ -706,44 +706,46 @@ interface. An informal writeup of such a protocol can be found at XXX.
 
 Trusted Auditors expose a REST API at the fixed URI:
 
-  https://<auditor>/ct/v1/trusted-auditor
+    https://<auditor>/ct/v1/trusted-auditor
 
-Submissions are made by sending a HTTP POST request, with the body of
-the POST a JSON object. Upon successful receipt the Trusted Auditor 
-returns a 200 OK. 
+Submissions are made by sending a HTTPS POST request, with the body of
+the POST in a JSON object. Upon successful receipt the Trusted Auditor 
+returns 200 OK. 
 
 The JSON object consists of two top-level keys: 'sct_feedback'
-and 'sths'.  The 'sct-feedback' value is an array of JSON Objects as 
+and 'sths'.  The 'sct_feedback' value is an array of JSON objects as 
 defined in {{feedback-dataformat}}. The 'sths' value is an array of STHs
-as defined in {{sth-pollination-dataformat}}. As shown here:
+as defined in {{sth-pollination-dataformat}}.
 
-{
- 'sct_feedback' :
-    [
-      {
-        'x509_chain' : 
-          [ 
-            '----BEGIN CERTIFICATE---\n
-             AAA...',
-            '----BEGIN CERTIFICATE---\n
-             AAA...', 
-             ...
-          ],
-        'sct_data' :
-          [
-            'AAA...', 
-            'AAA...', 
-            ...
-          ]
-      }, ...
-    ],
-  'sths' :
-    [
-      'AAA...', 
-      'AAA...', 
-      ...
-    ]
-}
+Example:
+
+    {
+      'sct_feedback' :
+        [
+          {
+            'x509_chain' : 
+              [ 
+                '----BEGIN CERTIFICATE---\n
+                 AAA...',
+                '----BEGIN CERTIFICATE---\n
+                 AAA...', 
+                 ...
+              ],
+            'sct_data' :
+              [
+                'AAA...', 
+                'AAA...', 
+                ...
+              ]
+          }, ...
+        ],
+      'sths' :
+        [
+          'AAA...', 
+          'AAA...', 
+          ...
+        ]
+    }
 
 # 3-Method Ecosystem
 
