@@ -374,7 +374,7 @@ policy.
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
 
-    https://<domain>/.well-known/ct/v1/sct-feedback
+    https://<domain>/.well-known/ct-gossip/v1/sct-feedback
 
 The data sent in the POST is defined in {{feedback-dataformat}}. This
 data SHOULD be sent in an already established TLS session. This makes
@@ -507,7 +507,7 @@ HTTPS servers receiving SCTs from clients SHOULD share SCTs and
 certificate chains with CT auditors by either serving them on the
 well-known URL:
 
-    https://<domain>/.well-known/ct/v1/collected-sct-feedback
+    https://<domain>/.well-known/ct-gossip/v1/collected-sct-feedback
 
 or by HTTPS POSTing them to a set of preconfigured auditors. This
 allows an HTTPS server to choose between an active push model or a
@@ -538,7 +538,7 @@ consist of only a single element, which is the end-entity certificate.
 Auditors SHOULD provide the following URL accepting HTTPS POSTing of
 SCT feedback data:
 
-    https://<auditor>/ct/v1/sct-feedback
+    https://<auditor>/ct-gossip/v1/sct-feedback
 
 \[ TBD: Should that be .well-known? \]
 
@@ -570,7 +570,7 @@ their auditing and monitoring duties by retrieving STHs from pools.
 HTPS clients send STHs to HTTPS servers by POSTing them to the
 well-known URL:
 
-    https://<domain>/.well-known/ct/v1/sth-pollination
+    https://<domain>/.well-known/ct-gossip/v1/sth-pollination
 
 The data sent in the POST is defined in
 {{sth-pollination-dataformat}}. This data SHOULD be sent in an
@@ -765,7 +765,7 @@ interface. An informal writeup of such a protocol can be found at XXX.
 
 Trusted Auditors expose a REST API at the fixed URI:
 
-    https://<auditor>/ct/v1/trusted-auditor
+    https://<auditor>/ct-gossip/v1/trusted-auditor
 
 Submissions are made by sending a HTTPS POST request, with the body of
 the POST in a JSON object. Upon successful receipt the Trusted Auditor
