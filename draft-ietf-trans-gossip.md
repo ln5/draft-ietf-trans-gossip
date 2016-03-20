@@ -413,14 +413,6 @@ SCTs. This means that the Issuer can be queried and obtained from the
 log - so omitting from the client's submission does not actually help
 user privacy.
 
-If the HTTPS client has configuration options for not sending cookies
-to third parties, SCTs of third parties MUST be treated as cookies
-with respect to this setting. This prevents third party tracking
-through the use of SCTs/certificates, which would bypass the cookie
-policy.
-
-\[ TBD: We're thinking about reversing this decision \]
-
 ### HTTPS server operation {#feedback-srvop}
 
 HTTPS servers can be configured (or omit configuration), resulting in,
