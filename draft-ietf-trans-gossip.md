@@ -1545,11 +1545,11 @@ We suppose a large data structure is used, such as a hashmap, indexed by the dom
       //  from that certificate path and SCTs
       //  For Servers, this is after receiving SCT Feedback
       def insert(SCTBundle b) {
+        if(operator_is_server) {
+          if(!passes_validity_checks(b))
+            return
+        }
         foreach(e in this.observed_records) {
-          if(operator_is_server) {
-            if(!passes_validity_checks(bundle))
-              return
-          }
           if(e.equals(b))
             return
           else if(e.approx_equals(b)) {
