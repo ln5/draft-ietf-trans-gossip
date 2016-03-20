@@ -311,7 +311,7 @@ learn about other sites visited by the HTTPS client. Second, auditors
 and monitors receiving SCTs from the HTTPS server would learn
 information about other HTTPS servers visited by its clients.
 
-If the client later connects to the same HTTPS server again it again
+If the client later again connects to the same HTTPS server, it again
 receives a set of SCTs and calculates a certificate chain, and again
 creates a sct\_feedback or similar object. If this object does not
 exactly match an existing object in the store, then the client MUST
