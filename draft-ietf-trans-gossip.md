@@ -346,7 +346,7 @@ Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
 received from (and provided to) domains that are loaded as subresources
 from an origin domain. Such domains are commonly called 'third
-party domains'. A HTTPS Client SHOULD store SCT Feedback using a
+party domains'. An HTTPS Client SHOULD store SCT Feedback using a
 'double-keying' approach, which isolates third party domains by the
 first party domain. This is described in XXX. Gossip would be
 performed normally for third party domains only when the user revisits
