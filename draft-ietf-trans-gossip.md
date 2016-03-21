@@ -396,7 +396,7 @@ perfom SCT Feedback for this SCT and certificate chain bundle. If it
 does so, the client MUST include the full chain of certificates
 chaining to the local trust anchor in the x509\_chain array. Perfoming
 SCT Feedback in this scenario may be advantageous for the broader
-Internet and CT ecosystem, but may also disclose information about the
+internet and CT ecosystem, but may also disclose information about the
 client. If the client elects to omit SCT Feedback, it can still choose
 to perform STH Pollination after fetching an inclusion proof, as
 specified in {{sth-pollination}}.
