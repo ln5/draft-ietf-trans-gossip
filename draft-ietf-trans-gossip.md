@@ -597,7 +597,7 @@ An HTTPS client may acquire STHs by several methods:
 HTTPS clients (that have STHs) and CT auditors SHOULD pollinate STH
 pools with STHs. Which STHs to send and how often pollination should
 happen is regarded as undefined policy with the exception of privacy
-concerns explained in the next section. Suggestions for the policy may
+concerns explained below. Suggestions for the policy may
 be found in {{pooling-policy-recommendations}}.
 
 An HTTPS client could be tracked by giving it a unique or rare STH.
