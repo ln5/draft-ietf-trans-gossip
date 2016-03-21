@@ -567,9 +567,9 @@ auditors with STHs from many vantage points, making it possible to
 detect logs that are presenting inconsistent views.
 
 HTTPS servers supporting the protocol act as STH pools. HTTPS clients
-and CT auditors in the possession of STHs should pollinate STH pools
+and CT auditors in the possession of STHs can pollinate STH pools
 by sending STHs to them, and retrieving new STHs to send to other STH
-pools. CT auditors should perform their auditing duties by retrieving
+pools. CT auditors can improve the value of their auditing by retrieving
 STHs from pools.
 
 HTPS clients send STHs to HTTPS servers by POSTing them to the
