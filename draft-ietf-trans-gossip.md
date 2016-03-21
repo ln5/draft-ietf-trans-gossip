@@ -671,7 +671,7 @@ general user behavior depending on how proofs are fetched. For
 example, if a client fetched all outstanding proofs at once, a log
 would know that SCTs or STHs recieved around the same time are more
 likely to come from a particular client. This could potentially go so
-far as to correlate of activity at different times to a single
+far as correlation of activity at different times to a single
 client. In aggregate the data could reveal what sites are commonly
 visited together. HTTPS clients SHOULD use a strategy of proof
 fetching that attempts to obfuscate these patterns. A suggestion of
