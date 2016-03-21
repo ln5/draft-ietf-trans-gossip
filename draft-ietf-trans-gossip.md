@@ -257,11 +257,6 @@ SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
 they've visisted to any third party.
 
-\[Here's an alternative to that paragraph:
-SCT Feedback is the most privacy-preserving gossip mechanism, as it
-does not create any potential cross-origin tracking mechanisms.
-\]
-
 HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
 well-known URL (associated with that server), as described in
@@ -348,17 +343,10 @@ sct\_feedback object constructed from the current TLS session.
 The client MUST NOT send the same set of SCTs to the same server more
 often than TBD.
 
-\[benl says: "sent to the server" only really counts if the server
-presented a valid SCT in the handshake and the certificate is known to
-be unrevoked (which will be hard for a MitM to sustain)\]
-
-\[TODO: expand on rate/resource limiting motivation\]
+\[ TODO: expand on rate/resource limiting motivation \]
 
 Refer to {{pooling-policy-recommendations}} for recommendations about
 strategies.
-
-\[ TODO: The above sentences that talk about the algorithm will be
-updated with the pooling recommendation section \]
 
 Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
