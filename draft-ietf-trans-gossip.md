@@ -42,6 +42,15 @@ normative:
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
   RFC7159:
 
+informative:
+  draft-ietf-trans-threat-analysis-03:
+    title: "Attack Model and Threat for Certificate Transparency"
+    author:
+      -
+        ins: S. Kent
+    date: 2015-10-06
+    target: https://datatracker.ietf.org/doc/draft-ietf-trans-threat-analysis/
+
 --- abstract
 
 The logs in Certificate Transparency are untrusted in the sense that
@@ -147,6 +156,9 @@ issuance frequency (see {{sth-pollination}}).
 This document relies on terminology and data structures defined in
 {{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT
 timestamp, CtExtensions, SCT signature, Merkle Tree Hash.
+
+This document relies on terminology defined in
+{{draft-ietf-trans-threat-analysis-03}}, including Auditing.
 
 ## Pre-Loaded vs Locally Added Anchors
 
