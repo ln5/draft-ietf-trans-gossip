@@ -1993,6 +1993,7 @@ Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
   on servers.
 - Pre-Loaded vs Locally Added Anchors explained.
 - Base for well-known URL's changed.
+- Remove all mentions of monitors -- gossip deals with adutitors.
 - New sections added: Trusted Auditor protocol, attacks by actively
   malicious log, the Dual-CA compromise attack, policy
   recommendations,
