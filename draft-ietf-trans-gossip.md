@@ -213,7 +213,7 @@ There are three separate gossip streams:
   trusted CT auditors/monitors sharing SCTs, certificate chains and
   STHs.
 
-It is worthwhile to note that when a HTTPS Client, auditor, or monitor
+It is worthwhile to note that when an HTTPS Client, auditor, or monitor
 interacts with a log, they may equivalently interact with a log mirror
 or cache that replicates the log.
 
@@ -292,7 +292,7 @@ extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
 remaining SCTs together with a locally constructed certificate chain
 which is trusted (i.e. terminated in a pre-loaded or locally installed
-Trust Anchor) in a sct\_feedback object or equivalent data structure
+Trust Anchor) in an sct\_feedback object or equivalent data structure
 for later use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name
@@ -311,7 +311,7 @@ information about other HTTPS servers visited by its clients.
 
 If the client later again connects to the same HTTPS server, it again
 receives a set of SCTs and calculates a certificate chain, and again
-creates a sct\_feedback or similar object. If this object does not
+creates an sct\_feedback or similar object. If this object does not
 exactly match an existing object in the store, then the client MUST
 add this new object to the store, associated with the exact domain
 name contacted, as described above. An exact comparison is needed to
@@ -350,7 +350,7 @@ party domains'. A HTTPS Client SHOULD store SCT Feedback using a
 'double-keying' approach, which isolates third party domains by the
 first party domain. This is described in XXX. Gossip would be
 performed normally for third party domains only when the user revisits
-the first party domain. In lieu of 'double-keying', a HTTPS Client MAY
+the first party domain. In lieu of 'double-keying', an HTTPS Client MAY
 treat SCT Feedback in the same manner it treats other security
 mechanisms that can enable tracking (such as HSTS and HPKP.)
 
@@ -422,7 +422,7 @@ mode requires more configuration, but is necessary to prevent denial
 of service (DoS) attacks on the server's storage space.
 
 In the simple mode of operation, upon recieving a submission at the
-sct-feedback well-known URL, a HTTPS server will perform a set of
+sct-feedback well-known URL, an HTTPS server will perform a set of
 operations, checking on each sct\_feedback object before storing it:
 
   1. the HTTPS server MAY modify the sct\_feedback object, and discard
@@ -435,7 +435,7 @@ operations, checking on each sct\_feedback object before storing it:
   1. if the leaf cert is not for a domain for which the server is
   authoritative, the SCT MUST be discarded
 
-  1. if a SCT in the sct\_data array can't be verified to be a valid
+  1. if an SCT in the sct\_data array can't be verified to be a valid
   SCT for the accompanying leaf cert, and issued by a known log, the
   individual SCT SHOULD be discarded
 
@@ -487,7 +487,7 @@ The HTTPS server may choose to omit checks 4 or 5. This will place the
 server at risk of having its data store filled up by invalid data, but
 can also allow a server to identify interesting certificate or
 certificate chains that omit valid SCTs, or do not chain to a trusted
-root. This information may enable a HTTPS server operator to detect
+root. This information may enable an HTTPS server operator to detect
 attacks or unusual behavior of Certificate Authorities even outside
 the Certificate Transparency ecosystem.
 
@@ -689,7 +689,7 @@ detecting and responding to a compromise.
 An HTTPS client MAY participate in STH Pollination without fetching
 proofs. In this situation, the client receives STHs from a server,
 applies the same validation logic to them (signed by a known log,
-within the validity window) and will later pass them to a HTTPS
+within the validity window) and will later pass them to an HTTPS
 server.
 
 When operating in this fashion, the HTTPS client is promoting gossip
@@ -758,7 +758,7 @@ Trusted Auditors expose a REST API at the fixed URI:
 
     https://<auditor>/ct-gossip/v1/trusted-auditor
 
-Submissions are made by sending a HTTPS POST request, with the body of
+Submissions are made by sending an HTTPS POST request, with the body of
 the POST in a JSON object. Upon successful receipt the Trusted Auditor
 returns 200 OK.
 
@@ -1371,9 +1371,9 @@ in this draft are:
   of time
 
 Each of these instances have specific requirements for user privacy,
-and each have options that may not be invoked. As one example, a HTTPS
+and each have options that may not be invoked. As one example, an HTTPS
 client should not mix SCTs from server A with SCTs from server B and
-release server B's SCTs to Server A. As another example, a HTTPS
+release server B's SCTs to Server A. As another example, an HTTPS
 server may choose to resolve STHs to a single more current STH via
 proof fetching, but it is under no obligation to do so.
 
@@ -1406,7 +1406,7 @@ Although most important for servers, random ordering is still strongly
 recommended for clients and Trusted Auditors. The above attack can
 still occur for these entities, although the circumstances are less
 straightforward. For clients, an attacker could observe their
-behavior, note when they recieve a STH from a server, and use
+behavior, note when they recieve an STH from a server, and use
 javascript to cause a network connection at the correct time to force
 a client to disclose the specific STH. Trusted Auditors are stewards
 of sensitive client data. If an attacker had the ability to observe
@@ -1479,14 +1479,14 @@ While deletion of SCTs and STHs will occur, proof fetching can ensure
 that any misbehavior from a log will still be detected, even after the
 direct evidence from the attack is deleted. Proof fetching ensures
 that if a log presents a split view for a client, they must maintain
-that split view in perpetuity. An inclusion proof from a SCT to a STH
+that split view in perpetuity. An inclusion proof from an SCT to an STH
 does not erase the evidence - the new STH is evidence itself. A
 consistency proof from that STH to a new one likewise - the new STH is
 every bit as incriminating as the first. (Client behavior in the
-situation where a SCT or STH cannot be resolved is suggested in
+situation where an SCT or STH cannot be resolved is suggested in
 {{blocking-policy-response}}.) Because of this property, we recommend
 that if a client is performing proof fetching, that they make every
-effort to not delete a SCT or STH until it has been successfully
+effort to not delete an SCT or STH until it has been successfully
 resolved to a new STH via a proof.
 
 When it is time to delete a record, it is important that the decision
@@ -1539,11 +1539,11 @@ most attacks.
 
 The recommendations for behavior are:
 - If proof fetching is enabled, do not delete an SCT until it has had
-  a proof resolving it to a STH.
-- If proof fetching continually fails for a SCT, do not make the item
+  a proof resolving it to an STH.
+- If proof fetching continually fails for an SCT, do not make the item
   eligible for deletion of the SCT until it has been released,
   multiple times, via SCT Feedback
-- If proof fetching continually fails for a STH, do not make the item
+- If proof fetching continually fails for an STH, do not make the item
   eligible for deletion until it has been queued for release to an
   auditor of last resort
 - Do not dequeue entries to an auditor of last resort if reporting
@@ -1804,9 +1804,9 @@ domain.
       uint32   num_submissions_succeeded
       SCTBundle[] observed_records
 
-      //  This function is called after recieving a SCTBundle.
+      //  This function is called after recieving an SCTBundle.
       //  For Clients, this is after a successful connection to a
-      //  HTTPS Server, calling this function with a SCTBundle
+      //  HTTPS Server, calling this function with an SCTBundle
       //  constructed from that certificate chain and SCTs
       //  For Servers, this is after receiving SCT Feedback
       def insert(SCTBundle b) {
