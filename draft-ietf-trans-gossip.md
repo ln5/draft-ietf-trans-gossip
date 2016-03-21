@@ -318,7 +318,7 @@ name contacted, as described above. An exact comparison is needed to
 ensure that attacks involving alternate chains are detected - an
 example of such an attack is described in
 \[TODO double-CA-compromise attack\]. However, at least one
-optimization is safe and MAY be performed. If the certificate cain
+optimization is safe and MAY be performed: If the certificate chain
 exactly matches an existing certificate chain, the client may store the
 union of the SCTs from the two objects in the first (existing) object.
 
