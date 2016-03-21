@@ -137,10 +137,10 @@ time period stipulated by the MMD metadata.
 
 Sharing an STH is considered reasonably safe from a privacy
 perspective as long as the same STH is shared by a large number of
-other log clients. This safety in numbers can be achieved by
-only allowing gossiping of STHs issued in a certain window of time, while also
-refusing to gossip about STHs from logs with too high an STH issuance
-frequency (see {{sth-pollination}}).
+other log clients. This safety in numbers can be achieved by only
+allowing gossiping of STHs issued in a certain window of time, while
+also refusing to gossip about STHs from logs with too high an STH
+issuance frequency (see {{sth-pollination}}).
 
 # Terminology and data flow
 
