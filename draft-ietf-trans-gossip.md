@@ -142,11 +142,50 @@ allowing gossiping of STHs issued in a certain window of time, while
 also refusing to gossip about STHs from logs with too high an STH
 issuance frequency (see {{sth-pollination}}).
 
-# Terminology and data flow
+# Terminology
 
 This document relies on terminology and data structures defined in
 {{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT
 timestamp, CtExtensions, SCT signature, Merkle Tree Hash.
+
+## Pre-Loaded vs Locally Added Anchors
+
+Through the document, we refer to both Trust Anchors (Certificate
+Authorities) and Logs. Both Logs and Trust Anchors may be locally
+added by an administrator. Unless otherwise clarified, in both cases
+we refer to the set of Trust Anchors and Logs that come pre-loaded and
+pre-trusted in a piece of client software.
+
+# Who gossips with whom {#who}
+
+- HTTPS clients and servers (SCT Feedback and STH Pollination)
+- HTTPS servers and CT auditors (SCT Feedback and STH Pollination)
+- CT auditors and monitors (Trusted Auditor Relationship)
+
+Additionally, some HTTPS clients may engage with an auditor who they
+trust with their privacy:
+
+- HTTPS clients and CT auditors (Trusted Auditor Relationship)
+
+# What to gossip about and how {#whathow}
+
+There are three separate gossip streams:
+
+- SCT Feedback -- transporting SCTs and certificate chains from HTTPS
+  clients to CT auditors/monitors via HTTPS servers.
+
+- STH Pollination -- HTTPS clients and CT auditors/monitors using
+  HTTPS servers as STH pools for exchanging STHs.
+
+- Trusted Auditor Stream -- HTTPS clients communicating directly with
+  trusted CT auditors/monitors sharing SCTs, certificate chains and
+  STHs.
+
+It is worthwhile to note that when an HTTPS Client, auditor, or monitor
+interacts with a log, they may equivalently interact with a log mirror
+or cache that replicates the log.
+
+# Data flow
 
 The following picture shows how certificates, SCTs and STHs flow
 through a CT system with SCT Feedback and STH Pollination. It does not
@@ -187,43 +226,6 @@ Log entries   /                   |     |
     |<-- consistency proof ----------|
 [4] SCT, cert and STH among multiple Auditors and Monitors
 ~~~~
-
-# Who gossips with whom {#who}
-
-- HTTPS clients and servers (SCT Feedback and STH Pollination)
-- HTTPS servers and CT auditors (SCT Feedback and STH Pollination)
-- CT auditors and monitors (Trusted Auditor Relationship)
-
-Additionally, some HTTPS clients may engage with an auditor who they
-trust with their privacy:
-
-- HTTPS clients and CT auditors (Trusted Auditor Relationship)
-
-# What to gossip about and how {#whathow}
-
-There are three separate gossip streams:
-
-- SCT Feedback -- transporting SCTs and certificate chains from HTTPS
-  clients to CT auditors/monitors via HTTPS servers.
-
-- STH Pollination -- HTTPS clients and CT auditors/monitors using
-  HTTPS servers as STH pools for exchanging STHs.
-
-- Trusted Auditor Stream -- HTTPS clients communicating directly with
-  trusted CT auditors/monitors sharing SCTs, certificate chains and
-  STHs.
-
-It is worthwhile to note that when an HTTPS Client, auditor, or monitor
-interacts with a log, they may equivalently interact with a log mirror
-or cache that replicates the log.
-
-# Pre-Loaded vs Locally Added Anchors
-
-Through the document, we refer to both Trust Anchors (Certificate
-Authorities) and Logs. Both Logs and Trust Anchors may be locally
-added by an administrator. Unless otherwise clarified, in both cases
-we refer to the set of Trust Anchors and Logs that come pre-loaded and
-pre-trusted in a piece of client software.
 
 # Gossip Mechanisms
 
