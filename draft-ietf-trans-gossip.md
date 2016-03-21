@@ -617,6 +617,13 @@ STHs older than 14 days. We consider STHs within this validity window
 not to be personally identifiable data, and STHs outside this window
 to be personally identifiable.
 
+When multiplied by the number of logs from which a client accepts
+STHs, this number of unique STHs grow and the negative privacy
+implications grow with it. It's important that this is taken into
+account when logs are chosen for default settings in HTTPS
+clients. This concern is discussed upon in
+{{privacy-sth-interaction}}.
+
 A log may cease operation, in which case there will soon be no STH
 within the validity window. Clients SHOULD perform all three methods
 of gossip about a log that has ceased operation since it is possible the
@@ -630,13 +637,6 @@ and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
 cannot be resolved to the final STH, clients should follow the
 requirements and recommendations set forth in
 {{blocking-policy-response}}.
-
-When multiplied by the number of logs from which a client accepts
-STHs, this number of unique STHs grow and the negative privacy
-implications grow with it. It's important that this is taken into
-account when logs are chosen for default settings in HTTPS
-clients. This concern is discussed upon in
-{{privacy-sth-interaction}}.
 
 ### HTTPS Clients and Proof Fetching {#clients-proof-fetching}
 
