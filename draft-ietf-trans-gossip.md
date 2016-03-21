@@ -594,7 +594,7 @@ An HTTPS client may acquire STHs by several methods:
 - resolving an SCT and certificate to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
-HTTPS clients (who have STHs) and CT auditors SHOULD pollinate STH
+HTTPS clients (that have STHs) and CT auditors SHOULD pollinate STH
 pools with STHs. Which STHs to send and how often pollination should
 happen is regarded as undefined policy with the exception of privacy
 concerns explained in the next section. Suggestions for the policy may
