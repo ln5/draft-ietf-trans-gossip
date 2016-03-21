@@ -248,7 +248,10 @@ chains with CT auditors while still preserving the privacy of the end
 user. The sharing of SCTs contribute to the overall goal of detecting
 misbehaving logs by providing auditors with SCTs from many vantage
 points, making it more likely to catch a violation of a log's MMD or a
-log presenting inconsistent views.
+log presenting inconsistent views. The sharing of certificate chains
+is beneficial to HTTPS server operators interested in direct feedback
+from clients for detecting bogus certificates issued in their name and
+therefore incentivises server operators to take part in SCT Feedback.
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
