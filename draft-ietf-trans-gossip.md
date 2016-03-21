@@ -87,9 +87,9 @@ to verify the append-only nature of the log but, in the extreme case,
 each client might see a unique view of the log.
 
 The CT logs are public, append-only and untrusted and thus have to be
-monitored for consistency, i.e., they should never rewrite history.
-Additionally, monitors and other log clients need to exchange
-information about monitored logs in order to be able to detect a
+audited for consistency, i.e., they should never rewrite history.
+Additionally, auditors and other log clients need to exchange
+information about logs in order to be able to detect a
 partitioning attack (as described above).
 
 Gossiping about log behaviour helps address the problem of
@@ -118,10 +118,10 @@ HTTPS servers, who in turn share them with CT auditors.
 In STH Pollination, HTTPS clients use HTTPS servers as pools to share
 Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with
 other connecting clients in the hope that STHs will find their way to
-auditors and monitors.
+CT auditors.
 
 HTTPS clients in a Trusted Auditor Relationship share SCTs and STHs
-with trusted auditors or monitors directly, with expectations of
+with trusted CT auditors directly, with expectations of
 privacy sensitive data being handled according to whatever privacy
 policy is agreed on between client and trusted party.
 
@@ -160,7 +160,7 @@ pre-trusted in a piece of client software.
 
 - HTTPS clients and servers (SCT Feedback and STH Pollination)
 - HTTPS servers and CT auditors (SCT Feedback and STH Pollination)
-- CT auditors and monitors (Trusted Auditor Relationship)
+- CT auditors (Trusted Auditor Relationship)
 
 Additionally, some HTTPS clients may engage with an auditor who they
 trust with their privacy:
@@ -172,17 +172,17 @@ trust with their privacy:
 There are three separate gossip streams:
 
 - SCT Feedback -- transporting SCTs and certificate chains from HTTPS
-  clients to CT auditors/monitors via HTTPS servers.
+  clients to CT auditors via HTTPS servers.
 
-- STH Pollination -- HTTPS clients and CT auditors/monitors using
+- STH Pollination -- HTTPS clients and CT auditors using
   HTTPS servers as STH pools for exchanging STHs.
 
 - Trusted Auditor Stream -- HTTPS clients communicating directly with
-  trusted CT auditors/monitors sharing SCTs, certificate chains and
+  trusted CT auditors sharing SCTs, certificate chains and
   STHs.
 
-It is worthwhile to note that when an HTTPS Client, auditor, or monitor
-interacts with a log, they may equivalently interact with a log mirror
+It is worthwhile to note that when an HTTPS Client or CT auditor
+interact with a log, they may equivalently interact with a log mirror
 or cache that replicates the log.
 
 # Data flow
@@ -207,11 +207,11 @@ show what goes in the Trusted Auditor Relationship stream.
   |  |          +----------+      |     |
   |  +--------> | Auditor  |      |  HTTPS traffic
   |             +----------+      |     |
-  |             /                 |    SCT
-  |            /            SCT & Certs |
-Log entries   /                   |     |
-  |          /                   STH   STH
-  v         /[4]                  |     |
+ STH                              |    SCT
+  |                         SCT & Certs |
+Log entries                       |     |
+  |                              STH   STH
+  v                               |     |
 +----------+                      |     v
 | Monitor  |                    +----------+
 +----------+                    | Browser  |
@@ -224,7 +224,6 @@ Log entries   /                   |     |
     |<-- index + inclusion proof --->|
 [3] |--- tree size 1 + tree size 2 ->|
     |<-- consistency proof ----------|
-[4] SCT, cert and STH among multiple Auditors and Monitors
 ~~~~
 
 # Gossip Mechanisms
@@ -232,9 +231,9 @@ Log entries   /                   |     |
 ## SCT Feedback
 
 The goal of SCT Feedback is for clients to share SCTs and certificate
-chains with CT auditors and monitors while still preserving the
+chains with CT auditors while still preserving the
 privacy of the end user. The sharing of SCTs contribute to the overall
-goal of detecting misbehaving logs by providing auditors and monitors
+goal of detecting misbehaving logs by providing auditors
 with SCTs from many vantage points, making it more likely to catch a
 violation of a log's MMD or a log presenting inconsistent views.
 
@@ -264,7 +263,7 @@ via a well-known URL. This is described in {{feedback-srvaud}}.
 ### SCT Feedback data format {#feedback-dataformat}
 
 The data shared between HTTPS clients and servers, as well as between
-HTTPS servers and CT auditors/monitors, is a JSON array {{RFC7159}}.
+HTTPS servers and CT auditors, is a JSON array {{RFC7159}}.
 Each item in the array is a JSON object with the following content:
 
 - x509_chain: An array of base64-encoded X.509 certificates. The
@@ -308,7 +307,7 @@ domain names, the same SCT is expected to be stored multiple times.
 Not following these constraints would increase the risk for two types
 of privacy breaches. First, the HTTPS server receiving the SCT would
 learn about other sites visited by the HTTPS client. Second, auditors
-and monitors receiving SCTs from the HTTPS server would learn
+receiving SCTs from the HTTPS server would learn
 information about other HTTPS servers visited by its clients.
 
 If the client later again connects to the same HTTPS server, it again
@@ -547,18 +546,18 @@ the activity of the client.
 ## STH pollination {#sth-pollination}
 
 The goal of sharing Signed Tree Heads (STHs) through pollination is to
-share STHs between HTTPS clients, CT auditors, and monitors while
+share STHs between HTTPS clients and CT auditors while
 still preserving the privacy of the end user. The sharing of STHs
 contribute to the overall goal of detecting misbehaving logs by
-providing CT auditors and monitors with STHs from many vantage points,
+providing CT auditors with STHs from many vantage points,
 making it possible to detect logs that are presenting inconsistent
 views.
 
 HTTPS servers supporting the protocol act as STH pools. HTTPS clients
-and \[CT auditors and monitors\] in the possession of STHs should
+and CT auditors in the possession of STHs should
 pollinate STH pools by sending STHs to them, and retrieving new STHs
-to send to other STH pools. CT auditors and monitors should perform
-their auditing and monitoring duties by retrieving STHs from pools.
+to send to other STH pools. CT auditors should perform
+their auditing duties by retrieving STHs from pools.
 
 HTPS clients send STHs to HTTPS servers by POSTing them to the
 well-known URL:
@@ -582,7 +581,7 @@ An HTTPS client may acquire STHs by several methods:
 - resolving an SCT and certificate to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
 
-HTTPS clients (who have STHs), CT auditors, and monitors SHOULD
+HTTPS clients (who have STHs) and CT auditors SHOULD
 pollinate STH pools with STHs. Which STHs to send and how often
 pollination should happen is regarded as undefined policy with the
 exception of privacy concerns explained in the next
@@ -701,9 +700,9 @@ STHs and pollinates them is assured that if it was attacked, there is
 a probability that the ecosystem will detect and respond to the attack
 (by distrusting the log).
 
-### Auditor and Monitor Action
+### Auditor Action
 
-Auditors and Monitors participate in STH pollination by retrieving
+CT auditors participate in STH pollination by retrieving
 STHs from HTTPS servers. They verify that the STH is valid by checking
 the signature, and requesting a consistency proof from the STH to the
 most recent STH.
@@ -715,7 +714,7 @@ continues to be tracked in the system.
 
 ### STH Pollination data format {#sth-pollination-dataformat}
 
-The data sent from HTTPS clients and CT monitors and auditors to HTTPS
+The data sent from HTTPS clients and CT auditors to HTTPS
 servers is a JSON object {{RFC7159}} with the following content:
 
 - sths -- an array of 0 or more fresh SignedTreeHead's as defined in
@@ -801,7 +800,7 @@ Example:
 
 # 3-Method Ecosystem
 
-The use of three distinct methods for monitoring logs may seem
+The use of three distinct methods for auditing logs may seem
 excessive, but each represents a needed component in the CT
 ecosystem. To understand why, the drawbacks of each component must be
 outlined. In this discussion we assume that an attacker knows which
@@ -821,8 +820,7 @@ some configuration to optimize its operation:
   certificate chains (or hashes thereof)
 - Maximize its chance of detecting a misissued certificate by
   configuring a trust store of CAs
-- Establish a "push" mechanism for POSTing SCTs to Auditors and
-  Monitors
+- Establish a "push" mechanism for POSTing SCTs to CT auditors
 
 These configuration needs, and the simple fact that it would require
 some deployment of software, means that some percentage of HTTPS
@@ -895,7 +893,7 @@ this relationship without retrieving informed consent from the user.
 However, the Trusted Auditor Relationship mechanism still provides
 value to a class of HTTPS Clients. For example, web crawlers have no
 concept of a "user" and no expectation of privacy. Organizations
-already performing network monitoring for anomalies or attacks can run
+already performing network auditing for anomalies or attacks can run
 their own Trusted Auditor for the same purpose with marginal increase
 in privacy concerns.
 
@@ -958,7 +956,7 @@ In the first attack, the log can present a split view of the log for
 all time. The only way to detect this attack is to resolve each view
 of the log to the two most recent STHs and then force the log to
 present a consistency proof. (Which it cannot.) This attack can be
-detected by Auditors or Monitors participating in STH Pollination, as
+detected by CT auditors participating in STH Pollination, as
 long as they are explicitly built to handle the situation of a log
 continuously presenting a split view.
 
@@ -983,9 +981,9 @@ attack, but can in certain modes.
 Defending against the Dual-CA Compromise attack requires SCT Feedback,
 and explicitly requires the server to save full certificate chains
 (described in {{feedback-srvop}} as the 'complex' configuration.)
-After Auditors receive the full certificate chains from servers, they
+After CT auditors receive the full certificate chains from servers, they
 must compare the chain built by clients to the chain supplied by the
-log. If the chains differ significantly, the Auditor can raise a
+log. If the chains differ significantly, the auditor can raise a
 concern.
 
 \[
@@ -1081,7 +1079,7 @@ site. Because the client-server relationship is sensitive, gossip
 between clients and servers about unrelated SCTs is risky. Therefore,
 a client with an SCT for a given server should transmit that
 information in only two channels: to the server associated with the SCT
-itself; and to a trusted CT auditor, if one exists.
+itself; and to a Trusted Auditor, if one exists.
 
 ### Privacy in SCT Feedback {#privacy-feedback}
 
@@ -1204,7 +1202,7 @@ with such a relationship already established, sending SCTs to a
 trusted auditor run by the same organization does not appear to expose
 any additional information to the trusted third party.
 
-Clients who wish to contact an auditor without associating their
+Clients who wish to contact a CT auditor without associating their
 identities with their SCTs may wish to use an anonymizing network like
 Tor to submit SCT Feedback to the auditor. Auditors SHOULD accept SCT
 Feedback that arrives over such anonymizing networks.
@@ -1217,16 +1215,16 @@ as the granularity of the timestamps embedded in the SCTs and STHs.
 
 ### HTTPS Clients as Auditors
 
-Some HTTPS Clients may choose to act as Auditors themselves. A Client
+Some HTTPS Clients may choose to act as CT auditors themselves. A Client
 taking on this role needs to consider the following:
 
 - an Auditing HTTPS Client potentially exposes its history to the logs
   that they query. Querying the log through a cache or a proxy with
   many other users may avoid this exposure, but may expose information to
-  the cache or proxy, in the same way that an non-Auditing HTTPS
-  Client exposes information to a trusted auditor.
+  the cache or proxy, in the same way that a non-Auditing HTTPS
+  Client exposes information to a Trusted Auditor.
 
-- an effective Auditor needs a strategy about what to do in the event
+- an effective CT auditor needs a strategy about what to do in the event
   that it discovers misbehavior from a log. Misbehavior from a log
   involves the log being unable to provide either (a) a consistency
   proof between two valid STHs or (b) an inclusion proof for a
@@ -1238,7 +1236,7 @@ taking on this role needs to consider the following:
 # Policy Recommendations
 
 This section is intended as suggestions to implementors of HTTPS
-Clients, HTTPS Servers, and Auditors. It is not a requirement for
+Clients, HTTPS Servers, and CT auditors. It is not a requirement for
 technique of implementation, so long as privacy considerations
 established above are obeyed.
 
@@ -1532,7 +1530,7 @@ report-back providing the client with its observed public IP
 address). The HTTPS client could also require reporting over a
 timespan, e.g. it must be reported at least N time, M weeks
 apart. This strategy could be employed always, or only when the client
-has disabled proof fetching and the auditor of last resort, as those
+has disabled proof fetching and the Auditor of Last Resort, as those
 two mechanisms (when used together) will enable a client to report
 most attacks.
 
@@ -1546,8 +1544,8 @@ The recommendations for behavior are:
   multiple times, via SCT Feedback.
 - If proof fetching continually fails for an STH, do not make the item
   eligible for deletion until it has been queued for release to an
-  auditor of last resort.
-- Do not dequeue entries to an auditor of last resort if reporting
+  Auditor of Last Resort.
+- Do not dequeue entries to an Auditor of Last Resort if reporting
   fails. Instead keep the items queued until they have been
   successfully sent.
 - Use a probability based system, with a cryptographically secure
