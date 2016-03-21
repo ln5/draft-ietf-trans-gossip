@@ -73,7 +73,7 @@ inconsistent views to different log clients, and logs failing to
 include submitted certificates within the time period stipulated by
 MMD.
 
-\[TODO: enumerate the interfaces used for detecting misbehaviour?\]
+\[ TODO: enumerate the interfaces used for detecting misbehaviour? \]
 
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
@@ -291,8 +291,8 @@ The x509\_chain element always contains at least one element. It also
 always contains a full chain from a leaf certificate to a self-signed
 trust anchor.
 
-\[TBD: Be strict about what sct\_data may contain or is this sufficiently
-implied by previous sections?\]
+\[ TBD: Be strict about what sct\_data may contain or is this sufficiently
+implied by previous sections? \]
 
 ### HTTPS client to server {#feedback-clisrv}
 
@@ -360,14 +360,10 @@ the first party domain. In lieu of 'double-keying', an HTTPS Client
 MAY treat SCT Feedback in the same manner it treats other security
 mechanisms that can enable tracking (such as HSTS and HPKP.)
 
-\[
-
-XXX is currently
+\[ XXX is currently
 https://www.torproject.org/projects/torbrowser/design/#identifier-linkability
 How should it be references? Do we need to copy this out into another
-document? An appendix?
-
-\]
+document? An appendix? \]
 
 If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies
@@ -477,7 +473,7 @@ feedback from being recorded), or an attack where an adversary simply
 attempts to fill up server's storage space.
 
 The more advanced server configuration will detect the
-\[TODO double-CA-compromise attack\] attack. In this configuration the
+\[TODO double-CA-compromise\] attack. In this configuration the
 server will not modify the sct\_feedback object prior to performing
 checks 2, 3, and 4.
 
@@ -663,8 +659,8 @@ intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
 providing a caching layer for oft-requested inclusion proofs.)
 
-\[TODO: Add a reference to Google's DNS mechanism more proper than
-http://www.certificate-transparency.org/august-2015-newsletter\]
+\[ TODO: Add a reference to Google's DNS mechanism more proper than
+http://www.certificate-transparency.org/august-2015-newsletter \]
 
 Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
@@ -989,8 +985,7 @@ they must compare the chain built by clients to the chain supplied by
 the log. If the chains differ significantly, the auditor can raise a
 concern.
 
-\[
-What does 'differ significantly' mean?  We should provide guidance.
+\[ What does 'differ significantly' mean?  We should provide guidance.
 I *think* the correct algorithm to raise a concern is:
 
 If one chain is not a subset of the other
@@ -1007,8 +1002,7 @@ Justification:
 
 (Hitting both those cases at once would cause a false positive though.)
 
-What did I miss?
-\]
+What did I miss? \]
 
 ## Censorship/Blocking considerations
 
@@ -1128,9 +1122,10 @@ described above. \[XXX any mitigations possible here?\]
 
 An HTTPS client performing Proof Fetching should only request proofs
 from a CT log that it accepts SCTs from. An HTTPS client MAY
-regularly \[TBD SHOULD? how regularly? This has operational implications
-for log operators\] request an STH from all logs it is willing to accept,
-even if it has seen no SCTs from that log.
+\[TBD SHOULD?\] regularly request an STH from all logs it is willing
+to accept, even if it has seen no SCTs from that log.
+
+\[ TBD how regularly? This has operational implications for log operators \]
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
@@ -1337,8 +1332,7 @@ commonly visited together in the aggregate.
 
 \[ TBD: What other recommendations do we want to make here?
         We can talk more about the inadequecies of DNS...
-        The first paragraph is 80% identical between here and above
-\]
+        The first paragraph is 80% identical between here and above \]
 
 ## Record Distribution Recommendations {#pooling-policy-recommendations}
 
@@ -1459,16 +1453,14 @@ messages. The goal is to ensure that an adversary does not know for
 certain if the data in question has been released or not, and if it
 has been deleted or not.
 
-\[
- TBD: At present, we do not have any support for dummy messages. Do we
+\[ TBD: At present, we do not have any support for dummy messages. Do we
  want to define a dummy message that clients and servers alike know to
  ignore?  Will HTTP Compression leak the presence of >1 dummy
  messages?
 
  Is it sufficient to define a dummy message as _anything_ with an
  invalid siganture? This would negatively impact SCT Feedback servers
- that log all things just in case they're interesting.
-\]
+ that log all things just in case they're interesting. \]
 
 ### The Deletion Algorithm
 
@@ -1508,11 +1500,12 @@ STH the record may be safely deleted, as long as the new STH is
 retained.
 
 The actual deletion algorithm may be \[STATISTICS HERE\].
-\[Something as simple as 'Pick an integer securely between 1 and 10. If
-it's greater than 7, delete the record.' Or something more
-complicated. \]
+\[ Something as simple as 'Pick an integer securely between 1 and 10.
+   If it's greater than 7, delete the record.' Or something more
+   complicated. \]
 
-\[TODO Enumerating the problems of different types of mixes vs Cottrell Mix\]
+\[ TODO Enumerating the problems of different types of mixes vs
+   Cottrell Mix \]
 
 #### Experimental Algorithms
 
@@ -1557,7 +1550,7 @@ The recommendations for behavior are:
   the datastore. Use a cryptographically secure random number
   generator.
 
-\[TBD: More? \]
+\[ TBD: More? \]
 
 We present the following pseudocode as a concrete outline of our
 suggestion.
@@ -1962,7 +1955,7 @@ pseudocode as an illustration.
 
 # IANA considerations
 
-\[TBD\]
+\[ TBD \]
 
 # Contributors
 
