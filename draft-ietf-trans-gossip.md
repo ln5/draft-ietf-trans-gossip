@@ -315,7 +315,7 @@ creates an sct\_feedback or similar object. If this object does not
 exactly match an existing object in the store, then the client MUST
 add this new object to the store, associated with the exact domain
 name contacted, as described above. An exact comparison is needed to
-ensure that attacks involving alternate chains are detected - an
+ensure that attacks involving alternate chains are detected. An
 example of such an attack is described in
 \[TODO double-CA-compromise attack\]. However, at least one
 optimization is safe and MAY be performed: If the certificate chain
@@ -345,7 +345,7 @@ updated with the pooling recommendation section \]
 Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
 received from (and provided to) domains that are loaded as subresources
-from an origin domain -- these domains are commonly called 'third
+from an origin domain. Such domains are commonly called 'third
 party domains'. A HTTPS Client SHOULD store SCT Feedback using a
 'double-keying' approach, which isolates third party domains by the
 first party domain. This is described in XXX. Gossip would be
@@ -408,8 +408,8 @@ actually preserve user privacy. The Issuer field in the certificate
 describes the signing certificate. And if the certificate is being
 submitted at all, it means the certificate is logged, and has
 SCTs. This means that the Issuer can be queried and obtained from the
-log - so omitting from the client's submission does not actually help
-user privacy.
+log so omitting the parent from the client's submission does not
+actually help user privacy.
 
 ### HTTPS server operation {#feedback-srvop}
 
@@ -462,7 +462,7 @@ The check in step 3 is to help malfunctioning clients from exposing
 which sites they visit. It additionally helps prevent DoS attacks on
 the server.
 
-\[ TBD: Thinking about building this - how does the SCT Feedback app know
+\[ TBD: Thinking about building this, how does the SCT Feedback app know
 which sites it's authoritative for? \]
 
 The check in step 4 is to prevent DoS attacks where an adversary fills
@@ -606,7 +606,7 @@ to be personally identifiable.
 
 A log may cease operation, in which case there will soon be no STH
 within the validity window. Clients SHOULD perform all three methods
-of gossip about a log that has ceased operation - it is possible the
+of gossip about a log that has ceased operation since it is possible the
 log was still compromised and gossip can detect that. STH Pollination
 is the one mechanism where a client must know about a log shutdown. A
 client who does not know about a log shutdown MUST NOT attempt any
@@ -666,7 +666,7 @@ Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
 
 Even when using a privacy-preserving layer between the client and the
-log - certain observations may be made about an anonymous client or
+log, certain observations may be made about an anonymous client or
 general user behavior depending on how proofs are fetched. For
 example, if a client fetched all outstanding proofs at once, a log
 would know that SCTs or STHs recieved around the same time are more
@@ -1010,7 +1010,7 @@ What did I miss?
 ## Censorship/Blocking considerations
 
 We assume a network attacker who is able to fully control the client's
-internet connection for some period of time - including selectively
+internet connection for some period of time, including selectively
 blocking requests to certain hosts and truncating TLS connections
 based on information observed or guessed about client behavior. In
 order to successfully detect log misbehavior, the gossip mechanisms
@@ -1066,7 +1066,7 @@ implications for correlative de-anonymisation of clients and
 relationship-mapping or clustering of servers or of clients.
 
 There are, however, certain clients that do not require privacy
-protection. Examples of these clients are web crawlers or robots -- but
+protection. Examples of these clients are web crawlers or robots. But
 even in this case, the method by which these clients crawl the web may
 in fact be considered sensitive information. In general, it is better
 to err on the side of safety, and not assume a client is okay with
@@ -1133,8 +1133,7 @@ The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
 DNS is a mechanism currently discussed. DNS exposes data in plaintext
 over the network (including what sites the user is visiting and what
-sites they have previously visited) - thus it may not be suitable for
-some.
+sites they have previously visited) an may not be suitable for some.
 
 ### Privacy in STH Pollination
 
@@ -1249,23 +1248,23 @@ When making gossip connections to HTTPS Servers or Trusted Auditors,
 it is desirable to minimize the plaintext metadata in the connection
 that can be used to identify the connection as a gossip connection and
 therefore be of interest to block. Additionally, introducing some
-randomness into client behavior may be important - we assume that the
+randomness into client behavior may be important. We assume that the
 adversary is able to inspect the behavior of the HTTPS client and
 understand how it makes gossip connections.
 
 As an example, if a client, after establishing a TLS connection (and
 receiving an SCT, but not making its own HTTP request yet),
-immediately opens a second TLS connection for the purpose of gossip -
+immediately opens a second TLS connection for the purpose of gossip,
 the adversary can reliably block this second connection to block
 gossip without affecting normal browsing. For this reason it is
 recommended to run the gossip protocols over an existing connection to
 the server, making use of connection multiplexing such as HTTP
 Keep-Alives or SPDY.
 
-Truncation is also a concern - if a client always establishes a TLS
+Truncation is also a concern. If a client always establishes a TLS
 connection, makes a request, receives a response, and then always
 attempts a gossip communication immediately following the first
-response - truncation will allow an attacker to block gossip reliably.
+response, truncation will allow an attacker to block gossip reliably.
 
 For these reasons, we recommend that, if at all possible, clients
 SHOULD send gossip data in an already established TLS session. This
@@ -1292,7 +1291,7 @@ Trusted Auditor -- but recieves an error on every attempt.
 In the case of 1 or 2, it is conceivable that the reason for the
 errors is that the log acted improperly, either through malicious
 actions or compromise. A proof may not be able to be fetched because
-it does not exist (and only errors or timeouts occur) -- one such
+it does not exist (and only errors or timeouts occur). One such
 situation may arise because of an actively malicious log, as presented
 in {{actively-malicious-log}}. This data is especially important to
 share with the broader internet to detect this situation.
@@ -1324,10 +1323,10 @@ more in {{pooling-policy-recommendations}}.
 
 Proof fetching (both inclusion proofs and consistency proofs) should
 be performed at random time intervals. If proof fetching occured all
-at once, in a flurry of activity - a log would know that SCTs or STHs
+at once, in a flurry of activity, a log would know that SCTs or STHs
 recieved around the same time are more likely to come from a
 particular client. While proof fetching is required to be done in a
-manner that attempts to be anonymous from the perspective of the log -
+manner that attempts to be anonymous from the perspective of the log,
 the correlation of activity to a single client would still reveal
 patterns of user behavior we wish to keep confidential. These patterns
 could be recognizable as a single user, or could reveal what sites are
@@ -1411,7 +1410,7 @@ javascript to cause a network connection at the correct time to force
 a client to disclose the specific STH. Trusted Auditors are stewards
 of sensitive client data. If an attacker had the ability to observe
 the activities of a Trusted Auditor (perhaps by being a log, or
-another auditor), they could perform the same attack - noting the
+another auditor), they could perform the same attack -- noting the
 disclosure of data from a client to the Trusted Auditor, and then
 correlating a later disclosure from the Trusted Auditor as coming from
 that client.
@@ -1430,14 +1429,14 @@ occurs on a dirty datastore before data is retrieved from it for use.
 A flushing attack is an attempt by an adversary to flush a particular
 piece of data from a pool. In the CT Gossip ecosystem, an attacker may
 have performed an attack and left evidence of a compromised log on a
-client or server. They would be interested in flushing that data -
+client or server. They would be interested in flushing that data, i.e.
 tricking the target into gossiping or pollinating the incriminating
 evidence with only attacker-controlled clients or servers with the
 hope they trick the target into deleting it.
 
 Servers are most vulnerable to flushing attacks, as they release
 records to anonymous connections. An attacker can perform a Sybil
-attack - connecting to the server hundreds or thousands of times in an
+attack -- connecting to the server hundreds or thousands of times in an
 attempt to trigger repeated release of a record, and then
 deletion. For this reason, servers must be especially aggressive about
 retaining data for a longer period of time.
@@ -1480,8 +1479,8 @@ that any misbehavior from a log will still be detected, even after the
 direct evidence from the attack is deleted. Proof fetching ensures
 that if a log presents a split view for a client, they must maintain
 that split view in perpetuity. An inclusion proof from an SCT to an STH
-does not erase the evidence - the new STH is evidence itself. A
-consistency proof from that STH to a new one likewise - the new STH is
+does not erase the evidence -- the new STH is evidence itself. A
+consistency proof from that STH to a new one likewise -- the new STH is
 every bit as incriminating as the first. (Client behavior in the
 situation where an SCT or STH cannot be resolved is suggested in
 {{blocking-policy-response}}.) Because of this property, we recommend
@@ -1502,7 +1501,7 @@ determine if the record will be deleted.
 
 Although the deletion algorithm is specifically designed to be
 non-deterministic, if the record has been resolved via proof to a new
-STH - the record may be safely deleted, so long as the new STH is
+STH the record may be safely deleted, as long as the new STH is
 retained.
 
 The actual deletion algorithm may be \[STATISTICS HERE\].
@@ -1517,8 +1516,8 @@ complicated. \]
 More complex algorithms could be inserted at any step. Three examples
 are illustrated:
 
-SCTs are not eligible to be submitted to an Auditor of Last Resort -
-therefore, it is more important that they be resolved to STHs and
+SCTs are not eligible to be submitted to an Auditor of Last Resort.
+Therefore, it is more important that they be resolved to STHs and
 reported via SCT feedback. If fetching an inclusion proof regularly
 fails for a particular SCT, one can require it be reported more times
 than normal via SCT Feedback before becoming eligible for deletion.
@@ -1529,9 +1528,9 @@ the pool by not making an item eligible for deletion until the client
 has moved networks (as seen by either the local IP address, or a
 report-back providing the client with its observed public IP
 address). The HTTPS client could also require reporting over a
-timespan - e.g. it must be reported at least N time, M weeks
+timespan, e.g. it must be reported at least N time, M weeks
 apart. This strategy could be employed always, or only when the client
-has disabled proof fetching and the auditor of last resort - as those
+has disabled proof fetching and the auditor of last resort, as those
 two mechanisms (when used together) will enable a client to report
 most attacks.
 
@@ -1542,14 +1541,15 @@ The recommendations for behavior are:
   a proof resolving it to an STH.
 - If proof fetching continually fails for an SCT, do not make the item
   eligible for deletion of the SCT until it has been released,
-  multiple times, via SCT Feedback
+  multiple times, via SCT Feedback.
 - If proof fetching continually fails for an STH, do not make the item
   eligible for deletion until it has been queued for release to an
-  auditor of last resort
+  auditor of last resort.
 - Do not dequeue entries to an auditor of last resort if reporting
-  fails - keep the items queued until they have been successfully sent
+  fails. Instead keep the items queued until they have been
+  successfully sent.
 - Use a probability based system, with a cryptographically secure
-  random number generator, to determine if an item should be deleted
+  random number generator, to determine if an item should be deleted.
 - Select items from the datastores by selecting random indexes into
   the datastore. Use a cryptographically secure random number
   generator.
@@ -1580,9 +1580,9 @@ structure being accessed by multiple threads. One thing to note about
 this pseudocode is that it aggressively removes STHs once they have
 been resolved to a newer STH (if proof fetching is configured). The
 only STHs in the store are ones that have never been resolved to a
-newer STH - either because proof fetching does not occur, has failed,
+newer STH, either because proof fetching does not occur, has failed,
 or because the STH is considered too new to request a proof for. It
-seems less likely that servers will perform proof fetching - therefore
+seems less likely that servers will perform proof fetching. Therefore
 it would be recommended that the various constants in use be increased
 considerably to ensure STHs are pollinated more aggressively.
 
