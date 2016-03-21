@@ -290,10 +290,10 @@ TLS handshake using one or more of the three mechanisms descrbied in
 {{RFC-6962-BIS-09}} section 3.4 -- in the server certificate, in a TLS
 extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
-remaining SCTs together with a locally constructed certificate chain which is trusted
-(i.e. terminated in a pre-loaded or locally installed Trust Anchor) in a
-sct\_feedback object or equivalent data structure for later use in
-SCT Feedback.
+remaining SCTs together with a locally constructed certificate chain
+which is trusted (i.e. terminated in a pre-loaded or locally installed
+Trust Anchor) in a sct\_feedback object or equivalent data structure
+for later use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name
 the client contacted. They MUST NOT be sent to any domain not matching
