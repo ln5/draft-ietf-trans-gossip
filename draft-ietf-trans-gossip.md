@@ -344,7 +344,7 @@ updated with the pooling recommendation section \]
 
 Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
-received (and provided) to domains that are loaded as subresources
+received from (and provided to) domains that are loaded as subresources
 from an origin domain -- these domains are commonly called 'third
 party domains'. A HTTPS Client SHOULD store SCT Feedback using a
 'double-keying' approach, which isolates third party domains by the
