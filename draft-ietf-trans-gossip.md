@@ -337,7 +337,7 @@ union of the SCTs from the two objects in the first (existing) object.
 
 If the client does connect to the same HTTPS server a subsequent time,
 it MUST send to the server sct\_feedback objects in the store that are
-associated with that domain name. It is not necessary to send a
+associated with that domain name. It is not necessary to send an
 sct\_feedback object constructed from the current TLS session.
 
 The client MUST NOT send the same set of SCTs to the same server more
