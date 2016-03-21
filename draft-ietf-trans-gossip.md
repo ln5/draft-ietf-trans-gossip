@@ -616,7 +616,7 @@ update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
 cannot be resolved to the final STH, clients should follow the
 requirements and recommendations set forth in
-{#blocking-policy-response}.
+{{blocking-policy-response}}.
 
 When multiplied by the number of logs from which a client accepts
 STHs, this number of unique STHs grow and the negative privacy
@@ -680,7 +680,7 @@ such a policy can be found in {{proof-fetching-recommendations}}.
 Resolving either SCTs and STHs may result in errors. These errors may
 be routine downtime or other transient errors, or they may be
 indicative of an attack. Clients should follow the requirements and
-recommendations set forth in {#blocking-policy-response} when handling
+recommendations set forth in {{blocking-policy-response}} when handling
 these errors in order to give the CT ecosystem the greatest chance of
 detecting and responding to a compromise.
 
@@ -829,7 +829,7 @@ servers will not deploy SCT Feedback.
 It is worthwhile to note that an attacker may be able to prevent
 detection of an attack on a webserver (in all cases) if SCT Feedback
 is not implemented. This attack is detailed in
-{#actively-malicious-log}).
+{{actively-malicious-log}}).
 
 If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
@@ -928,7 +928,7 @@ when they either participate in both SCT Feedback and STH Pollination
 with Proof Fetching or if they have a Trusted Auditor relationship.
 (Participating in SCT Feedback is required to prevent a malicious log
 from refusing to ever resolve an SCT to an STH, as put forward in
-{#actively-malicious-log}). Additionally, participating in SCT
+{{actively-malicious-log}}). Additionally, participating in SCT
 Feedback enables an HTTPS Client to assist in detecting the exact target
 of an attack.
 
@@ -968,7 +968,7 @@ an inclusion proof for that SCT (or a consistency proof from that
 STH), the log would respond with an error, and a client may simply
 regard the response as a transient error. This attack can be detected
 using SCT Feedback, or an Auditor of Last Resort, as presented in
-{#blocking-policy-response}.
+{{blocking-policy-response}}.
 
 ## Dual-CA Compromise {#dual-ca-compromise}
 
@@ -1211,7 +1211,7 @@ Feedback that arrives over such anonymizing networks.
 Clients sending feedback to an auditor may prefer to reduce the
 temporal granularity of the history exposure to the auditor by caching
 and delaying their SCT Feedback reports. This is elaborated upon in
-{#pooling-policy-recommendations}. This strategy is only as effective
+{{pooling-policy-recommendations}}. This strategy is only as effective
 as the granularity of the timestamps embedded in the SCTs and STHs.
 
 ### HTTPS Clients as Auditors
@@ -1294,7 +1294,7 @@ errors is that the log acted improperly, either through malicious
 actions or compromise. A proof may not be able to be fetched because
 it does not exist (and only errors or timeouts occur) -- one such
 situation may arise because of an actively malicious log, as presented
-in {#actively-malicious-log}. This data is especially important to
+in {{actively-malicious-log}}. This data is especially important to
 share with the broader internet to detect this situation.
 
 If an SCT has attempted to be resolved to an STH via an inclusion
@@ -1318,7 +1318,7 @@ auditor in question is either experiencing an operational failure, or
 being attacked. In both cases, a client SHOULD retain the data for
 later submission (subject to Private Browsing or other
 history-clearing actions taken by the user.) This is elaborated upon
-more in {#pooling-policy-recommendations}.
+more in {{pooling-policy-recommendations}}.
 
 ## Proof Fetching Recommendations {#proof-fetching-recommendations}
 
