@@ -286,7 +286,7 @@ implied by previous sections?\]
 
 When an HTTPS client connects to an HTTPS server, the client receives
 a set of SCTs as part of the TLS handshake. SCTs are included in the
-TLS handshake using one or more of the three mechanisms descrbied in
+TLS handshake using one or more of the three mechanisms described in
 {{RFC-6962-BIS-09}} section 3.4 -- in the server certificate, in a TLS
 extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
