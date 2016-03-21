@@ -604,7 +604,7 @@ An HTTPS client could be tracked by giving it a unique or rare STH.
 To address this concern, we place restrictions on different components
 of the system to ensure an STH will not be rare.
 
-- HTTPS clients sliently ignore STHs from logs with an STH issuance
+- HTTPS clients silently ignore STHs from logs with an STH issuance
   frequency of more than one STH per hour. Logs use the STH Frequency
   Count metadata to express this ({{RFC-6962-BIS-09}} sections 3.6
   and 5.1).
