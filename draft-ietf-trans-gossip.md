@@ -1969,6 +1969,19 @@ Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 # ChangeLog
 
+## Changes between ietf-01 and ietf-02
+
+- Requiring full certificate chain in SCT Feedback.
+- Clarifications on what clients store for and send in SCT Feedback
+  added.
+- SCT Feedback server operation updated to protect against DoS attacks
+  on servers.
+- Pre-Loaded vs Locally Added Anchors explained.
+- Base for well-known URL's changed.
+- New sections added: Trusted Auditor protocol, attacks by actively
+  malicious log, the Dual-CA compromise attack, policy
+  recommendations,
+
 ## Changes between ietf-00 and ietf-01
 
 - Improve langugage and readability based on feedback from Stephen
