@@ -456,13 +456,13 @@ operations, checking on each sct\_feedback object before storing it:
   all items in the x509\_chain array except the first item (which is
   the end-entity certificate)
 
-  1. if a bit-wise compare of the sct\_feedback object matches one
+  2. if a bit-wise compare of the sct\_feedback object matches one
   already in the store, this sct\_feedback object SHOULD be discarded
 
-  1. if the leaf cert is not for a domain for which the server is
+  3. if the leaf cert is not for a domain for which the server is
   authoritative, the SCT MUST be discarded
 
-  1. if an SCT in the sct\_data array can't be verified to be a valid
+  4. if an SCT in the sct\_data array can't be verified to be a valid
   SCT for the accompanying leaf cert, and issued by a known log, the
   individual SCT SHOULD be discarded
 
