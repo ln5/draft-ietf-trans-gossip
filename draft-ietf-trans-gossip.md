@@ -1004,7 +1004,7 @@ they must compare the chain built by clients to the chain supplied by
 the log. If the chains differ significantly, the auditor can raise a
 concern.
 
-\[ What does 'differ significantly' mean?  We should provide guidance.
+\[ TBD What does 'differ significantly' mean?  We should provide guidance.
 I *think* the correct algorithm to raise a concern is:
 
 If one chain is not a subset of the other
