@@ -104,8 +104,6 @@ inconsistent views to different log clients, and logs failing to
 include submitted certificates within the time period stipulated by
 MMD.
 
-\[ TODO: enumerate the interfaces used for detecting misbehaviour? \]
-
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
 information about the logs and their operations, but not to expose any
