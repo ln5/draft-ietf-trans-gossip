@@ -994,7 +994,7 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 
 {{dual-ca-compromise-attack}} describes an attack possible by an adversary who compromises two
 Certificate Authorites and a Log. This attack is difficult to defend
-gainst in the CT ecosystem, and XXX describes a few approaches to
+against in the CT ecosystem, and XXX describes a few approaches to
 doing so. We note that Gossip is not intended to defend against this
 attack, but can in certain modes.
 
