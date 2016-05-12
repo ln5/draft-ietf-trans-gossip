@@ -51,6 +51,37 @@ informative:
     date: 2015-10-06
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-threat-analysis/
 
+  dual-ca-compromise-attack:
+    title: "TODO"
+    author:
+      -
+        ins: N. N
+    target: TBD
+
+  draft-ct-over-dns:
+    title: "Certificate Transparency over DNS"
+    author:
+      -
+        ins: B. Laurie
+      -
+        ins: P. Phaneuf
+      -
+        ins: A. Eijdenberg
+    date: 2016-02-18
+    target: https://github.com/google/certificate-transparency-rfcs/blob/master/dns/draft-ct-over-dns.md
+
+  double-keying:
+    title: "Cross-Origin Identifier Unlinkability"
+    author:
+      -
+        ins: M. Perry
+      -
+        ins: E. Clark
+      -
+        ins: S. Murdoch
+    date: 2015-05-06
+    target: https://www.torproject.org/projects/torbrowser/design/#identifier-linkability
+
 --- abstract
 
 The logs in Certificate Transparency are untrusted in the sense that
@@ -287,12 +318,11 @@ in the array is a JSON object with the following content:
 
 We will refer to this object as 'sct\_feedback'.
 
-The x509\_chain element always contains at least one element. It also
-always contains a full chain from a leaf certificate to a self-signed
-trust anchor.
+The x509\_chain element always contains a full chain from a leaf
+certificate to a self-signed trust anchor.
 
-\[ TBD: Be strict about what sct\_data may contain or is this sufficiently
-implied by previous sections? \]
+See {{feedback-clisrv}} for details on what the sct\_data element
+contains as well as more details about the x509\_chain element.
 
 ### HTTPS client to server {#feedback-clisrv}
 
@@ -329,7 +359,7 @@ add this new object to the store, associated with the exact domain
 name contacted, as described above. An exact comparison is needed to
 ensure that attacks involving alternate chains are detected. An
 example of such an attack is described in
-\[TODO double-CA-compromise attack\]. However, at least one
+{{dual-ca-compromise-attack}}. However, at least one
 optimization is safe and MAY be performed: If the certificate chain
 exactly matches an existing certificate chain, the client may store
 the union of the SCTs from the two objects in the first (existing)
@@ -354,16 +384,11 @@ received from (and provided to) domains that are loaded as
 subresources from an origin domain. Such domains are commonly called
 'third party domains'. An HTTPS Client SHOULD store SCT Feedback using
 a 'double-keying' approach, which isolates third party domains by the
-first party domain. This is described in XXX. Gossip would be
+first party domain. This is described in {{double-keying}}. Gossip would be
 performed normally for third party domains only when the user revisits
 the first party domain. In lieu of 'double-keying', an HTTPS Client
 MAY treat SCT Feedback in the same manner it treats other security
 mechanisms that can enable tracking (such as HSTS and HPKP.)
-
-\[ XXX is currently
-https://www.torproject.org/projects/torbrowser/design/#identifier-linkability
-How should it be references? Do we need to copy this out into another
-document? An appendix? \]
 
 If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies
@@ -448,7 +473,7 @@ arbitrary number of chains that terminate in an end-entity certificate
 with an existing SCT. By discarding all but the end-entity
 certificate, we prevent a simple HTTPS server from storing this
 data. Note that operation in this mode will not prevent the attack
-described in {{dual-ca-compromise}}. Skipping this step requires
+described in {{dual-ca-compromise-attack}}. Skipping this step requires
 additional configuration as described below.
 
 The check in step 2 is for detecting duplicates and minimizing
@@ -473,7 +498,7 @@ feedback from being recorded), or an attack where an adversary simply
 attempts to fill up server's storage space.
 
 The more advanced server configuration will detect the
-\[TODO double-CA-compromise\] attack. In this configuration the
+{{dual-ca-compromise-attack}} attack. In this configuration the
 server will not modify the sct\_feedback object prior to performing
 checks 2, 3, and 4.
 
@@ -657,10 +682,8 @@ manner that disguises the client.
 Depending on the client's DNS provider, DNS may provide an appropriate
 intermediate layer that obfuscates the linkability between the user of
 the client and the request for inclusion (while at the same time
-providing a caching layer for oft-requested inclusion proofs.)
-
-\[ TODO: Add a reference to Google's DNS mechanism more proper than
-http://www.certificate-transparency.org/august-2015-newsletter \]
+providing a caching layer for oft-requested inclusion proofs). See
+{{draft-ct-over-dns}} for an example of how this can be done.
 
 Anonymity networks such as Tor also present a mechanism for a client
 to anonymously retrieve a proof from an auditor or log.
@@ -749,7 +772,8 @@ resolving already know a great deal about which sites their users
 visit. As mentioned in {{clients-proof-fetching}}, in order for HTTPS
 clients to be able to retrieve proofs in a privacy preserving manner,
 logs could expose a DNS interface in addition to the ordinary HTTPS
-interface. An informal writeup of such a protocol can be found at XXX.
+interface. A specification of such a protocol can be found in
+{{draft-ct-over-dns}}.
 
 
 ### Trusted Auditor data format
@@ -971,9 +995,9 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 
 ## Dual-CA Compromise {#dual-ca-compromise}
 
-XXX describes an attack possible by an adversary who compromises two
+{{dual-ca-compromise-attack}} describes an attack possible by an adversary who compromises two
 Certificate Authorites and a Log. This attack is difficult to defend
-against in the CT ecosystem, and XXX describes a few approaches to
+gainst in the CT ecosystem, and XXX describes a few approaches to
 doing so. We note that Gossip is not intended to defend against this
 attack, but can in certain modes.
 
