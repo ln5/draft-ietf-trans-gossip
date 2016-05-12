@@ -671,9 +671,6 @@ client MAY fetch an inclusion proof for an SCT (issued by a pre-loaded
 log) that validates a certificate chaining to a locally added trust
 anchor.
 
-\[ TBD: Linus doesn't like this because we're mandating behavior
-that is not necessarily safe. Is it unsafe? Not sure.\]
-
 If a client requested either proof directly from a log or auditor, it
 would reveal the client's browsing habits to a third party. To
 mitigate this risk, an HTTPS client MUST retrieve the proof in a
