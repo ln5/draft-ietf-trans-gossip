@@ -1141,9 +1141,9 @@ described above. \[XXX any mitigations possible here?\]
 
 ### Privacy for HTTPS clients performing STH Proof Fetching
 
-An HTTPS client performing Proof Fetching should only request proofs
-from a CT log that it accepts SCTs from. An HTTPS client MAY
-\[TBD SHOULD?\] regularly request an STH from all logs it is willing
+An HTTPS client performing Proof Fetching SHOULD NOT request proofs
+from a CT log that it doesn't accept SCTs from. An HTTPS client SHOULD
+regularly request an STH from all logs it is willing
 to accept, even if it has seen no SCTs from that log.
 
 \[ TBD how regularly? This has operational implications for log operators \]
