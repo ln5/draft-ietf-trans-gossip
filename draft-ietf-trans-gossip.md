@@ -365,16 +365,13 @@ object.
 
 If the client does connect to the same HTTPS server a subsequent time,
 it MUST send to the server sct\_feedback objects in the store that are
-associated with that domain name. It is not necessary to send an
-sct\_feedback object constructed from the current TLS session.
+associated with that domain name. However, it is not necessary to send 
+an sct\_feedback object constructed from the current TLS session, and
+if the client does so, it should not be marked as sent in any internal
+tracking done by the client.
 
-The client MUST NOT send the same set of SCTs to the same server more
-often than TBD.
-
-\[ TODO: expand on rate/resource limiting motivation \]
-
-Refer to {{pooling-policy-recommendations}} for recommendations about
-strategies.
+Refer to {{pooling-policy-recommendations}} for recommendations for
+implementation.
 
 Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
@@ -392,7 +389,10 @@ If the HTTPS client has configuration options for not sending cookies
 to third parties, SCTs of third parties MUST be treated as cookies
 with respect to this setting. This prevents third party tracking
 through the use of SCTs/certificates, which would bypass the cookie
-policy.
+policy. For domains that are only loaded as third party domains,
+the client may never perform SCT Feedback; however the client may 
+perform STH Pollination after fetching an inclusion proof, as
+specified in {{sth-pollination}}.
 
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
@@ -422,7 +422,7 @@ does so, the client MUST include the full chain of certificates
 chaining to the local trust anchor in the x509\_chain array. Perfoming
 SCT Feedback in this scenario may be advantageous for the broader
 internet and CT ecosystem, but may also disclose information about the
-client. If the client elects to omit SCT Feedback, it can still choose
+client. If the client elects to omit SCT Feedback, it can choose
 to perform STH Pollination after fetching an inclusion proof, as
 specified in {{sth-pollination}}.
 
@@ -433,8 +433,8 @@ actually preserve user privacy. The Issuer field in the certificate
 describes the signing certificate. And if the certificate is being
 submitted at all, it means the certificate is logged, and has
 SCTs. This means that the Issuer can be queried and obtained from the
-log so omitting the parent from the client's submission does not
-actually help user privacy.
+log - so omitting the signing certificate from the client's submission 
+does not actually help user privacy.
 
 ### HTTPS server operation {#feedback-srvop}
 
@@ -487,21 +487,24 @@ The check in step 3 is to help malfunctioning clients from exposing
 which sites they visit. It additionally helps prevent DoS attacks on
 the server.
 
-\[ TBD: Thinking about building this, how does the SCT Feedback app know
-which sites it's authoritative for? \]
+\[ Note: Thinking about building this, how does the SCT Feedback app know
+which sites it's authoritative for? It will need that amount of 
+configuration at least. \]
 
 The check in step 4 is to prevent DoS attacks where an adversary fills
 up the store prior to attacking a client (thus preventing the client's
 feedback from being recorded), or an attack where an adversary simply
 attempts to fill up server's storage space.
 
-The more advanced server configuration will detect the
-{{dual-ca-compromise-attack}} attack. In this configuration the
+The above describes the simpler mode of operation. In the more advanced 
+server mode, the server will detect the attack described 
+in {{dual-ca-compromise-attack}}. In this configuration the
 server will not modify the sct\_feedback object prior to performing
 checks 2, 3, and 4.
 
 To prevent a malicious client from filling the server's data store,
-the HTTPS Server SHOULD perform an additional check:
+the HTTPS Server SHOULD perform an additional check in the more 
+advanced mode:
 
    5. if the x509\_chain consists of an invalid certificate chain, or
    the culminating trust anchor is not recognized by the server, the
@@ -530,6 +533,11 @@ passive pull model.
 
 The data received in a GET of the well-known URL or sent in the POST
 is defined in {{feedback-dataformat}}.
+
+\[ TBD: Technically the dataformat is slightly different. 
+feedback-dataformat says the x509_chain will always contain a full 
+chain. But when it is recieved by an auditor, it may omit the chain,
+as described three paragraphs below. \]
 
 HTTPS servers SHOULD share all sct\_feedback objects they see that
 pass the checks in {{feedback-srvop}}. If this is an infeasible amount
@@ -653,9 +661,15 @@ requirements and recommendations set forth in
 There are two types of proofs a client may retrieve; inclusion proofs
 and consistency proofs.
 
-An HTTPS client will retrieve SCTs from an HTTPS server, and must
+An HTTPS client will retrieve SCTs from an HTTPS server, and can
 obtain an inclusion proof to an STH in order to verify the promise
 made by the SCT.
+
+\[ TBD: The above paragraph needs to be fixed to be accurate. You get
+an inclusion proof from something other than just a SCT. \]
+
+An HTTPS client will have STHs from performing STH Pollination,
+and may obtain a consistency proof to a more recent STH.
 
 An HTTPS client may also receive an SCT bundled with an inclusion
 proof to a historical STH via an unspecified future mechanism. Because
@@ -697,7 +711,7 @@ such a policy can be found in {{proof-fetching-recommendations}}.
 
 Resolving either SCTs and STHs may result in errors. These errors may
 be routine downtime or other transient errors, or they may be
-indicative of an attack. Clients should follow the requirements and
+indicative of an attack. Clients SHOULD follow the requirements and
 recommendations set forth in {{blocking-policy-response}} when handling
 these errors in order to give the CT ecosystem the greatest chance of
 detecting and responding to a compromise.
@@ -707,7 +721,7 @@ detecting and responding to a compromise.
 An HTTPS client MAY participate in STH Pollination without fetching
 proofs. In this situation, the client receives STHs from a server,
 applies the same validation logic to them (signed by a known log,
-within the validity window) and will later pass them to an HTTPS
+within the validity window) and will later pass them to another HTTPS
 server.
 
 When operating in this fashion, the HTTPS client is promoting gossip
@@ -875,8 +889,9 @@ HTTPS Servers must deploy software (although, as in the case with SCT
 Feedback this logic can be pre-provided) and commit some configurable
 amount of disk space to the endeavor.
 
-Logs (or a third party) must provide access to clients to query proofs
-in a privacy preserving manner, most likely through DNS.
+Logs (or a third party mirroring the logs) must provide access to 
+clients to query proofs in a privacy preserving manner, most likely 
+through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
 only a minority of HTTPS servers deploy it. However, it makes an
@@ -992,7 +1007,7 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 
 {{dual-ca-compromise-attack}} describes an attack possible by an adversary who compromises two
 Certificate Authorites and a Log. This attack is difficult to defend
-against in the CT ecosystem, and XXX describes a few approaches to
+against in the CT ecosystem, and TBD describes a few approaches to
 doing so. We note that Gossip is not intended to defend against this
 attack, but can in certain modes.
 
@@ -1126,6 +1141,8 @@ requirement that logs MUST use a deterministic signature scheme when
 signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using
 RSA is not required to use a deterministic signature scheme.
 
+\[ TBD: Should that be a capital MUST?? \]
+
 Since logs are allowed to issue a new SCT for a certificate already
 present in the log, mandating deterministic signatures does not stop
 this fingerprinting attack altogether. It does make the attack harder
@@ -1135,7 +1152,7 @@ There is another similar fingerprinting attack where an HTTPS server
 tracks a client by using a unqiue certificate or a variation of cert
 chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
-described above. \[XXX any mitigations possible here?\]
+described above. \[TBD any mitigations possible here?\]
 
 ### Privacy for HTTPS clients performing STH Proof Fetching
 
@@ -1150,7 +1167,7 @@ The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
 DNS is a mechanism currently discussed. DNS exposes data in plaintext
 over the network (including what sites the user is visiting and what
-sites they have previously visited) an may not be suitable for some.
+sites they have previously visited) and may not be suitable for some.
 
 ### Privacy in STH Pollination
 
@@ -1319,15 +1336,21 @@ every effort to send this SCT via SCT Feedback. However the client
 MUST NOT share the data with any other third party (excepting a
 Trusted Auditor should one exist).
 
+\[ TBD: I think we should just remove the above paragraph. I do 
+not think, implementation-wise, separate code paths are needed. 
+Or perhaps we can just remove the SHOULD sentence, or make it a
+lower-case. \]
+
 If an STH has attempted to be resolved to a newer STH via a
 consistency proof multiple times, and each time has failed, a client
 MAY share the STH with an "Auditor of Last Resort" even if the STH in
 question is no longer within the validity window. This auditor may be
 pre-configured in the client, but the client SHOULD permit a user to
 disable the functionality or change whom data is sent to. The Auditor
-of Last Resort itself represents a point of failure, so if
+of Last Resort itself represents a point of failure and privacy 
+concerns, so if
 implemented, it should connect using public key pinning and not
-considered an item delivered until it recieves a confirmation.
+considere an item delivered until it recieves a confirmation.
 
 In the cases 3, 4, and 5, we assume that the webserver(s) or trusted
 auditor in question is either experiencing an operational failure, or
@@ -1397,7 +1420,9 @@ aggregating multiple pieces of data, choosing when and how many to
 release, and when to remove them is shared. This problem has
 previously been considered in the case of Mix Networks and Remailers,
 including papers such as "From a Trickle to a Flood: Active Attacks on
-Several Mix Types", \[Y\], and \[Z\].
+Several Mix Types".
+
+\[ TBD: Turn the above reference into a formal reference. \]
 
 There are several concerns to be addressed in this area, outlined
 below.
