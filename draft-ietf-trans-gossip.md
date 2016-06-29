@@ -1086,6 +1086,89 @@ from network error) is relegated to the implementation policy chosen
 by clients. Suggestions for client behavior are specified in
 {{blocking-policy-recommendations}}.
 
+## Flushing Attacks
+
+A flushing attack is an attempt by an adversary to flush a particular
+piece of data from a pool. In the CT Gossip ecosystem, an attacker may
+have performed an attack and left evidence of a compromised log on a
+client or server. They would be interested in flushing that data, i.e.
+tricking the target into gossiping or pollinating the incriminating
+evidence with only attacker-controlled clients or servers with the
+hope they trick the target into deleting it.
+
+Flushing attacks may be defended against differently depending on the 
+entity (HTTPS Client or HTTPS Server) and record (STHs or SCTs with 
+Certificate Chains). 
+
+### STHs
+
+For both HTTPS CLients and HTTPS Servers, STHs within the validity 
+window SHOULD NOT be deleted. An attacker cannot flush an item from the 
+cache if it is never removed - so flushing attacks are completely mitigated.
+
+The required disk space for all STHs within the validity window is 
+336 STHs per log that is trusted. If 20 logs are trusted, and each STH 
+takes 1 Kilobytes, this is 6.56 Megabytes.
+
+Note that it is important that implementors not calculate the exact 
+size of cache expected - if an attack does occur, a small number 
+of additional STHs will enter into the cache. These STHs will be in 
+addition to the expected set, and will be evidence of the attack.
+
+If a HTTPS Client or HTTPS Server is operating in a constrained 
+environment and cannot devote enough storage space to hold all
+STHs within the validity window it is recommended to use the below 
+Deletion Algorithm {{deletion-algorithm}} to make it more difficult 
+for the attacker.
+
+### SCTs & Certificate Chains on HTTPS Servers
+
+HTTPS Servers will only accept SCTs and Certificate Chains for 
+domains it is authoritative for. Therefore the storage space needed 
+is bound by the number of logs it accepts, multiplied by the 
+number of domains it is authoritative for, multiplied by the number
+of certificates issued for those domains.  
+
+Imagine a server authoritative for 10,000 domains, and each domain
+has 3 certificate chains, and 10 SCTs. A certificate chain is 5 
+Kilobytes in size and a SCT 1 Kilobyte. This yields 732 Megabytes.
+
+This data can be large, but it is calculable. Web properties with
+more certificates and domains are more likely to be able to handle
+the increased storage need, while small web properties will not
+seen an undue burden. Therefore HTTPS Servers SHOULD NOT delete SCTs
+or Certificate Chains - this completely mitigates flushing attacks.
+
+Again, note that it is important that implementors not calculate the 
+exact size of cache expected - if an attack does occur, the new
+SCT(s) and Certificate Chain(s) will enter into the cache. This data
+will be in addition to the expected set, and will be evidence of the 
+attack.
+
+If a HTTPS Server is operating in a constrained 
+environment and cannot devote enough storage space to hold all
+SCTs and Certificate Chains it is authoritative for it is recommended 
+to config the SCT Feedback mechanism to whitelist certain certificates 
+that are known to be valid. These chains and SCTs can then be discarded 
+without being stored or subsequently provided to any clients or 
+auditors. If the whitelist is not sufficient, the below Deletion 
+Algorithm {{deletion-algorithm}} is recommended to make it more 
+difficult for the attacker to perform a flushing attack.
+
+XXX The above is probably not correct.
+
+### SCTs & Certificate Chains on HTTPS Clients
+
+HTTPS Clients will accumulate SCTs and Certificate Chains without
+bound. It is expected they will choose a particular cache size and
+delete entries when the cache size meets its limit. This does not
+mitigate flushing attacks, and such an attack is documented in
+https://ritter.vg/blog-a_bit_on_certificate_transparency_gossip.html.
+
+The below Deletion Algorithm {{deletion-algorithm}} is recommended 
+to make it more difficult for the attacker to perform a flushing 
+attack.
+
 ## Privacy considerations
 
 CT Gossip deals with HTTPS Clients which are trying to share
@@ -1465,120 +1548,6 @@ used in either case. If shuffling is performed, the datastore must be
 marked 'dirty' upon item insertion, and at least one shuffle operation
 occurs on a dirty datastore before data is retrieved from it for use.
 
-### Flushing Attacks
-
-A flushing attack is an attempt by an adversary to flush a particular
-piece of data from a pool. In the CT Gossip ecosystem, an attacker may
-have performed an attack and left evidence of a compromised log on a
-client or server. They would be interested in flushing that data, i.e.
-tricking the target into gossiping or pollinating the incriminating
-evidence with only attacker-controlled clients or servers with the
-hope they trick the target into deleting it.
-
-Servers are most vulnerable to flushing attacks, as they release
-records to anonymous connections. An attacker can perform a Sybil
-attack -- connecting to the server hundreds or thousands of times in an
-attempt to trigger repeated release of a record, and then
-deletion. For this reason, servers must be especially aggressive about
-retaining data for a longer period of time.
-
-Clients are vulnerable to flushing attacks targetting STHs, as these
-can be given to any cooperating server and an attacker can generally
-induce connections to random servers using javascript. It would be
-more difficult to perform a flushing attack against SCTs, as the
-target server must be authenticated (and an attacker impersonating an
-authentic server presents a recursive problem for the
-attacker). Nonetheless, flushing SCTs should not be ruled
-impossible. A Trusted Auditor may also be vulnerable to flushing
-attacks if it does not perform auditing operations itself.
-
-Flushing attacks are defended against using non-determinism and dummy
-messages. The goal is to ensure that an adversary does not know for
-certain if the data in question has been released or not, and if it
-has been deleted or not.
-
-\[ TBD: At present, we do not have any support for dummy messages. Do we
- want to define a dummy message that clients and servers alike know to
- ignore?  Will HTTP Compression leak the presence of >1 dummy
- messages?
-
- Is it sufficient to define a dummy message as _anything_ with an
- invalid siganture? This would negatively impact SCT Feedback servers
- that log all things just in case they're interesting. \]
-
-
-### Record Storage
-
-Flushing attacks are defended against differently depending on the 
-entity (HTTPS Client or HTTPS Server) and record (STHs or SCTs with Certificate Chains). 
-
-#### STHs
-
-For both HTTPS CLients and HTTPS Servers, STHs within the validity 
-window SHOULD NOT be deleted. An attacker cannot flush an item from the 
-cache if it is never removed - so flushing attacks are completely mitigated.
-
-The required disk space for all STHs within the validity window is 
-336 STHs per log. 
-XXX Calculations
-
-Note that it is important that implementors not calculate the exact 
-size of cache expected - if an attack does occur, a small number 
-of additional STHs will enter into the cache. These STHs will be in 
-addition to the expected set, and will be evidence of the attack.
-
-If a HTTPS Client or HTTPS Server is operating in a constrained 
-environment and cannot devote enough storage space to hold all
-STHs within the validity window it is recommended to use the below 
-Deletion Algorithm {{deletion-algorithm}} to make it more difficult 
-for the attacker.
-
-#### SCTs & Certificate Chains on HTTPS Servers
-
-HTTPS Servers will only accept SCTs and Certificate Chains for 
-domains it is authoritative for. Therefore the storage space needed 
-is bound by the number of logs it accepts, multiplied by the 
-number of domains it is authoritative for, multiplied by the number
-of certificates issued for those domains.  
-
-XXX Calculations
-
-This data can be large, but it is calculable. Web properties with
-more certificates and domains are more likely to be able to handle
-the increased storage need, while small web properties will not
-seen an undue burden. Therefore HTTPS Servers SHOULD NOT delete SCTs
-or Certificate Chains - this completely mitigates flushing attacks.
-
-Again, note that it is important that implementors not calculate the 
-exact size of cache expected - if an attack does occur, the new
-SCT(s) and Certificate Chain(s) will enter into the cache. This data
-will be in addition to the expected set, and will be evidence of the 
-attack.
-
-If a HTTPS Server is operating in a constrained 
-environment and cannot devote enough storage space to hold all
-SCTs and Certificate Chains it is authoritative for it is recommended 
-to config the SCT Feedback mechanism to whitelist certain certificates 
-that are known to be valid. These chains and SCTs can then be discarded 
-without being stored or subsequently provided to any clients or 
-auditors. If the whitelist is not sufficient, the below Deletion 
-Algorithm {{deletion-algorithm}} is recommended to make it more 
-difficult for the attacker to perform a flushing attack.
-
-XXX The above is probably not correct.
-
-#### SCTs & Certificate Chains on HTTPS Clients
-
-HTTPS Clients will accumulate SCTs and Certificate Chains without
-bound. It is expected they will choose a particular cache size and
-delete entries when the cache size meets its limit. This does not
-mitigate flushing attacks, and such an attack is documented in
-{{TBD TBD}}.
-
-The below Deletion Algorithm {{deletion-algorithm}} is recommended 
-to make it more difficult for the attacker to perform a flushing 
-attack.
-
 ### The Deletion Algorithm {#deletion-algorithm}
 
 No entity in CT Gossip is required to delete records at any time, 
@@ -1615,16 +1584,19 @@ it more difficult for a successful flushing attack to to be performed.
   attacker is faced with a recursive problem. Deletion from this set of
   SCTs should be done at random.
 
-  3. Finally, if the above steps have been followed and have not 
-  succeeded in reducing the size sufficiently, records may be deleted at random. 
+  3. Attempt to save any submissions that have failed proof fetching
+  repeatedly, as these are the most likely to be indicative of an attack
+
+  4. Finally, if the above steps have been followed and have not 
+  succeeded in reducing the size sufficiently, records may be deleted at 
+  random. 
 
 The decision to delete records at random is intentional. Introducing 
 non-determinism in the decision is absolutely necessary to make it 
 more difficult for an adversary to know with certainty or high 
 confidence that the record has been successfully flushed from a target. 
-See {{TBD TBD}} for an example.
 
-### Concrete Recommendations
+## Concrete Recommendations
 
 We present the following pseudocode as a concrete outline of our
 suggestion.
