@@ -1155,8 +1155,6 @@ auditors. If the whitelist is not sufficient, the below Deletion
 Algorithm {{deletion-algorithm}} is recommended to make it more 
 difficult for the attacker to perform a flushing attack.
 
-XXX The above is probably not correct.
-
 ### SCTs & Certificate Chains on HTTPS Clients
 
 HTTPS Clients will accumulate SCTs and Certificate Chains without
@@ -1578,18 +1576,23 @@ it more difficult for a successful flushing attack to to be performed.
   been fetched, the record is safer to delete.
 
   2. If proof fetching has failed, or is disabled, begin by deleting
-  SCTs and Certificate Chains that have been successfully reported
-  to the server. Because a submission is not counted as being reported 
-  unless it is sent over a connection using a different SCT, the 
-  attacker is faced with a recursive problem. Deletion from this set of
-  SCTs should be done at random.
+  SCTs and Certificate Chains that have been successfully reported. 
+  Deletion from this set of SCTs should be done at random.  For a 
+  client, a submission is not counted as being reported unless it is 
+  sent over a connection using a different SCT, so the 
+  attacker is faced with a recursive problem. (For a server, this step
+  does not apply.) 
 
   3. Attempt to save any submissions that have failed proof fetching
-  repeatedly, as these are the most likely to be indicative of an attack
+  repeatedly, as these are the most likely to be indicative of an attack.
 
   4. Finally, if the above steps have been followed and have not 
   succeeded in reducing the size sufficiently, records may be deleted at 
   random. 
+
+Note that if proof fetching is disabled (which is expected although not 
+required for servers) -- the algorithm collapses down to 'delete at 
+random'.
 
 The decision to delete records at random is intentional. Introducing 
 non-determinism in the decision is absolutely necessary to make it 
@@ -1599,9 +1602,13 @@ confidence that the record has been successfully flushed from a target.
 ## Concrete Recommendations
 
 We present the following pseudocode as a concrete outline of our
-suggestion.
+policy recommendations.
 
-#### STH Polination
+Both suggestions presented are applicable to both clients and servers.
+Servers may not perform proof fetching, in which case large portions
+of the pseudocode are not applicable. But it should work in either case.
+
+### STH Polination
 
 The STH class contains data pertaining specifically to the STH itself.
 
@@ -1737,10 +1744,9 @@ These functions also exist in the STHStore class.
       }
     }
 
-#### SCT Feedback
+### SCT Feedback
 
-TBD 
-This section is not well abstracted to be used for both servers and clients.
+
 
 The SCT class contains data pertaining specifically to an SCT itself.
 
@@ -1924,34 +1930,41 @@ illustrate the intended behavior. Hopefully the code matches!
       //  is valid for
       string   domain
 
-      //  This is the last time the domain was contacted by the client. It 
-      //  is updated whenever the client makes any request (not just feedback) 
-      //  to the domain - responsibility for updating lies OUTSIDE of the class
+      //  This is the last time the domain was contacted. For client 
+      //  operations it is updated whenever the client makes any request 
+      //  (not just feedback) to the domain. For server operations, it is
+      //  updated whenever any client contacts the domain. Responsibility 
+      //  for updating lies OUTSIDE of the class
       public datetime last_contact_for_domain
 
       //  This is the last time SCT Feedback was attempted for the domain. 
       //  It is updated whenever feedback is attempted - responsibility for 
       //  updating lies OUTSIDE of the class
+      //  This is not used when this algorithm runs on servers
       public datetime last_sct_feedback_attempt
 
       //  This is the number of times we have waited an
       //  WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, and still failed
       //  e.g. 10 months of failures
+      //  This is not used when this algorithm runs on servers
       private uint16   num_feedback_loop_failures
 
       //  This is whether or not SCT Feedback has failed enough times that we
       //  should not bother storing data for it anymore. It is a small function 
       //  used for illustrative purposes
+      //  This is not used when this algorithm runs on servers
       private bool     sct_feedback_failing_longterm() 
         { num_feedback_loop_failures >= MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE }
 
       //  This is the number of SCT Feedback submissions attempted. 
       //  Responsibility for incrementing lies OUTSIDE of the class
       //  (And watch for integer overflows)
+      //  This is not used when this algorithm runs on servers
       public uint16    num_submissions_attempted
 
       //  This is the number of successfull SCT Feedback submissions. This
       //  variable is updated by the class.
+      //  This is not used when this algorithm runs on servers
       private uint16   num_submissions_succeeded
       
       //  This contains all the bundles of SCT data we have observed for 
@@ -1962,6 +1975,10 @@ illustrate the intended behavior. Hopefully the code matches!
       //  This function can be called to determine if we should attempt
       //  SCT Feedback for this domain.
       def should_attempt_feedback() {
+        // Servers always perform feedback!
+        if(operator_is_server)
+          return true
+
         // If we have not tried in a month, try again
         if(now() - last_sct_feedback_attempt > WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS)
           return true
@@ -1975,31 +1992,35 @@ illustrate the intended behavior. Hopefully the code matches!
         return false
       }
 
-      //  This function is called after recieving an SCTBundle.
-      //  For Clients, this is after a successful connection to a
-      //  HTTPS Server, calling this function with an SCTBundle
-      //  constructed from that certificate chain and SCTs.
-      //  For Servers, this is called after receiving SCT Feedback.
-      def insert(SCTBundle b) {
+      //  For Clients, this function is called after a successful 
+      //  connection to a HTTPS Server, with a single SCTBundle
+      //  constructed from that conneciton's certificate chain and SCTs.
+      //  For Servers, this is called after receiving SCT Feedback with
+      //  all the bundles sent in the feedback.
+      def insert(SCTBundle[] bundles) {
         // Do not store data for long-failing domains
         if(sct_feedback_failing_longterm()) {
           return
         }
 
-        if(operator_is_server) {
-          if(!passes_validity_checks(b))
-            return
-        }
-        foreach(e in this.observed_records) {
-          if(e.equals(b))
-            return
-          else if(e.approx_equals(b)) {
-            e.insert_scts(b.sct_list)
-            SCTStoreManager.update_cache_percentage()
-            return
+        foreach(b in bundles) {
+          if(operator_is_server) {
+            if(!passes_validity_checks(b))
+              return
           }
+
+          bool have_inserted = false
+          foreach(e in this.observed_records) {
+            if(e.equals(b))
+              return
+            else if(e.approx_equals(b)) {
+              have_inserted = true
+              e.insert_scts(b.sct_list)
+            }
+          }
+          if(!have_inserted)
+            this.observed_records.insert(b)
         }
-        this.observed_records.insert(b)
         SCTStoreManager.update_cache_percentage()
       }
 
@@ -2037,12 +2058,23 @@ The SCTDomainEntry is responsible for handling the outcome of a submission
 report for that domain using its member function:
 
     //  This function is called after providing SCT Feedback
-    //  to a server. It is passed the feedback sent to the server, which
+    //  to a server. It is passed the feedback sent to the other party, which
     //  is the output of get_gossip_selection(), and also the SCTBundle 
-    //  representing the connection the data was sent on.
+    //  representing the connection the data was sent on. 
+    //  (When this code runs on the server, connectionBundle is NULL)
     //  If the Feedback was not sent successfully, error is True
     def after_submit_to_thirdparty(error, SCTBundle[] submittedBundles, SCTBundle connectionBundle)
     {
+      // Server operation in this instance is exceedingly simple
+      if(operator_is_server) {
+        if(error)
+          return
+        foreach(bundle in submittedBundles)
+          bundle.num_reports_to_thirdparty++
+        return
+      }
+
+      // Client behavior is much more complicated
       if(error) {
         if(sct_feedback_failing_longterm()) {
           num_feedback_loop_failures++
@@ -2164,7 +2196,7 @@ if the cache is getting full, separate functions are used for that.
         }
 
         // Do not store data for domains who are not supporting SCT
-        if(domainEntry.sct_feedback_failing_longterm())
+        if(!operator_is_server && domainEntry.sct_feedback_failing_longterm())
         {
           // Note that reseting these variables every single time is 
           // necessary to avoid a bug
@@ -2175,7 +2207,7 @@ if the cache is getting full, separate functions are used for that.
         }
 
         // This check removes successfully submitted data for
-        // old domains we have not visited in a long time
+        // old domains we have not dealt with in a long time
         if(domainEntry.num_submissions_succeeded > 0
            && now() - domainEntry.last_contact_for_domain
               > TIME_UNTIL_OLD_SUBMITTED_SCTDATA_ERASED)
@@ -2184,7 +2216,7 @@ if the cache is getting full, separate functions are used for that.
         }
 
         // This check removes unsuccessfully submitted data for
-        // old domains we have not visited in a very long time
+        // old domains we have not dealt with in a very long time
         if(now() - domainEntry.last_contact_for_domain
            > TIME_UNTIL_OLD_UNSUBMITTED_SCTDATA_ERASED)
         {
@@ -2247,7 +2279,7 @@ SCTStoreManager class will be used.
           }
 
           // Third, consider deleting entries that have been successfully 
-          // reported to the server
+          // reported
           if(sctBundle.num_reports_to_thirdparty > 0) {
             bundlesToDelete.append( Struct(domainEntry, sctBundle) )
           }
