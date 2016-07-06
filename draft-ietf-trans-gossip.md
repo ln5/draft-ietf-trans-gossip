@@ -368,7 +368,7 @@ object.
 
 If the client does connect to the same HTTPS server a subsequent time,
 it MUST send to the server sct\_feedback objects in the store that are
-associated with that domain name. However, it is not necessary to send 
+associated with that domain name. However, it is not necessary to send
 an sct\_feedback object constructed from the current TLS session, and
 if the client does so, it MUST NOT be marked as sent in any internal
 tracking done by the client.
@@ -393,7 +393,7 @@ to third parties, SCTs of third parties MUST be treated as cookies
 with respect to this setting. This prevents third party tracking
 through the use of SCTs/certificates, which would bypass the cookie
 policy. For domains that are only loaded as third party domains,
-the client may never perform SCT Feedback; however the client may 
+the client may never perform SCT Feedback; however the client may
 perform STH Pollination after fetching an inclusion proof, as
 specified in {{sth-pollination}}.
 
@@ -436,7 +436,7 @@ actually preserve user privacy. The Issuer field in the certificate
 describes the signing certificate. And if the certificate is being
 submitted at all, it means the certificate is logged, and has
 SCTs. This means that the Issuer can be queried and obtained from the
-log - so omitting the signing certificate from the client's submission 
+log - so omitting the signing certificate from the client's submission
 does not actually help user privacy.
 
 ### HTTPS server operation {#feedback-srvop}
@@ -491,7 +491,7 @@ which sites they visit. It additionally helps prevent DoS attacks on
 the server.
 
 \[ Note: Thinking about building this, how does the SCT Feedback app know
-which sites it's authoritative for? It will need that amount of 
+which sites it's authoritative for? It will need that amount of
 configuration at least. \]
 
 The check in step 4 is to prevent DoS attacks where an adversary fills
@@ -499,14 +499,14 @@ up the store prior to attacking a client (thus preventing the client's
 feedback from being recorded), or an attack where an adversary simply
 attempts to fill up server's storage space.
 
-The above describes the simpler mode of operation. In the more advanced 
-server mode, the server will detect the attack described 
+The above describes the simpler mode of operation. In the more advanced
+server mode, the server will detect the attack described
 in {{dual-ca-compromise-attack}}. In this configuration the
 server will not modify the sct\_feedback object prior to performing
 checks 2, 3, and 4.
 
 To prevent a malicious client from filling the server's data store,
-the HTTPS Server SHOULD perform an additional check in the more 
+the HTTPS Server SHOULD perform an additional check in the more
 advanced mode:
 
    5. if the x509\_chain consists of an invalid certificate chain, or
@@ -537,8 +537,8 @@ passive pull model.
 The data received in a GET of the well-known URL or sent in the POST
 is defined in {{feedback-dataformat}}.
 
-\[ TBD: Technically the dataformat is slightly different. 
-feedback-dataformat says the x509_chain will always contain a full 
+\[ TBD: Technically the dataformat is slightly different.
+feedback-dataformat says the x509_chain will always contain a full
 chain. But when it is received by an auditor, it may omit the chain,
 as described three paragraphs below. \]
 
@@ -892,8 +892,8 @@ HTTPS Servers must deploy software (although, as in the case with SCT
 Feedback this logic can be pre-provided) and commit some configurable
 amount of disk space to the endeavor.
 
-Logs (or a third party mirroring the logs) must provide access to 
-clients to query proofs in a privacy preserving manner, most likely 
+Logs (or a third party mirroring the logs) must provide access to
+clients to query proofs in a privacy preserving manner, most likely
 through DNS.
 
 Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
@@ -1099,41 +1099,41 @@ tricking the target into gossiping or pollinating the incriminating
 evidence with only attacker-controlled clients or servers with the
 hope they trick the target into deleting it.
 
-Flushing attacks may be defended against differently depending on the 
-entity (HTTPS Client or HTTPS Server) and record (STHs or SCTs with 
-Certificate Chains). 
+Flushing attacks may be defended against differently depending on the
+entity (HTTPS Client or HTTPS Server) and record (STHs or SCTs with
+Certificate Chains).
 
 ### STHs
 
 For both HTTPS Clients and HTTPS Servers, STHs within the validity
-window SHOULD NOT be deleted. An attacker cannot flush an item from the 
+window SHOULD NOT be deleted. An attacker cannot flush an item from the
 cache if it is never removed - so flushing attacks are completely mitigated.
 
-The required disk space for all STHs within the validity window is 
-336 STHs per log that is trusted. If 20 logs are trusted, and each STH 
+The required disk space for all STHs within the validity window is
+336 STHs per log that is trusted. If 20 logs are trusted, and each STH
 takes 1 Kilobytes, this is 6.56 Megabytes.
 
-Note that it is important that implementors not calculate the exact 
-size of cache expected - if an attack does occur, a small number 
-of additional STHs will enter into the cache. These STHs will be in 
+Note that it is important that implementors not calculate the exact
+size of cache expected - if an attack does occur, a small number
+of additional STHs will enter into the cache. These STHs will be in
 addition to the expected set, and will be evidence of the attack.
 
-If a HTTPS Client or HTTPS Server is operating in a constrained 
+If a HTTPS Client or HTTPS Server is operating in a constrained
 environment and cannot devote enough storage space to hold all
-STHs within the validity window it is recommended to use the below 
-Deletion Algorithm {{deletion-algorithm}} to make it more difficult 
+STHs within the validity window it is recommended to use the below
+Deletion Algorithm {{deletion-algorithm}} to make it more difficult
 for the attacker.
 
 ### SCTs & Certificate Chains on HTTPS Servers
 
-HTTPS Servers will only accept SCTs and Certificate Chains for 
-domains it is authoritative for. Therefore the storage space needed 
-is bound by the number of logs it accepts, multiplied by the 
+HTTPS Servers will only accept SCTs and Certificate Chains for
+domains it is authoritative for. Therefore the storage space needed
+is bound by the number of logs it accepts, multiplied by the
 number of domains it is authoritative for, multiplied by the number
-of certificates issued for those domains.  
+of certificates issued for those domains.
 
 Imagine a server authoritative for 10,000 domains, and each domain
-has 3 certificate chains, and 10 SCTs. A certificate chain is 5 
+has 3 certificate chains, and 10 SCTs. A certificate chain is 5
 Kilobytes in size and a SCT 1 Kilobyte. This yields 732 Megabytes.
 
 This data can be large, but it is calculable. Web properties with
@@ -1142,20 +1142,20 @@ the increased storage need, while small web properties will not
 seen an undue burden. Therefore HTTPS Servers SHOULD NOT delete SCTs
 or Certificate Chains - this completely mitigates flushing attacks.
 
-Again, note that it is important that implementors not calculate the 
+Again, note that it is important that implementors not calculate the
 exact size of cache expected - if an attack does occur, the new
 SCT(s) and Certificate Chain(s) will enter into the cache. This data
-will be in addition to the expected set, and will be evidence of the 
+will be in addition to the expected set, and will be evidence of the
 attack.
 
-If a HTTPS Server is operating in a constrained 
+If a HTTPS Server is operating in a constrained
 environment and cannot devote enough storage space to hold all
-SCTs and Certificate Chains it is authoritative for it is recommended 
+SCTs and Certificate Chains it is authoritative for it is recommended
 to configure the SCT Feedback mechanism to allow only certain certificates
-that are known to be valid. These chains and SCTs can then be discarded 
-without being stored or subsequently provided to any clients or 
+that are known to be valid. These chains and SCTs can then be discarded
+without being stored or subsequently provided to any clients or
 auditors. If the allowlist is not sufficient, the below Deletion
-Algorithm {{deletion-algorithm}} is recommended to make it more 
+Algorithm {{deletion-algorithm}} is recommended to make it more
 difficult for the attacker to perform a flushing attack.
 
 ### SCTs & Certificate Chains on HTTPS Clients
@@ -1166,8 +1166,8 @@ delete entries when the cache size meets its limit. This does not
 mitigate flushing attacks, and such an attack is documented in
 https://ritter.vg/blog-a_bit_on_certificate_transparency_gossip.html.
 
-The below Deletion Algorithm {{deletion-algorithm}} is recommended 
-to make it more difficult for the attacker to perform a flushing 
+The below Deletion Algorithm {{deletion-algorithm}} is recommended
+to make it more difficult for the attacker to perform a flushing
 attack.
 
 ## Privacy considerations
@@ -1420,8 +1420,8 @@ every effort to send this SCT via SCT Feedback. However the client
 MUST NOT share the data with any other third party (excepting a
 Trusted Auditor should one exist).
 
-\[ TBD: I think we should just remove the above paragraph. I do 
-not think, implementation-wise, separate code paths are needed. 
+\[ TBD: I think we should just remove the above paragraph. I do
+not think, implementation-wise, separate code paths are needed.
 Or perhaps we can just remove the SHOULD sentence, or make it a
 lower-case. \]
 
@@ -1431,7 +1431,7 @@ MAY share the STH with an "Auditor of Last Resort" even if the STH in
 question is no longer within the validity window. This auditor may be
 pre-configured in the client, but the client SHOULD permit a user to
 disable the functionality or change whom data is sent to. The Auditor
-of Last Resort itself represents a point of failure and privacy 
+of Last Resort itself represents a point of failure and privacy
 concerns, so if
 implemented, it should connect using public key pinning and not
 consider an item delivered until it receives a confirmation.
@@ -1551,9 +1551,9 @@ occurs on a dirty datastore before data is retrieved from it for use.
 
 ### The Deletion Algorithm {#deletion-algorithm}
 
-No entity in CT Gossip is required to delete records at any time, 
-except to respect user's wishes such as private browsing mode or 
-clearing history. However, it is likely that over time the 
+No entity in CT Gossip is required to delete records at any time,
+except to respect user's wishes such as private browsing mode or
+clearing history. However, it is likely that over time the
 accumulated storage will grow in size and need to be pruned.
 
 While deletion of data will occur, proof fetching can ensure
@@ -1573,34 +1573,34 @@ resolved to a new STH via a proof.
 When it is time to delete a record, it can be done in a way that makes
 it more difficult for a successful flushing attack to to be performed.
 
-  1. When the record cache has reached a certain size that is yet under 
-  the limit, aggressively perform proof fetching. This should resolve 
-  records to a small set of STHs that can be retained. Once a proof has 
+  1. When the record cache has reached a certain size that is yet under
+  the limit, aggressively perform proof fetching. This should resolve
+  records to a small set of STHs that can be retained. Once a proof has
   been fetched, the record is safer to delete.
 
   2. If proof fetching has failed, or is disabled, begin by deleting
-  SCTs and Certificate Chains that have been successfully reported. 
-  Deletion from this set of SCTs should be done at random.  For a 
-  client, a submission is not counted as being reported unless it is 
-  sent over a connection using a different SCT, so the 
+  SCTs and Certificate Chains that have been successfully reported.
+  Deletion from this set of SCTs should be done at random.  For a
+  client, a submission is not counted as being reported unless it is
+  sent over a connection using a different SCT, so the
   attacker is faced with a recursive problem. (For a server, this step
-  does not apply.) 
+  does not apply.)
 
   3. Attempt to save any submissions that have failed proof fetching
   repeatedly, as these are the most likely to be indicative of an attack.
 
-  4. Finally, if the above steps have been followed and have not 
-  succeeded in reducing the size sufficiently, records may be deleted at 
-  random. 
+  4. Finally, if the above steps have been followed and have not
+  succeeded in reducing the size sufficiently, records may be deleted at
+  random.
 
-Note that if proof fetching is disabled (which is expected although not 
-required for servers) -- the algorithm collapses down to 'delete at 
+Note that if proof fetching is disabled (which is expected although not
+required for servers) -- the algorithm collapses down to 'delete at
 random'.
 
-The decision to delete records at random is intentional. Introducing 
-non-determinism in the decision is absolutely necessary to make it 
-more difficult for an adversary to know with certainty or high 
-confidence that the record has been successfully flushed from a target. 
+The decision to delete records at random is intentional. Introducing
+non-determinism in the decision is absolutely necessary to make it
+more difficult for an adversary to know with certainty or high
+confidence that the record has been successfully flushed from a target.
 
 ## Concrete Recommendations
 
@@ -1630,8 +1630,8 @@ server). This simplistic view of the class does not take into account
 the complicated locking that would likely be required for a data
 structure being accessed by multiple threads. Something to note about
 this pseudocode is that it does not remove STHs once they have
-been resolved to a newer STH. Doing so might make older STHs within 
-the validity window rarer and thus enable tracking. 
+been resolved to a newer STH. Doing so might make older STHs within
+the validity window rarer and thus enable tracking.
 
     class STHStore
     {
@@ -1816,27 +1816,27 @@ reported to the third party.
       }
     }
 
-For each domain, we store a SCTDomainEntry that holds the SCTBundles 
-seen for that domain, as well as encapsulating some logic relating 
-to SCT Feedback for that particular domain.  In particular, this data 
-structure also contains the logic that handles domains not supporting 
+For each domain, we store a SCTDomainEntry that holds the SCTBundles
+seen for that domain, as well as encapsulating some logic relating
+to SCT Feedback for that particular domain.  In particular, this data
+structure also contains the logic that handles domains not supporting
 SCT Feedback. Its behavior is:
 
- 1. When a user visits a domain, SCT Feedback is attempted for it. If 
-    it fails, it will retry after a month (configurable). If it succeeds, 
-    excellent. SCT Feedback data is still collected and stored even if 
+ 1. When a user visits a domain, SCT Feedback is attempted for it. If
+    it fails, it will retry after a month (configurable). If it succeeds,
+    excellent. SCT Feedback data is still collected and stored even if
     SCT Feedback failed.
- 2. After 3 month-long waits between failures, the domain will be marked 
-    as failing long-term. No SCT Feedback data will be stored beyond 
-    meta-data, but SCT Feedback will still be attempted after month-long 
+ 2. After 3 month-long waits between failures, the domain will be marked
+    as failing long-term. No SCT Feedback data will be stored beyond
+    meta-data, but SCT Feedback will still be attempted after month-long
     waits
- 3. If at any point in time, SCT Feedback succeeds, all failure counters 
+ 3. If at any point in time, SCT Feedback succeeds, all failure counters
     are reset
  4. If a domain succeeds, but then begins failing, it must fail more than
     90% of the time (configurable) and then the process begins at (2).
 
-If a domain is visited infrequently (say, once every 7 months) then it 
-will be evicted from the cache and start all over again (according to 
+If a domain is visited infrequently (say, once every 7 months) then it
+will be evicted from the cache and start all over again (according to
 the suggestion values in the below pseudocode).
 
 \[
@@ -1845,31 +1845,31 @@ illustrate the intended behavior. Hopefully the code matches!
 
      Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
      Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ... 
+     ... wait a month ...
      Succeed 1 month later num_submissions_attempted=13   num_submissions_succeeded=2  num_feedback_loop_failures=0(r) indicates (Reset)
      -> Feedback is attempted regularly.
- 
+
      Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
      Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=13   num_submissions_succeeded=1  num_feedback_loop_failures=2
-     ... wait a month ... 
+     ... wait a month ...
      Succeed 1 month later num_submissions_attempted=14   num_submissions_succeeded=2  num_feedback_loop_failures=0(r)
      -> Feedback is attempted regularly.
- 
+
      Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
      Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=13   num_submissions_succeeded=1  num_feedback_loop_failures=2
-     ... wait a month ... 
+     ... wait a month ...
      Fail 1 month later    num_submissions_attempted=14   num_submissions_succeeded=2  num_feedback_loop_failures=3
-     ... clear_old_data() is run every hour ... 
+     ... clear_old_data() is run every hour ...
                            num_submissions_attempted=0    num_submissions_succeeded=0  num_feedback_loop_failures=3
                            sct_feedback_failing_longterm=True
      Fail 1 month later    num_submissions_attempted=1    num_submissions_succeeded=0  num_feedback_loop_failures=4
@@ -1881,8 +1881,8 @@ illustrate the intended behavior. Hopefully the code matches!
                            sct_feedback_failing_longterm=False
      -> Feedback is attempted regularly.
 
-     Note above that the second run of clear_old_data() will reset num_submissions_attempted from 1 to 0.  This is 
-     CRITICAL. Otherwise, we would have the below bug (where after 10 months of failures, a success would not hit 
+     Note above that the second run of clear_old_data() will reset num_submissions_attempted from 1 to 0.  This is
+     CRITICAL. Otherwise, we would have the below bug (where after 10 months of failures, a success would not hit
      the required ratio to keep going)
 
 
@@ -1912,36 +1912,36 @@ illustrate the intended behavior. Hopefully the code matches!
 
     //Suggestions:
     //  After concluding a domain doesn't support feedback, we try again
-    //  after WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time to see if 
+    //  after WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time to see if
     //  they added support
     #define WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS                     1 month
 
     //  If we've waited MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE
     //  multiplied by WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, we
-    //  still attempt SCT Feedback, but no longer bother storing any data 
+    //  still attempt SCT Feedback, but no longer bother storing any data
     //  until the domain supports SCT Feedback
     #define MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE      3
 
     //  If this percentage of SCT Feedback attempts previously succeeded,
-    //  we consider the domain as supporting feedback and is just having 
+    //  we consider the domain as supporting feedback and is just having
     //  transient errors
     #define MIN_RATIO_FOR_SCT_FEEDBACK_TO_BE_WORKING               .10
 
     class SCTDomainEntry
     {
-      //  This is the primary key of the object, the exact domain name it 
+      //  This is the primary key of the object, the exact domain name it
       //  is valid for
       string   domain
 
-      //  This is the last time the domain was contacted. For client 
-      //  operations it is updated whenever the client makes any request 
+      //  This is the last time the domain was contacted. For client
+      //  operations it is updated whenever the client makes any request
       //  (not just feedback) to the domain. For server operations, it is
-      //  updated whenever any client contacts the domain. Responsibility 
+      //  updated whenever any client contacts the domain. Responsibility
       //  for updating lies OUTSIDE of the class
       public datetime last_contact_for_domain
 
-      //  This is the last time SCT Feedback was attempted for the domain. 
-      //  It is updated whenever feedback is attempted - responsibility for 
+      //  This is the last time SCT Feedback was attempted for the domain.
+      //  It is updated whenever feedback is attempted - responsibility for
       //  updating lies OUTSIDE of the class
       //  This is not used when this algorithm runs on servers
       public datetime last_sct_feedback_attempt
@@ -1953,13 +1953,13 @@ illustrate the intended behavior. Hopefully the code matches!
       private uint16   num_feedback_loop_failures
 
       //  This is whether or not SCT Feedback has failed enough times that we
-      //  should not bother storing data for it anymore. It is a small function 
+      //  should not bother storing data for it anymore. It is a small function
       //  used for illustrative purposes
       //  This is not used when this algorithm runs on servers
-      private bool     sct_feedback_failing_longterm() 
+      private bool     sct_feedback_failing_longterm()
         { num_feedback_loop_failures >= MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE }
 
-      //  This is the number of SCT Feedback submissions attempted. 
+      //  This is the number of SCT Feedback submissions attempted.
       //  Responsibility for incrementing lies OUTSIDE of the class
       //  (And watch for integer overflows)
       //  This is not used when this algorithm runs on servers
@@ -1969,9 +1969,9 @@ illustrate the intended behavior. Hopefully the code matches!
       //  variable is updated by the class.
       //  This is not used when this algorithm runs on servers
       private uint16   num_submissions_succeeded
-      
-      //  This contains all the bundles of SCT data we have observed for 
-      //  this domain 
+
+      //  This contains all the bundles of SCT data we have observed for
+      //  this domain
       SCTBundle[] observed_records
 
 
@@ -1995,7 +1995,7 @@ illustrate the intended behavior. Hopefully the code matches!
         return false
       }
 
-      //  For Clients, this function is called after a successful 
+      //  For Clients, this function is called after a successful
       //  connection to a HTTPS Server, with a single SCTBundle
       //  constructed from that connection's certificate chain and SCTs.
       //  For Servers, this is called after receiving SCT Feedback with
@@ -2057,13 +2057,13 @@ illustrate the intended behavior. Hopefully the code matches!
       }
     }
 
-The SCTDomainEntry is responsible for handling the outcome of a submission 
+The SCTDomainEntry is responsible for handling the outcome of a submission
 report for that domain using its member function:
 
     //  This function is called after providing SCT Feedback
     //  to a server. It is passed the feedback sent to the other party, which
-    //  is the output of get_gossip_selection(), and also the SCTBundle 
-    //  representing the connection the data was sent on. 
+    //  is the output of get_gossip_selection(), and also the SCTBundle
+    //  representing the connection the data was sent on.
     //  (When this code runs on the server, connectionBundle is NULL)
     //  If the Feedback was not sent successfully, error is True
     def after_submit_to_thirdparty(error, SCTBundle[] submittedBundles, SCTBundle connectionBundle)
@@ -2082,13 +2082,13 @@ report for that domain using its member function:
         if(sct_feedback_failing_longterm()) {
           num_feedback_loop_failures++
         }
-        else if((num_submissions_succeeded / num_submissions_attempted) 
+        else if((num_submissions_succeeded / num_submissions_attempted)
                 > MIN_RATIO_FOR_SCT_FEEDBACK_TO_BE_WORKING) {
           // Do nothing. num_submissions_succeeded will not be incremented
-          // After enough of these failures, the ratio will fall beyond 
+          // After enough of these failures, the ratio will fall beyond
           // acceptable
         } else {
-          // The domain has begun its three-month grace period. We will 
+          // The domain has begun its three-month grace period. We will
           // attempt submissions once a month
           num_feedback_loop_failures++
         }
@@ -2096,7 +2096,7 @@ report for that domain using its member function:
       }
       // We succeeded, so reset all of our failure states
       // Note, there is a race condition here if clear_old_data() is called
-      // while this callback is outstanding. 
+      // while this callback is outstanding.
       num_feedback_loop_failures     = 0
       if(num_submissions_succeeded != UINT16_MAX )
         num_submissions_succeeded++
@@ -2109,7 +2109,7 @@ report for that domain using its member function:
           bundle.num_reports_to_thirdparty++
         else {
           // This check ensures that a SCT Bundle is not considered reported
-          // if it is submitted over a connection with the same SCTs. This 
+          // if it is submitted over a connection with the same SCTs. This
           // satisfies the constraint in Paragraph 5 of {{feedback-clisrv}}
           // Consider three submission scenarios:
           // Submitted SCTs      Connection SCTs      Considered Submitted
@@ -2122,9 +2122,9 @@ report for that domain using its member function:
       }
     }
 
-Instances of the SCTDomainEntry class are stored as part of a larger class 
-that manages the entire SCT Cache, storing them in a hashmap keyed by domain. 
-This class also tracks the current size of the cache, and will trigger 
+Instances of the SCTDomainEntry class are stored as part of a larger class
+that manages the entire SCT Cache, storing them in a hashmap keyed by domain.
+This class also tracks the current size of the cache, and will trigger
 cache eviction.
 
     //Suggestions:
@@ -2140,8 +2140,8 @@ cache eviction.
       uint32                          current_cache_size
       datetime                        imminent_cache_pressure_check_performed
 
-      float current_cache_percentage() { 
-        return current_cache_size / MAX_CACHE_SIZE; 
+      float current_cache_percentage() {
+        return current_cache_size / MAX_CACHE_SIZE;
       }
 
       static def update_cache_percentage() {
@@ -2150,11 +2150,11 @@ cache eviction.
         /* ... perform calculations ... */
         current_cache_size = /* new calculated value */
 
-        // Perform locking to prevent multiple of these functions being 
+        // Perform locking to prevent multiple of these functions being
         // called concurrently or unnecessarily
         if(current_cache_percentage() > CACHE_PRESSURE_FULL) {
             cache_is_full()
-        } 
+        }
 
         else if(current_cache_percentage() > CACHE_PRESSURE_ALMOST_FULL) {
           cache_pressure_almost_full()
@@ -2162,7 +2162,7 @@ cache eviction.
 
         else if(current_cache_percentage() > CACHE_PRESSURE_IMMINENT) {
           // Do not repeatedly perform the imminent cache pressure operation
-          if(now() - imminent_cache_pressure_check_performed > 
+          if(now() - imminent_cache_pressure_check_performed >
               WAIT_BETWEEN_IMMINENT_CACHE_EVICTION) {
             cache_pressure_is_imminent()
           }
@@ -2170,10 +2170,10 @@ cache eviction.
       }
     }
 
-The SCTStoreManager contains a function that will be called periodically 
-in the background, iterating through all SCTDomainEntry objects and 
-performing maintenance tasks. It removes data for domains we have not 
-contacted in a long time. This function is not intended to clear data 
+The SCTStoreManager contains a function that will be called periodically
+in the background, iterating through all SCTDomainEntry objects and
+performing maintenance tasks. It removes data for domains we have not
+contacted in a long time. This function is not intended to clear data
 if the cache is getting full, separate functions are used for that.
 
     // Suggestions:
@@ -2201,7 +2201,7 @@ if the cache is getting full, separate functions are used for that.
         // Do not store data for domains who are not supporting SCT
         if(!operator_is_server && domainEntry.sct_feedback_failing_longterm())
         {
-          // Note that reseting these variables every single time is 
+          // Note that reseting these variables every single time is
           // necessary to avoid a bug
           all_sct_stores[domainEntry].num_submissions_attempted      = 0
           all_sct_stores[domainEntry].num_submissions_succeeded      = 0
@@ -2232,7 +2232,7 @@ if the cache is getting full, separate functions are used for that.
 Inclusion Proof Fetching is handled fairly independently
 
     // This function is a callback invoked after an inclusion proof
-    // has been retrieved. It can exist on the SCT class or independently, 
+    // has been retrieved. It can exist on the SCT class or independently,
     // so long as it can modify the SCT class' members
     def inclusion_proof_callback(inclusion_proof, original_sct, error)
     {
@@ -2250,20 +2250,20 @@ Inclusion Proof Fetching is handled fairly independently
     }
 
 
-If the cache is getting full, these three member functions of the 
+If the cache is getting full, these three member functions of the
 SCTStoreManager class will be used.
 
     // -----------------------------------------------------------------
     // This function is called when the cache is not yet full, but is
     // nearing it. It prioritizes deleting data that should be safe
-    // to delete (because it has been shared with the site or resolved 
+    // to delete (because it has been shared with the site or resolved
     // to a STH)
     def cache_pressure_is_imminent()
     {
       bundlesToDelete = []
       foreach(domainEntry in all_sct_stores) {
         foreach(sctBundle in domainEntry.observed_records) {
-      
+
           if(proof_fetching_enabled) {
             // First, queue proofs for anything not already queued
             if(!sctBundle.has_been_fully_resolved_to_sths()) {
@@ -2281,7 +2281,7 @@ SCTStoreManager class will be used.
             }
           }
 
-          // Third, consider deleting entries that have been successfully 
+          // Third, consider deleting entries that have been successfully
           // reported
           if(sctBundle.num_reports_to_thirdparty > 0) {
             bundlesToDelete.append( Struct(domainEntry, sctBundle) )
@@ -2294,7 +2294,7 @@ SCTStoreManager class will be used.
       uint recalculateIndex                = 0
       #define RECALCULATE_EVERY_N_OPERATIONS 50
 
-      while(bundlesToDelete.length > 0 && 
+      while(bundlesToDelete.length > 0 &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex = rand() % bundlesToDelete.length
         bundlesToDelete[rndIndex].domainEntry.observed_records.remove(bundlesToDelete[rndIndex].sctBundle)
@@ -2308,8 +2308,8 @@ SCTStoreManager class will be used.
 
       // Finally, tell the proof fetching engine to go faster
       if(proof_fetching_enabled) {
-        // This function would speed up proof fetching until an 
-        // arbitrary time has passed. Perhaps until it has fetched 
+        // This function would speed up proof fetching until an
+        // arbitrary time has passed. Perhaps until it has fetched
         // proofs for the number of items currently in its queue? Or
         // a percentage of them?
         proof_fetch_faster_please()
@@ -2320,26 +2320,26 @@ SCTStoreManager class will be used.
 
     // -----------------------------------------------------------------
     // This function is called when the cache is almost full. It will
-    // evict entries at random, while attempting to save entries that 
+    // evict entries at random, while attempting to save entries that
     // appear to have proof fetching failures
     def cache_pressure_almost_full()
     {
       uint recalculateIndex                = 0
-      uint savedRecords                    = 0 
+      uint savedRecords                    = 0
       #define RECALCULATE_EVERY_N_OPERATIONS 50
 
-      while(all_sct_stores.length > savedRecords && 
+      while(all_sct_stores.length > savedRecords &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex1 = rand() % all_sct_stores.length
         uint rndIndex2 = rand() % all_sct_stores[rndIndex1].observed_records.length
-        
+
         if(proof_fetching_enabled) {
           if(all_sct_stores[rndIndex1].observed_records[rndIndex2].max_proof_failures() >
              MIN_PROOF_FAILURES_CONSIDERED_SUSPICIOUS) {
             savedRecords++
             continue
           }
-        } 
+        }
 
         // If proof fetching is not enabled we need some other logic
         else {
@@ -2371,11 +2371,11 @@ SCTStoreManager class will be used.
       uint recalculateIndex                = 0
       #define RECALCULATE_EVERY_N_OPERATIONS 50
 
-      while(all_sct_stores.length > 0 && 
+      while(all_sct_stores.length > 0 &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex1 = rand() % all_sct_stores.length
         uint rndIndex2 = rand() % all_sct_stores[rndIndex1].observed_records.length
-        
+
         all_sct_stores[rndIndex1].observed_records.removeAt(rndIndex2)
         if(all_sct_stores[rndIndex1].observed_records.length == 0) {
           all_sct_stores.removeAt(rndIndex1)
