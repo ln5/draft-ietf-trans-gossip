@@ -306,7 +306,7 @@ The data shared between HTTPS clients and servers, as well as between
 HTTPS servers and CT auditors, is a JSON array {{RFC7159}}.  Each item
 in the array is a JSON object with the following content:
 
-- x509_chain: An array of base64-encoded X.509 certificates. The
+- x509_chain: An array of PEM-encoded X.509 certificates. The
   first element is the end-entity certificate, the second certifies
   the first and so on.
 
