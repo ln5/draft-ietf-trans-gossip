@@ -403,10 +403,14 @@ HTTPS server at the well-known URL:
     https://<domain>/.well-known/ct-gossip/v1/sct-feedback
 
 The data sent in the POST is defined in {{feedback-dataformat}}. This
-data SHOULD be sent in an already established TLS session. This makes
+data SHOULD be sent in an already-established TLS session. This makes
 it hard for an attacker to disrupt SCT Feedback without also
 disturbing ordinary secure browsing (https://). This is discussed more
 in {{blocking-policy-frustrating}}.
+
+The HTTPS server SHOULD respond with a HTTP 200 response code and an
+empty body if it was able to process the request.  An HTTPS client who
+receives any other response should consider it an error.
 
 Some clients have trust anchors or logs that are locally added
 (e.g. by an administrator or by the user themselves). These additions
@@ -604,8 +608,10 @@ already established TLS session. This makes it hard for an attacker to
 disrupt STH gossiping without also disturbing ordinary secure browsing
 (https://). This is discussed more in {{blocking-policy-frustrating}}.
 
-The response contains zero or more STHs in the same format, described
-in {{sth-pollination-dataformat}}.
+On a successful connection to an HTTPS server implementing STH
+Pollination, the response code will be 200, and the response body is
+application/json, containing zero or more STHs in the same format,
+as described in {{sth-pollination-dataformat}}.
 
 An HTTPS client may acquire STHs by several methods:
 
