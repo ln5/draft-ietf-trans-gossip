@@ -86,7 +86,7 @@ informative:
 
 The logs in Certificate Transparency are untrusted in the sense that
 the users of the system don't have to trust that they behave correctly
-since the behaviour of a log can be verified to be correct.
+since the behavior of a log can be verified to be correct.
 
 This document tries to solve the problem with logs presenting a "split
 view" of their operations. It describes three gossiping mechanisms for
@@ -131,7 +131,7 @@ Additionally, auditors and other log clients need to exchange
 information about logs in order to be able to detect a partitioning
 attack (as described above).
 
-Gossiping about log behaviour helps address the problem of detecting
+Gossiping about log behavior helps address the problem of detecting
 malicious or compromised logs with respect to a partitioning
 attack. We want some side of the partitioned tree, and ideally both
 sides, to see the other side.
@@ -280,7 +280,7 @@ points, making it more likely to catch a violation of a log's MMD or a
 log presenting inconsistent views. The sharing of certificate chains
 is beneficial to HTTPS server operators interested in direct feedback
 from clients for detecting bogus certificates issued in their name and
-therefore incentivises server operators to take part in SCT Feedback.
+therefore incentivizes server operators to take part in SCT Feedback.
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
@@ -607,7 +607,7 @@ in {{sth-pollination-dataformat}}.
 An HTTPS client may acquire STHs by several methods:
 
 - in replies to pollination POSTs;
-- asking logs that it recognises for the current STH, either directly
+- asking logs that it recognizes for the current STH, either directly
   (v2/get-sth) or indirectly (for example over DNS)
 - resolving an SCT and certificate to an STH via an inclusion proof
 - resolving one STH to another via a consistency proof
@@ -1174,7 +1174,7 @@ indicators that correspond to their browsing history. The most
 sensitive relationships in the CT ecosystem are the relationships
 between HTTPS clients and HTTPS servers. Client-server relationships
 can be aggregated into a network graph with potentially serious
-implications for correlative de-anonymisation of clients and
+implications for correlative de-anonymization of clients and
 relationship-mapping or clustering of servers or of clients.
 
 There are, however, certain clients that do not require privacy
