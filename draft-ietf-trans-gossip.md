@@ -174,8 +174,8 @@ already indicate that the client is accessing that site. In this way a
 site can accumulate records of SCTs that have been issued by various
 logs for that site, providing a consolidated repository of SCTs that
 could be shared with auditors. Auditors can use this information to
-detect logs that misbehave by not including certificates within the
-time period stipulated by the MMD metadata.
+detect a misbehaving log that fails to include a certificate within the
+time period stipulated by its MMD metadata.
 
 Sharing an STH is considered reasonably safe from a privacy
 perspective as long as the same STH is shared by a large number of
