@@ -149,6 +149,9 @@ fingerprinting through rare STHs is one potential attack (see
 
 # Overview
 
+This document presents three gossiping mechanisms: SCT Feedback, STH
+Pollination, and a Trusted Auditor Relationship.
+
 SCT Feedback enables HTTPS clients to share Signed Certificate
 Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
