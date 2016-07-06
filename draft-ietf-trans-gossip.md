@@ -1611,7 +1611,7 @@ Both suggestions presented are applicable to both clients and servers.
 Servers may not perform proof fetching, in which case large portions
 of the pseudocode are not applicable. But it should work in either case.
 
-### STH Pollination
+### STH Pollination {#recommendations-sth-pollination}
 
 The STH class contains data pertaining specifically to the STH itself.
 
