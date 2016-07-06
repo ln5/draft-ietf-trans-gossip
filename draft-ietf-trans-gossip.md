@@ -284,7 +284,7 @@ therefore incentivizes server operators to take part in SCT Feedback.
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
-they've visisted to any third party.
+they've visited to any third party.
 
 HTTPS clients store SCTs and certificate chains they see, and later
 send them to the originating HTTPS server by posting them to a
@@ -417,9 +417,9 @@ be reported via SCT Feedback.
 
 If a certificate is validated by SCTs that are issued by publicly
 trusted logs, but chains to a local trust anchor, the client MAY
-perfom SCT Feedback for this SCT and certificate chain bundle. If it
+perform SCT Feedback for this SCT and certificate chain bundle. If it
 does so, the client MUST include the full chain of certificates
-chaining to the local trust anchor in the x509\_chain array. Perfoming
+chaining to the local trust anchor in the x509\_chain array. Performing
 SCT Feedback in this scenario may be advantageous for the broader
 internet and CT ecosystem, but may also disclose information about the
 client. If the client elects to omit SCT Feedback, it can choose
@@ -446,7 +446,7 @@ client's chain validation and store the certificate chain. The latter
 mode requires more configuration, but is necessary to prevent denial
 of service (DoS) attacks on the server's storage space.
 
-In the simple mode of operation, upon recieving a submission at the
+In the simple mode of operation, upon receiving a submission at the
 sct-feedback well-known URL, an HTTPS server will perform a set of
 operations, checking on each sct\_feedback object before storing it:
 
@@ -536,7 +536,7 @@ is defined in {{feedback-dataformat}}.
 
 \[ TBD: Technically the dataformat is slightly different. 
 feedback-dataformat says the x509_chain will always contain a full 
-chain. But when it is recieved by an auditor, it may omit the chain,
+chain. But when it is received by an auditor, it may omit the chain,
 as described three paragraphs below. \]
 
 HTTPS servers SHOULD share all sct\_feedback objects they see that
@@ -554,7 +554,7 @@ configuration), resulting in two modes of operation. In one mode, the
 x509\_chain array will contain a full certificate chain. This chain
 may terminate in a trust anchor the auditor may recognize, or it may
 not. (One scenario where this could occur is if the client submitted a
-chain terminiating in a locally added trust anchor, and the server
+chain terminating in a locally added trust anchor, and the server
 kept this chain.) In the other mode, the x509\_chain array will
 consist of only a single element, which is the end-entity certificate.
 
@@ -590,7 +590,7 @@ by sending STHs to them, and retrieving new STHs to send to other STH
 pools. CT auditors can improve the value of their auditing by retrieving
 STHs from pools.
 
-HTPS clients send STHs to HTTPS servers by POSTing them to the
+HTTPS clients send STHs to HTTPS servers by POSTing them to the
 well-known URL:
 
     https://<domain>/.well-known/ct-gossip/v1/sth-pollination
@@ -701,7 +701,7 @@ Even when using a privacy-preserving layer between the client and the
 log, certain observations may be made about an anonymous client or
 general user behavior depending on how proofs are fetched. For
 example, if a client fetched all outstanding proofs at once, a log
-would know that SCTs or STHs recieved around the same time are more
+would know that SCTs or STHs received around the same time are more
 likely to come from a particular client. This could potentially go so
 far as correlation of activity at different times to a single
 client. In aggregate the data could reveal what sites are commonly
@@ -748,7 +748,7 @@ continues to be tracked in the system.
 The data sent from HTTPS clients and CT auditors to HTTPS servers is a
 JSON object {{RFC7159}} with the following content:
 
-- sths -- an array of 0 or more fresh SignedTreeHead's as defined in
+- sths -- an array of 0 or more fresh SignedTreeHeads as defined in
   {{RFC-6962-BIS-09}} Section 3.6.1.
 
 ## Trusted Auditor Stream
@@ -1006,7 +1006,7 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 ## Dual-CA Compromise {#dual-ca-compromise}
 
 {{dual-ca-compromise-attack}} describes an attack possible by an adversary who compromises two
-Certificate Authorites and a Log. This attack is difficult to defend
+Certificate Authorities and a Log. This attack is difficult to defend
 against in the CT ecosystem, and TBD describes a few approaches to
 doing so. We note that Gossip is not intended to defend against this
 attack, but can in certain modes.
@@ -1071,7 +1071,7 @@ The connections that allow positive affirmation are 1, 2, 4, 5, and 7.
 More insidious is blocking the connections that do not allow positive
 confirmation: 3 and 6. An attacker may truncate or drop a response
 from a server to a client, such that the server believes it has shared
-data with the recipient, when it has not. However, in both scenatios
+data with the recipient, when it has not. However, in both scenarios
 (3 and 6), the server cannot distinguish the client as a cooperating
 member of the CT ecosystem or as an attacker performing a sybil
 attack, aiming to flush the server's data store. Therefore the fact
@@ -1102,7 +1102,7 @@ Certificate Chains).
 
 ### STHs
 
-For both HTTPS CLients and HTTPS Servers, STHs within the validity 
+For both HTTPS Clients and HTTPS Servers, STHs within the validity
 window SHOULD NOT be deleted. An attacker cannot flush an item from the 
 cache if it is never removed - so flushing attacks are completely mitigated.
 
@@ -1230,7 +1230,7 @@ this fingerprinting attack altogether. It does make the attack harder
 to pull off without being detected though.
 
 There is another similar fingerprinting attack where an HTTPS server
-tracks a client by using a unqiue certificate or a variation of cert
+tracks a client by using a unique certificate or a variation of cert
 chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
 described above. \[TBD any mitigations possible here?\]
@@ -1387,21 +1387,21 @@ can be done through the use of HTTP Pipelining, SPDY, or HTTP/2.
 
 ### Responding to possible blocking {#blocking-policy-response}
 
-In some cirsumstances a client may have a piece of data that they have
+In some circumstances a client may have a piece of data that they have
 attempted to share (via SCT Feedback or STH Pollination), but have been
-unable to do so: with every attempt they recieve an error. These
+unable to do so: with every attempt they receive an error. These
 situations are:
 
 1. The client has an SCT and a certificate, and attempts to retrieve an
-inclusion proof -- but recieves an error on every attempt.
+inclusion proof -- but receives an error on every attempt.
 2. The client has an STH, and attempts to resolve it to a newer STH via
-a consistency proof -- but recieves an error on every attempt.
+a consistency proof -- but receives an error on every attempt.
 3. The client has attempted to share an SCT and constructed certificate
-via SCT Feedback -- but recieves an error on every attempt.
+via SCT Feedback -- but receives an error on every attempt.
 4. The client has attempted to share an STH via STH Pollination -- but
-recieves an error on every attempt.
+receives an error on every attempt.
 5. The client has attempted to share a specific piece of data with a
-Trusted Auditor -- but recieves an error on every attempt.
+Trusted Auditor -- but receives an error on every attempt.
 
 In the case of 1 or 2, it is conceivable that the reason for the
 errors is that the log acted improperly, either through malicious
@@ -1431,7 +1431,7 @@ disable the functionality or change whom data is sent to. The Auditor
 of Last Resort itself represents a point of failure and privacy 
 concerns, so if
 implemented, it should connect using public key pinning and not
-considere an item delivered until it recieves a confirmation.
+consider an item delivered until it receives a confirmation.
 
 In the cases 3, 4, and 5, we assume that the webserver(s) or trusted
 auditor in question is either experiencing an operational failure, or
@@ -1443,9 +1443,9 @@ more in {{pooling-policy-recommendations}}.
 ## Proof Fetching Recommendations {#proof-fetching-recommendations}
 
 Proof fetching (both inclusion proofs and consistency proofs) should
-be performed at random time intervals. If proof fetching occured all
+be performed at random time intervals. If proof fetching occurred all
 at once, in a flurry of activity, a log would know that SCTs or STHs
-recieved around the same time are more likely to come from a
+received around the same time are more likely to come from a
 particular client. While proof fetching is required to be done in a
 manner that attempts to be anonymous from the perspective of the log,
 the correlation of activity to a single client would still reveal
@@ -1454,7 +1454,7 @@ could be recognizable as a single user, or could reveal what sites are
 commonly visited together in the aggregate.
 
 \[ TBD: What other recommendations do we want to make here?
-        We can talk more about the inadequecies of DNS...
+        We can talk more about the inadequacies of DNS...
         The first paragraph is 80% identical between here and above \]
 
 ## Record Distribution Recommendations {#pooling-policy-recommendations}
@@ -1527,7 +1527,7 @@ Although most important for servers, random ordering is still strongly
 recommended for clients and Trusted Auditors. The above attack can
 still occur for these entities, although the circumstances are less
 straightforward. For clients, an attacker could observe their
-behavior, note when they recieve an STH from a server, and use
+behavior, note when they receive an STH from a server, and use
 javascript to cause a network connection at the correct time to force
 a client to disclose the specific STH. Trusted Auditors are stewards
 of sensitive client data. If an attacker had the ability to observe
@@ -1541,7 +1541,7 @@ Random ordering can be ensured by several mechanisms. A datastore can
 be shuffled, using a secure shuffling algorithm such as
 Fisher-Yates. Alternately, a series of random indexes into the data
 store can be selected (if a collision occurs, a new index is
-selected.) A cryptographyically secure random number generator must be
+selected.) A cryptographically secure random number generator must be
 used in either case. If shuffling is performed, the datastore must be
 marked 'dirty' upon item insertion, and at least one shuffle operation
 occurs on a dirty datastore before data is retrieved from it for use.
@@ -1608,7 +1608,7 @@ Both suggestions presented are applicable to both clients and servers.
 Servers may not perform proof fetching, in which case large portions
 of the pseudocode are not applicable. But it should work in either case.
 
-### STH Polination
+### STH Pollination
 
 The STH class contains data pertaining specifically to the STH itself.
 
@@ -1703,7 +1703,7 @@ member functions of the STHStore class.
         else if(proof_fetching_enabled
                 && now() - sth.timestamp > LOG_MMD
                 && sth.proof_attempts != UINT16_MAX
-                // Only fetch a proof is we have never recieved a proof before
+                // Only fetch a proof is we have never received a proof before
                 // (This also avoids submitting something already in the queue)
                 && sth.proof_attempts == sth.proof_failure_count) {
           sth.proof_attempts++
@@ -1718,7 +1718,7 @@ These functions also exist in the STHStore class.
     //  to a third party. It is passed the STHs sent to the third
     //  party, which is the output of get_gossip_selection(), as well
     //  as the STHs received in the response.
-    def successfull_thirdparty_submission_callback(STH[] submitted_sth_list, STH[] new_sths)
+    def successful_thirdparty_submission_callback(STH[] submitted_sth_list, STH[] new_sths)
     {
       foreach(sth in submitted_sth_list) {
         sth.num_reports_to_thirdparty++
@@ -1846,7 +1846,7 @@ illustrate the intended behavior. Hopefully the code matches!
      Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
      ... wait a month ... 
      Succeed 1 month later num_submissions_attempted=13   num_submissions_succeeded=2  num_feedback_loop_failures=0(r) indicates (Reset)
-     -> Feedback is attempted regurally. 
+     -> Feedback is attempted regularly.
  
      Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
      Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
@@ -1856,7 +1856,7 @@ illustrate the intended behavior. Hopefully the code matches!
      Fail 1 month later    num_submissions_attempted=13   num_submissions_succeeded=1  num_feedback_loop_failures=2
      ... wait a month ... 
      Succeed 1 month later num_submissions_attempted=14   num_submissions_succeeded=2  num_feedback_loop_failures=0(r)
-     -> Feedback is attempted regurally. 
+     -> Feedback is attempted regularly.
  
      Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
      Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
@@ -1876,7 +1876,7 @@ illustrate the intended behavior. Hopefully the code matches!
                            sct_feedback_failing_longterm=True
      Succeed 1 month later num_submissions_attempted=2   num_submissions_succeeded=1  num_feedback_loop_failures=0(r)
                            sct_feedback_failing_longterm=False
-     -> Feedback is attempted regurally.
+     -> Feedback is attempted regularly.
 
      Note above that the second run of clear_old_data() will reset num_submissions_attempted from 1 to 0.  This is 
      CRITICAL. Otherwise, we would have the below bug (where after 10 months of failures, a success would not hit 
@@ -1902,7 +1902,7 @@ illustrate the intended behavior. Hopefully the code matches!
                            sct_feedback_failing_longterm=True
      Succeed 1 month later num_submissions_attempted=11  num_submissions_succeeded=1  num_feedback_loop_failures=0(r)
                            sct_feedback_failing_longterm=False
-     -> Feedback is NOT attempted regurally.
+     -> Feedback is NOT attempted regularly.
 \]
 
 
@@ -1962,7 +1962,7 @@ illustrate the intended behavior. Hopefully the code matches!
       //  This is not used when this algorithm runs on servers
       public uint16    num_submissions_attempted
 
-      //  This is the number of successfull SCT Feedback submissions. This
+      //  This is the number of successful SCT Feedback submissions. This
       //  variable is updated by the class.
       //  This is not used when this algorithm runs on servers
       private uint16   num_submissions_succeeded
@@ -1994,7 +1994,7 @@ illustrate the intended behavior. Hopefully the code matches!
 
       //  For Clients, this function is called after a successful 
       //  connection to a HTTPS Server, with a single SCTBundle
-      //  constructed from that conneciton's certificate chain and SCTs.
+      //  constructed from that connection's certificate chain and SCTs.
       //  For Servers, this is called after receiving SCT Feedback with
       //  all the bundles sent in the feedback.
       def insert(SCTBundle[] bundles) {
@@ -2286,7 +2286,7 @@ SCTStoreManager class will be used.
         }
       }
 
-      // Third, delete the elligible entries at random until the cache is 
+      // Third, delete the eligible entries at random until the cache is
       // at a safe level
       uint recalculateIndex                = 0
       #define RECALCULATE_EVERY_N_OPERATIONS 50
@@ -2410,14 +2410,14 @@ Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
   on servers.
 - Pre-Loaded vs Locally Added Anchors explained.
 - Base for well-known URL's changed.
-- Remove all mentions of monitors -- gossip deals with adutitors.
+- Remove all mentions of monitors -- gossip deals with auditors.
 - New sections added: Trusted Auditor protocol, attacks by actively
   malicious log, the Dual-CA compromise attack, policy
   recommendations,
 
 ## Changes between ietf-00 and ietf-01
 
-- Improve langugage and readability based on feedback from Stephen
+- Improve language and readability based on feedback from Stephen
   Kent.
 - STH Pollination Proof Fetching defined and indicated as optional.
 - 3-Method Ecosystem section added.
