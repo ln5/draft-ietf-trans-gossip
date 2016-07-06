@@ -227,7 +227,7 @@ There are three separate gossip streams:
   STHs.
 
 It is worthwhile to note that when an HTTPS Client or CT auditor
-interact with a log, they may equivalently interact with a log mirror
+interacts with a log, they may equivalently interact with a log mirror
 or cache that replicates the log.
 
 # Data flow
@@ -245,17 +245,17 @@ show what goes in the Trusted Auditor Relationship stream.
 |   Log    | ---------- SCT -----------+
 +----------+                           v
   |  ^                          +----------+
-  |  |          SCT & Certs --- | Website  |
+  |  |         SCTs & Certs --- | Website  |
   |  |[1]           |           +----------+
-  |  |[2]          STH            ^     |
+  |  |[2]         STHs            ^     |
   |  |[3]           v             |     |
   |  |          +----------+      |     |
   |  +--------> | Auditor  |      |  HTTPS traffic
   |             +----------+      |     |
- STH                              |    SCT
-  |                         SCT & Certs |
+ STH                              |  SCT & Cert
+  |                        SCTs & Certs |
 Log entries                       |     |
-  |                              STH   STH
+  |                             STHs   STHs
   v                               |     |
 +----------+                      |     v
 | Monitor  |                    +----------+
@@ -1377,7 +1377,7 @@ the adversary can reliably block this second connection to block
 gossip without affecting normal browsing. For this reason it is
 recommended to run the gossip protocols over an existing connection to
 the server, making use of connection multiplexing such as HTTP
-Keep-Alives or SPDY.
+Keep-Alive or SPDY.
 
 Truncation is also a concern. If a client always establishes a TLS
 connection, makes a request, receives a response, and then always
