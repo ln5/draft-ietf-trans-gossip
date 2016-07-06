@@ -187,7 +187,7 @@ issuance frequency (see {{sth-pollination}}).
 # Terminology
 
 This document relies on terminology and data structures defined in
-{{RFC-6962-BIS-09}}, including STH, SCT, Version, LogID, SCT
+{{RFC-6962-BIS-09}}, including MMD, STH, SCT, Version, LogID, SCT
 timestamp, CtExtensions, SCT signature, Merkle Tree Hash.
 
 This document relies on terminology defined in
