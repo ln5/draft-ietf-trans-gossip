@@ -1151,10 +1151,10 @@ attack.
 If a HTTPS Server is operating in a constrained 
 environment and cannot devote enough storage space to hold all
 SCTs and Certificate Chains it is authoritative for it is recommended 
-to config the SCT Feedback mechanism to whitelist certain certificates 
+to configure the SCT Feedback mechanism to allow only certain certificates
 that are known to be valid. These chains and SCTs can then be discarded 
 without being stored or subsequently provided to any clients or 
-auditors. If the whitelist is not sufficient, the below Deletion 
+auditors. If the allowlist is not sufficient, the below Deletion
 Algorithm {{deletion-algorithm}} is recommended to make it more 
 difficult for the attacker to perform a flushing attack.
 
