@@ -226,7 +226,7 @@ There are three separate gossip streams:
   trusted CT auditors sharing SCTs, certificate chains and
   STHs.
 
-It is worthwhile to note that when an HTTPS Client or CT auditor
+It is worthwhile to note that when an HTTPS client or CT auditor
 interacts with a log, they may equivalently interact with a log mirror
 or cache that replicates the log.
 
@@ -380,11 +380,11 @@ Because SCTs can be used as a tracking mechanism (see
 {{privacy-feedback}}), they deserve special treatment when they are
 received from (and provided to) domains that are loaded as
 subresources from an origin domain. Such domains are commonly called
-'third party domains'. An HTTPS Client SHOULD store SCT Feedback using
+'third party domains'. An HTTPS client SHOULD store SCT Feedback using
 a 'double-keying' approach, which isolates third party domains by the
 first party domain. This is described in {{double-keying}}. Gossip would be
 performed normally for third party domains only when the user revisits
-the first party domain. In lieu of 'double-keying', an HTTPS Client
+the first party domain. In lieu of 'double-keying', an HTTPS client
 MAY treat SCT Feedback in the same manner it treats other security
 mechanisms that can enable tracking (such as HSTS and HPKP.)
 
@@ -436,7 +436,7 @@ actually preserve user privacy. The Issuer field in the certificate
 describes the signing certificate. And if the certificate is being
 submitted at all, it means the certificate is logged, and has
 SCTs. This means that the Issuer can be queried and obtained from the
-log - so omitting the signing certificate from the client's submission
+log, so omitting the signing certificate from the client's submission
 does not actually help user privacy.
 
 ### HTTPS server operation {#feedback-srvop}
@@ -506,7 +506,7 @@ server will not modify the sct\_feedback object prior to performing
 checks 2, 3, and 4.
 
 To prevent a malicious client from filling the server's data store,
-the HTTPS Server SHOULD perform an additional check in the more
+the HTTPS server SHOULD perform an additional check in the more
 advanced mode:
 
    5. if the x509\_chain consists of an invalid certificate chain, or
@@ -742,7 +742,7 @@ signature, and requesting a consistency proof from the STH to the most
 recent STH.
 
 After retrieving the consistency proof to the most recent STH, they
-SHOULD pollinate this new STH among participating HTTPS Servers. In
+SHOULD pollinate this new STH among participating HTTPS servers. In
 this way, as STHs "age out" and are no longer fresh, their "lineage"
 continues to be tracked in the system.
 
@@ -888,7 +888,7 @@ safely perform Proof Fetching in a privacy preserving manner. (The
 client may pollinate STHs it receives without performing Proof
 Fetching, but we do not consider this option in this section.)
 
-HTTPS Servers must deploy software (although, as in the case with SCT
+HTTPS servers must deploy software (although, as in the case with SCT
 Feedback this logic can be pre-provided) and commit some configurable
 amount of disk space to the endeavor.
 
@@ -914,20 +914,20 @@ benefit.)
 If STH Pollination was the only mechanism deployed, users that disable
 it would be able to be attacked without risk of detection.
 
-If STH Pollination was not deployed, HTTPS Clients visiting HTTPS
+If STH Pollination was not deployed, HTTPS clients visiting HTTPS
 Servers who did not deploy SCT Feedback could be attacked without risk
 of detection.
 
 ## Trusted Auditor Relationship
 
 The Trusted Auditor Relationship is expected to be the rarest gossip
-mechanism, as an HTTPS Client is providing an unadulterated report of
+mechanism, as an HTTPS client is providing an unadulterated report of
 its browsing history to a third party. While there are valid and
 common reasons for doing so, there is no appropriate way to enter into
 this relationship without retrieving informed consent from the user.
 
 However, the Trusted Auditor Relationship mechanism still provides
-value to a class of HTTPS Clients. For example, web crawlers have no
+value to a class of HTTPS clients. For example, web crawlers have no
 concept of a "user" and no expectation of privacy. Organizations
 already performing network auditing for anomalies or attacks can run
 their own Trusted Auditor for the same purpose with marginal increase
@@ -956,19 +956,19 @@ auditor.
 
 The interactions of the mechanisms is thus outlined:
 
-HTTPS Clients can be attacked without risk of detection if they do not
+HTTPS clients can be attacked without risk of detection if they do not
 participate in any of the three mechanisms.
 
-HTTPS Clients are afforded the greatest chance of detecting an attack
+HTTPS clients are afforded the greatest chance of detecting an attack
 when they either participate in both SCT Feedback and STH Pollination
 with Proof Fetching or if they have a Trusted Auditor relationship.
 (Participating in SCT Feedback is required to prevent a malicious log
 from refusing to ever resolve an SCT to an STH, as put forward in
 {{actively-malicious-log}}). Additionally, participating in SCT
-Feedback enables an HTTPS Client to assist in detecting the exact
+Feedback enables an HTTPS client to assist in detecting the exact
 target of an attack.
 
-HTTPS Servers that omit SCT Feedback enable malicious logs to carry
+HTTPS servers that omit SCT Feedback enable malicious logs to carry
 out attacks without risk of detection. If these servers are targeted
 specifically, even if the attack is detected, without SCT Feedback
 they may never learn that they were specifically targeted. HTTPS
@@ -976,7 +976,7 @@ servers without SCT Feedback do gain some measure of herd immunity,
 but only because their clients participate in STH Pollination (with
 Proof Fetching) or have a Trusted Auditor Relationship.
 
-When HTTPS Servers omit SCT feedback, it allows their users to be
+When HTTPS servers omit SCT feedback, it allows their users to be
 attacked without detection by a malicious log; the vulnerable users
 are those who do not have a Trusted Auditor relationship.
 
@@ -1100,33 +1100,33 @@ evidence with only attacker-controlled clients or servers with the
 hope they trick the target into deleting it.
 
 Flushing attacks may be defended against differently depending on the
-entity (HTTPS Client or HTTPS Server) and record (STHs or SCTs with
-Certificate Chains).
+entity (HTTPS client or HTTPS server) and record (STHs or SCTs with
+Certificate Chains). 
 
 ### STHs
 
-For both HTTPS Clients and HTTPS Servers, STHs within the validity
+For both HTTPS clients and HTTPS servers, STHs within the validity
 window SHOULD NOT be deleted. An attacker cannot flush an item from the
-cache if it is never removed - so flushing attacks are completely mitigated.
+cache if it is never removed so flushing attacks are completely mitigated.
 
 The required disk space for all STHs within the validity window is
 336 STHs per log that is trusted. If 20 logs are trusted, and each STH
 takes 1 Kilobytes, this is 6.56 Megabytes.
 
-Note that it is important that implementors not calculate the exact
-size of cache expected - if an attack does occur, a small number
+Note that it is important that implementors do not calculate the exact
+size of cache expected -- if an attack does occur, a small number
 of additional STHs will enter into the cache. These STHs will be in
 addition to the expected set, and will be evidence of the attack.
 
-If a HTTPS Client or HTTPS Server is operating in a constrained
+If an HTTPS client or HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all
 STHs within the validity window it is recommended to use the below
 Deletion Algorithm {{deletion-algorithm}} to make it more difficult
-for the attacker.
+for the attacker to perform a flushing attack.
 
 ### SCTs & Certificate Chains on HTTPS Servers
 
-HTTPS Servers will only accept SCTs and Certificate Chains for
+An HTTPS server will only accept SCTs and Certificate Chains for
 domains it is authoritative for. Therefore the storage space needed
 is bound by the number of logs it accepts, multiplied by the
 number of domains it is authoritative for, multiplied by the number
@@ -1134,21 +1134,21 @@ of certificates issued for those domains.
 
 Imagine a server authoritative for 10,000 domains, and each domain
 has 3 certificate chains, and 10 SCTs. A certificate chain is 5
-Kilobytes in size and a SCT 1 Kilobyte. This yields 732 Megabytes.
+Kilobytes in size and an SCT 1 Kilobyte. This yields 732 Megabytes.
 
 This data can be large, but it is calculable. Web properties with
 more certificates and domains are more likely to be able to handle
 the increased storage need, while small web properties will not
-seen an undue burden. Therefore HTTPS Servers SHOULD NOT delete SCTs
-or Certificate Chains - this completely mitigates flushing attacks.
+seen an undue burden. Therefore HTTPS servers SHOULD NOT delete SCTs
+or Certificate Chains. This completely mitigates flushing attacks.
 
-Again, note that it is important that implementors not calculate the
-exact size of cache expected - if an attack does occur, the new
+Again, note that it is important that implementors do not calculate the
+exact size of cache expected -- if an attack does occur, the new
 SCT(s) and Certificate Chain(s) will enter into the cache. This data
 will be in addition to the expected set, and will be evidence of the
 attack.
 
-If a HTTPS Server is operating in a constrained
+If an HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all
 SCTs and Certificate Chains it is authoritative for it is recommended
 to configure the SCT Feedback mechanism to allow only certain certificates
@@ -1160,11 +1160,13 @@ difficult for the attacker to perform a flushing attack.
 
 ### SCTs & Certificate Chains on HTTPS Clients
 
-HTTPS Clients will accumulate SCTs and Certificate Chains without
+HTTPS clients will accumulate SCTs and Certificate Chains without
 bound. It is expected they will choose a particular cache size and
 delete entries when the cache size meets its limit. This does not
 mitigate flushing attacks, and such an attack is documented in
 https://ritter.vg/blog-a_bit_on_certificate_transparency_gossip.html.
+
+\[ TODO: make this a proper reference \]
 
 The below Deletion Algorithm {{deletion-algorithm}} is recommended
 to make it more difficult for the attacker to perform a flushing
@@ -1172,7 +1174,7 @@ attack.
 
 ## Privacy considerations
 
-CT Gossip deals with HTTPS Clients which are trying to share
+CT Gossip deals with HTTPS clients which are trying to share
 indicators that correspond to their browsing history. The most
 sensitive relationships in the CT ecosystem are the relationships
 between HTTPS clients and HTTPS servers. Client-server relationships
@@ -1221,11 +1223,9 @@ fingerprint clients -- TLS session tickets, HPKP and HSTS headers,
 HTTP Cookies, etc. -- this is considered acceptable.
 
 The fingerprinting attack described above would be mitigated by a
-requirement that logs MUST use a deterministic signature scheme when
+requirement that logs must use a deterministic signature scheme when
 signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using
 RSA is not required to use a deterministic signature scheme.
-
-\[ TBD: Should that be a capital MUST?? \]
 
 Since logs are allowed to issue a new SCT for a certificate already
 present in the log, mandating deterministic signatures does not stop
@@ -1271,7 +1271,7 @@ client:
 There is a possible fingerprinting attack where a log issues a unique
 STH for a targeted HTTPS client. This is similar to the fingerprinting
 attack described in {{privacy-feedback}}, but can operate
-cross-origin. If a log (or HTTPS Server cooperating with a log)
+cross-origin. If a log (or HTTPS server cooperating with a log)
 provides a unique STH to a client, the targeted client will be the
 only client pollinating that STH cross-origin.
 
@@ -1282,7 +1282,7 @@ the attack.
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
 An HTTPS client may pollinate any STH within the last 14 days. An
-HTTPS Client may also pollinate an STH for any log that it knows
+HTTPS client may also pollinate an STH for any log that it knows
 about. When a client pollinates STHs to a server, it will release
 more than one STH at a time. It is unclear if a server may 'prime' a
 client and be able to reliably detect the client at a later time.
@@ -1333,10 +1333,10 @@ as the granularity of the timestamps embedded in the SCTs and STHs.
 
 ### HTTPS Clients as Auditors
 
-Some HTTPS Clients may choose to act as CT auditors themselves. A Client
+Some HTTPS clients may choose to act as CT auditors themselves. A Client
 taking on this role needs to consider the following:
 
-- an Auditing HTTPS Client potentially exposes its history to the logs
+- an Auditing HTTPS client potentially exposes its history to the logs
   that they query. Querying the log through a cache or a proxy with
   many other users may avoid this exposure, but may expose information
   to the cache or proxy, in the same way that a non-Auditing HTTPS
@@ -1354,7 +1354,7 @@ taking on this role needs to consider the following:
 # Policy Recommendations
 
 This section is intended as suggestions to implementors of HTTPS
-Clients, HTTPS Servers, and CT auditors. It is not a requirement for
+Clients, HTTPS servers, and CT auditors. It is not a requirement for
 technique of implementation, so long as privacy considerations
 established above are obeyed.
 
@@ -1362,7 +1362,7 @@ established above are obeyed.
 
 ### Frustrating blocking {#blocking-policy-frustrating}
 
-When making gossip connections to HTTPS Servers or Trusted Auditors,
+When making gossip connections to HTTPS servers or Trusted Auditors,
 it is desirable to minimize the plaintext metadata in the connection
 that can be used to identify the connection as a gossip connection and
 therefore be of interest to block. Additionally, introducing some
@@ -1580,7 +1580,7 @@ it more difficult for a successful flushing attack to to be performed.
 
   2. If proof fetching has failed, or is disabled, begin by deleting
   SCTs and Certificate Chains that have been successfully reported.
-  Deletion from this set of SCTs should be done at random.  For a
+  Deletion from this set of SCTs should be done at random. For a
   client, a submission is not counted as being reported unless it is
   sent over a connection using a different SCT, so the
   attacker is faced with a recursive problem. (For a server, this step
@@ -1653,7 +1653,7 @@ the validity window rarer and thus enable tracking.
         this.sth_list.remove(s)
       }
 
-      //  When it is time to perform STH Pollination, the HTTPS Client
+      //  When it is time to perform STH Pollination, the HTTPS client
       //  calls this function to get a selection of STHs to send as
       //  feedback
       def get_pollination_selection() {
@@ -1664,8 +1664,9 @@ the validity window rarer and thus enable tracking.
           modulus = len(this.sth_list)
           while(len(indexes) < MAX_STH_TO_GOSSIP) {
             r = randomInt() % modulus
+            // Ignore STHs that are past the validity window but not
+            // yet removed.
             if(r not in indexes
-               //Ignore STHs that are past the validity window but not yet removed:
                && now() - this.sth_list[i].timestamp < TWO_WEEKS)
               indexes.insert(r)
           }
@@ -1695,8 +1696,10 @@ member functions of the STHStore class.
           //STH is too old, we must remove it
           if(proof_fetching_enabled
              && auditor_of_last_resort_enabled
-             && sth.proof_failure_count > MIN_PROOF_FAILURES_CONSIDERED_SUSPICIOUS) {
-            queue_for_auditor_of_last_resort(sth, auditor_of_last_resort_callback)
+             && sth.proof_failure_count
+                > MIN_PROOF_FAILURES_CONSIDERED_SUSPICIOUS) {
+            queue_for_auditor_of_last_resort(sth,
+                                             auditor_of_last_resort_callback)
           } else {
             delete_now(sth)
           }
@@ -1996,7 +1999,7 @@ illustrate the intended behavior. Hopefully the code matches!
       }
 
       //  For Clients, this function is called after a successful
-      //  connection to a HTTPS Server, with a single SCTBundle
+      //  connection to an HTTPS server, with a single SCTBundle
       //  constructed from that connection's certificate chain and SCTs.
       //  For Servers, this is called after receiving SCT Feedback with
       //  all the bundles sent in the feedback.
@@ -2027,7 +2030,7 @@ illustrate the intended behavior. Hopefully the code matches!
         SCTStoreManager.update_cache_percentage()
       }
 
-      //  When it is time to perform SCT Feedback, the HTTPS Client
+      //  When it is time to perform SCT Feedback, the HTTPS client
       //  calls this function to get a selection of SCTBundles to send
       //  as feedback
       def get_gossip_selection() {
