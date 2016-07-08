@@ -2439,7 +2439,7 @@ Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 ## Changes between ietf-02 and ietf-03
 
-- Almost all TBD's resolved.
+- TBD's resolved.
 - References added.
 - Pseduocode changed to work for both clients and servers.
 
