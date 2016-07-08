@@ -1035,30 +1035,28 @@ attack, but can in certain modes.
 
 Defending against the Dual-CA Compromise attack requires SCT Feedback,
 and explicitly requires the server to save full certificate chains
-(described in {{feedback-srvop}} as the 'complex' configuration.)
-After CT auditors receive the full certificate chains from servers,
-they must compare the chain built by clients to the chain supplied by
-the log. If the chains differ significantly, the auditor can raise a
-concern.
+(described in {{feedback-srvop}} as the 'complex' configuration.) After
+CT auditors receive the full certificate chains from servers, they MAY
+compare the chain built by clients to the chain supplied by the log. If
+the chains differ significantly, the auditor SHOULD raise a concern. A
+method of determining if chains differ significantly is by asserting
+that one chain is not a subset of the other and that the roots of the
+chains are different.
 
-\[ TBD What does 'differ significantly' mean?  We should provide guidance.
-I *think* the correct algorithm to raise a concern is:
+\[Note: Justification for this algorithm:
 
-If one chain is not a subset of the other
-AND
-If the root certificates of the chains are different
-THEN It's suspicious.
+Cross-Signatures could result in a different org being treated as the
+'root', but in this case, one chain would be a subset of the other.
 
-Justification:
-- Cross-Signatures could result in a different org being treated as
-  the 'root', but in this case, one chain would be a subset of the
-  other.
-- Intermediate swapping (e.g. different signature algorithms) could
-  result in different chains, but the root would be the same.
+Intermediate swapping (e.g. different signature algorithms) could result
+in different chains, but the root would be the same.
 
-(Hitting both those cases at once would cause a false positive though.)
+(Hitting both those cases at once would cause a false positive though,
+but this would likely be rare.)
 
-What did I miss? \]
+Are there other cases that could occur?
+(Left for the purposes of reading during pre-Last Call, to be removed by
+Editor)\]
 
 ## Censorship/Blocking considerations
 
