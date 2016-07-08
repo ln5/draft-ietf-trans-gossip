@@ -658,12 +658,11 @@ requirements and recommendations set forth in
 There are two types of proofs a client may retrieve; inclusion proofs
 and consistency proofs.
 
-An HTTPS client will retrieve SCTs from an HTTPS server, and can
-obtain an inclusion proof to an STH in order to verify the promise
-made by the SCT.
-
-\[ TBD: The above paragraph needs to be fixed to be accurate. You get
-an inclusion proof from something other than just a SCT. \]
+An HTTPS client will retrieve SCTs together with certificate chains
+from an HTTPS server. Using the timestamp in the SCT together with the
+end-entity certificate and the issuer key hash, it can obtain an
+inclusion proof to an STH in order to verify the promise made by the
+SCT.
 
 An HTTPS client will have STHs from performing STH Pollination,
 and may obtain a consistency proof to a more recent STH.
