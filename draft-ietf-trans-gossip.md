@@ -408,8 +408,8 @@ it hard for an attacker to disrupt SCT Feedback without also
 disturbing ordinary secure browsing (https://). This is discussed more
 in {{blocking-policy-frustrating}}.
 
-The HTTPS server SHOULD respond with a HTTP 200 response code and an
-empty body if it was able to process the request.  An HTTPS client who
+The HTTPS server SHOULD respond with an HTTP 200 response code and an
+empty body if it was able to process the request. An HTTPS client who
 receives any other response should consider it an error.
 
 Some clients have trust anchors or logs that are locally added
