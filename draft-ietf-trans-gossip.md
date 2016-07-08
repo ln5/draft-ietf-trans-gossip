@@ -1446,10 +1446,6 @@ patterns of user behavior we wish to keep confidential. These patterns
 could be recognizable as a single user, or could reveal what sites are
 commonly visited together in the aggregate.
 
-\[ TBD: What other recommendations do we want to make here?
-        We can talk more about the inadequacies of DNS...
-        The first paragraph is 80% identical between here and above \]
-
 ## Record Distribution Recommendations {#pooling-policy-recommendations}
 
 In several components of the CT Gossip ecosystem, the recommendation
