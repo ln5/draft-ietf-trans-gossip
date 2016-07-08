@@ -382,7 +382,7 @@ ensure that attacks involving alternate chains are detected. An
 example of such an attack is described in
 {{dual-ca-compromise-attack}}. However, at least one
 optimization is safe and MAY be performed: If the certificate chain
-exactly matches an existing certificate chain, the client may store
+exactly matches an existing certificate chain, the client MAY store
 the union of the SCTs from the two objects in the first (existing)
 object.
 
@@ -430,7 +430,7 @@ in {{blocking-policy-frustrating}}.
 
 The HTTPS server SHOULD respond with an HTTP 200 response code and an
 empty body if it was able to process the request. An HTTPS client who
-receives any other response should consider it an error.
+receives any other response SHOULD consider it an error.
 
 Some clients have trust anchors or logs that are locally added
 (e.g. by an administrator or by the user themselves). These additions
@@ -506,9 +506,10 @@ processing and storage by the server. As on the client, an exact
 comparison is needed to ensure that attacks involving alternate chains
 are detected. Again, at least one optimization is safe and MAY be
 performed. If the certificate chain exactly matches an existing
-certificate chain, the server may store the union of the SCTs from the
-two objects in the first (existing) object. It should do this after
-completing the validity check on the SCTs.
+certificate chain, the server MAY store the union of the SCTs from the
+two objects in the first (existing) object. If the validity check on
+any of the SCTs fails, the server SHOULD NOT store the union of the
+SCTs.
 
 The check in step 3 is to help malfunctioning clients from exposing
 which sites they visit. It additionally helps prevent DoS attacks on
@@ -538,7 +539,7 @@ advanced mode:
    server SHOULD modify the sct\_feedback object, discarding all items
    in the x509\_chain array except the first item
 
-The HTTPS server may choose to omit checks 4 or 5. This will place the
+The HTTPS server MAY choose to omit checks 4 or 5. This will place the
 server at risk of having its data store filled up by invalid data, but
 can also allow a server to identify interesting certificate or
 certificate chains that omit valid SCTs, or do not chain to a trusted
@@ -565,7 +566,7 @@ described below.
 
 HTTPS servers SHOULD share all sct\_feedback objects they see that
 pass the checks in {{feedback-srvop}}. If this is an infeasible amount
-of data, the server may choose to expire submissions according to an
+of data, the server MAY choose to expire submissions according to an
 undefined policy. Suggestions for such a policy can be found in
 {{pooling-policy-recommendations}}.
 
@@ -638,7 +639,7 @@ An HTTPS client may acquire STHs by several methods:
 HTTPS clients (that have STHs) and CT auditors SHOULD pollinate STH
 pools with STHs. Which STHs to send and how often pollination should
 happen is regarded as undefined policy with the exception of privacy
-concerns explained below. Suggestions for the policy may
+concerns explained below. Suggestions for the policy can
 be found in {{pooling-policy-recommendations}}.
 
 An HTTPS client could be tracked by giving it a unique or rare STH.
@@ -675,7 +676,7 @@ heuristic to detect a shutdown. Instead the client MUST be informed
 about the shutdown from a verifiable source (e.g. a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
-cannot be resolved to the final STH, clients should follow the
+cannot be resolved to the final STH, clients SHOULD follow the
 requirements and recommendations set forth in
 {{blocking-policy-response}}.
 
@@ -696,7 +697,7 @@ and may obtain a consistency proof to a more recent STH.
 An HTTPS client may also receive an SCT bundled with an inclusion
 proof to a historical STH via an unspecified future mechanism. Because
 this historical STH is considered personally identifiable information
-per above, the client must obtain a consistency proof to a more recent
+per above, the client needs to obtain a consistency proof to a more recent
 STH.
 
 A client SHOULD perform proof fetching. A client MUST NOT perform
@@ -1209,9 +1210,9 @@ giving up its privacy.
 An SCT contains information that links it to a particular web
 site. Because the client-server relationship is sensitive, gossip
 between clients and servers about unrelated SCTs is risky. Therefore,
-a client with an SCT for a given server should transmit that
-information in only two channels: to the server associated with the
-SCT itself; and to a Trusted Auditor, if one exists.
+a client with an SCT for a given server SHOULD NOT transmit that
+information in any other than the following two channels: to the server associated with the
+SCT itself; or to a Trusted Auditor, if one exists.
 
 ### Privacy in SCT Feedback {#privacy-feedback}
 
@@ -1445,7 +1446,7 @@ pre-configured in the client, but the client SHOULD permit a user to
 disable the functionality or change whom data is sent to. The Auditor
 of Last Resort itself represents a point of failure and privacy
 concerns, so if
-implemented, it should connect using public key pinning and not
+implemented, it SHOULD connect using public key pinning and not
 consider an item delivered until it receives a confirmation.
 
 In the cases 3, 4, and 5, we assume that the webserver(s) or trusted
@@ -1457,7 +1458,7 @@ more in {{pooling-policy-recommendations}}.
 
 ## Proof Fetching Recommendations {#proof-fetching-recommendations}
 
-Proof fetching (both inclusion proofs and consistency proofs) should
+Proof fetching (both inclusion proofs and consistency proofs) SHOULD
 be performed at random time intervals. If proof fetching occurred all
 at once, in a flurry of activity, a log would know that SCTs or STHs
 received around the same time are more likely to come from a
