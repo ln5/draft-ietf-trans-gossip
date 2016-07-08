@@ -52,11 +52,11 @@ informative:
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-threat-analysis/
 
   dual-ca-compromise-attack:
-    title: "TODO"
+    title: "can CT defend against dual CA compromise?"
     author:
       -
-        ins: N. N
-    target: TBD
+        ins: D. Gillmor
+    target: https://www.ietf.org/mail-archive/web/trans/current/msg01984.html
 
   draft-ct-over-dns:
     title: "Certificate Transparency over DNS"
