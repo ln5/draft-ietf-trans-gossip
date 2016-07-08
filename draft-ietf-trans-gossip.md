@@ -1120,7 +1120,7 @@ hope they trick the target into deleting it.
 
 Flushing attacks may be defended against differently depending on the
 entity (HTTPS client or HTTPS server) and record (STHs or SCTs with
-Certificate Chains). 
+Certificate Chains).
 
 ### STHs
 
@@ -2420,6 +2420,12 @@ valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Josef
 Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 # ChangeLog
+
+## Changes between ietf-02 and ietf-03
+
+- Almost all TBD's resolved.
+- References added.
+- Pseduocode changed to work for both clients and servers.
 
 ## Changes between ietf-01 and ietf-02
 
