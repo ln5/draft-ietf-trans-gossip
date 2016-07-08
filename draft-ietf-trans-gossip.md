@@ -1410,15 +1410,10 @@ in {{actively-malicious-log}}. This data is especially important to
 share with the broader internet to detect this situation.
 
 If an SCT has attempted to be resolved to an STH via an inclusion
-proof multiple times, and each time has failed, a client SHOULD make
-every effort to send this SCT via SCT Feedback. However the client
-MUST NOT share the data with any other third party (excepting a
-Trusted Auditor should one exist).
-
-\[ TBD: I think we should just remove the above paragraph. I do
-not think, implementation-wise, separate code paths are needed.
-Or perhaps we can just remove the SHOULD sentence, or make it a
-lower-case. \]
+proof multiple times, and each time has failed, this SCT might very
+well be a compromising proof of an attack. However the client MUST NOT
+share the data with any other third party (excepting a Trusted Auditor
+should one exist).
 
 If an STH has attempted to be resolved to a newer STH via a
 consistency proof multiple times, and each time has failed, a client
