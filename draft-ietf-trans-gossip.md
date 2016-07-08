@@ -563,9 +563,6 @@ SCT feedback data:
 
     https://<auditor>/ct-gossip/v1/sct-feedback
 
-\[ TBD: Should that be .well-known? Depends on whether auditors will
-operate in their own URL name space or not. \]
-
 Auditors SHOULD regularly poll HTTPS servers at the well-known
 collected-sct-feedback URL. The frequency of the polling and how to
 determine which domains to poll is outside the scope of this
