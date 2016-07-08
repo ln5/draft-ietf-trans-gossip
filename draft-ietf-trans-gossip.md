@@ -82,6 +82,18 @@ informative:
     date: 2015-05-06
     target: https://www.torproject.org/projects/torbrowser/design/#identifier-linkability
 
+  trickle:
+    title: "From a Trickle to a Flood: Active Attacks on Several Mix Types"
+    author:
+      -
+        ins: A. Serjantov
+      -
+        ins: R. Dingledine
+      -
+        ins: Paul Syverson
+    date: 2002-10
+    target: http://freehaven.net/doc/batching-taxonomy/taxonomy.pdf
+
 --- abstract
 
 The logs in Certificate Transparency are untrusted in the sense that
@@ -1489,10 +1501,7 @@ These requirements should be met, but the general problem of
 aggregating multiple pieces of data, choosing when and how many to
 release, and when to remove them is shared. This problem has
 previously been considered in the case of Mix Networks and Remailers,
-including papers such as "From a Trickle to a Flood: Active Attacks on
-Several Mix Types".
-
-\[ TBD: Turn the above reference into a formal reference. \]
+including papers such as {{trickle}}.
 
 There are several concerns to be addressed in this area, outlined
 below.
