@@ -1706,7 +1706,7 @@ member functions of the STHStore class.
              && sth.proof_failure_count
                 > MIN_PROOF_FAILURES_CONSIDERED_SUSPICIOUS) {
             queue_for_auditor_of_last_resort(sth,
-                                             auditor_of_last_resort_callback)
+                                            auditor_of_last_resort_callback)
           } else {
             delete_now(sth)
           }
@@ -1716,8 +1716,9 @@ member functions of the STHStore class.
         else if(proof_fetching_enabled
                 && now() - sth.timestamp > LOG_MMD
                 && sth.proof_attempts != UINT16_MAX
-                // Only fetch a proof is we have never received a proof before
-                // (This also avoids submitting something already in the queue)
+                // Only fetch a proof is we have never received a proof
+                // before. (This also avoids submitting something
+                // already in the queue.)
                 && sth.proof_attempts == sth.proof_failure_count) {
           sth.proof_attempts++
           queue_consistency_proof(sth, consistency_proof_callback)
@@ -1731,7 +1732,8 @@ These functions also exist in the STHStore class.
     //  to a third party. It is passed the STHs sent to the third
     //  party, which is the output of get_gossip_selection(), as well
     //  as the STHs received in the response.
-    def successful_thirdparty_submission_callback(STH[] submitted_sth_list, STH[] new_sths)
+    def successful_thirdparty_submission_callback(STH[] submitted_sth_list,
+                                                  STH[] new_sths)
     {
       foreach(sth in submitted_sth_list) {
         sth.num_reports_to_thirdparty++
@@ -2076,7 +2078,8 @@ report for that domain using its member function:
     //  representing the connection the data was sent on.
     //  (When this code runs on the server, connectionBundle is NULL)
     //  If the Feedback was not sent successfully, error is True
-    def after_submit_to_thirdparty(error, SCTBundle[] submittedBundles, SCTBundle connectionBundle)
+    def after_submit_to_thirdparty(error, SCTBundle[] submittedBundles,
+                                   SCTBundle connectionBundle)
     {
       // Server operation in this instance is exceedingly simple
       if(operator_is_server) {
@@ -2114,7 +2117,8 @@ report for that domain using its member function:
 
       foreach(bundle in submittedBundles)
       {
-        // Compare Certificate Chains, if they do not match, it counts as a submission
+        // Compare Certificate Chains, if they do not match, it counts as a
+        // submission.
         if(!connectionBundle.approx_equals(bundle))
           bundle.num_reports_to_thirdparty++
         else {
@@ -2122,10 +2126,10 @@ report for that domain using its member function:
           // if it is submitted over a connection with the same SCTs. This
           // satisfies the constraint in Paragraph 5 of {{feedback-clisrv}}
           // Consider three submission scenarios:
-          // Submitted SCTs      Connection SCTs      Considered Submitted
-          // A, B                A, B                 No - no new information
-          // A                   A, B                 Yes - B is a new SCT
-          // A, B                A                    No - no new information
+          // Submitted SCTs      Connection SCTs    Considered Submitted
+          // A, B                A, B               No - no new information
+          // A                   A, B               Yes - B is a new SCT
+          // A, B                A                  No - no new information
           if(connectionBundle.sct_list is NOT a subset of bundle.sct_list)
             bundle.num_reports_to_thirdparty++
         }
@@ -2147,8 +2151,8 @@ cache eviction.
     class SCTStoreManager
     {
       hashmap<String, SCTDomainEntry> all_sct_entries
-      uint32                          current_cache_size
-      datetime                        imminent_cache_pressure_check_performed
+      uint32                         current_cache_size
+      datetime                       imminent_cache_pressure_check_performed
 
       float current_cache_percentage() {
         return current_cache_size / MAX_CACHE_SIZE;
@@ -2209,7 +2213,8 @@ if the cache is getting full, separate functions are used for that.
         }
 
         // Do not store data for domains who are not supporting SCT
-        if(!operator_is_server && domainEntry.sct_feedback_failing_longterm())
+        if(!operator_is_server
+           && domainEntry.sct_feedback_failing_longterm())
         {
           // Note that reseting these variables every single time is
           // necessary to avoid a bug
@@ -2246,9 +2251,9 @@ Inclusion Proof Fetching is handled fairly independently
     // so long as it can modify the SCT class' members
     def inclusion_proof_callback(inclusion_proof, original_sct, error)
     {
-      // Unlike the STH code, this counter must be incremented on the callback
-      // as there is a race condition on using this counter in the cache_*
-      // functions
+      // Unlike the STH code, this counter must be incremented on the
+      // callback as there is a race condition on using this counter in the
+      // cache_* functions.
       original_sct.proof_attempts++
       original_sct.proof_outstanding = False
       if(!error) {
@@ -2275,17 +2280,19 @@ SCTStoreManager class will be used.
         foreach(sctBundle in domainEntry.observed_records) {
 
           if(proof_fetching_enabled) {
-            // First, queue proofs for anything not already queued
+            // First, queue proofs for anything not already queued.
             if(!sctBundle.has_been_fully_resolved_to_sths()) {
               foreach(sct in bundle.sct_list) {
-                if(!sct.has_been_resolved_to_sth  && !sct.proof_outstanding) {
+                if(!sct.has_been_resolved_to_sth
+                   && !sct.proof_outstanding) {
                   sct.proof_outstanding = True
                   queue_inclusion_proof(sct, inclusion_proof_callback)
                 }
               }
             }
 
-            //Second, consider deleting entries that have been fully resolved
+            // Second, consider deleting entries that have been fully
+            // resolved.
             else {
               bundlesToDelete.append( Struct(domainEntry, sctBundle) )
             }
