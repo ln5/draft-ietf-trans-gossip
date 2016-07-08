@@ -1238,7 +1238,9 @@ from a CT log that it doesn't accept SCTs from. An HTTPS client SHOULD
 regularly request an STH from all logs it is willing
 to accept, even if it has seen no SCTs from that log.
 
-\[ TBD how regularly? This has operational implications for log operators \]
+The time between two polls for new STH's SHOULD NOT be significantly
+shorter than the MMD of the polled log divided by its STH Frequency
+Count ({{RFC-6962-BIS-09}} section 5.1).
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
