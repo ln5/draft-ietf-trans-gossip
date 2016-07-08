@@ -94,6 +94,14 @@ informative:
     date: 2002-10
     target: http://freehaven.net/doc/batching-taxonomy/taxonomy.pdf
 
+  gossip-mixing:
+    title: "A Bit on Certificate Transparency Gossip"
+    author:
+      -
+        ins: T. Ritter
+    date: 2016-06-27
+    target: https://ritter.vg/blog-a_bit_on_certificate_transparency_gossip.html
+
 --- abstract
 
 The logs in Certificate Transparency are untrusted in the sense that
@@ -1169,9 +1177,7 @@ HTTPS clients will accumulate SCTs and Certificate Chains without
 bound. It is expected they will choose a particular cache size and
 delete entries when the cache size meets its limit. This does not
 mitigate flushing attacks, and such an attack is documented in
-https://ritter.vg/blog-a_bit_on_certificate_transparency_gossip.html.
-
-\[ TODO: make this a proper reference \]
+{{gossip-mixing}}.
 
 The below Deletion Algorithm {{deletion-algorithm}} is recommended
 to make it more difficult for the attacker to perform a flushing
