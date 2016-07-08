@@ -1229,7 +1229,7 @@ There is another similar fingerprinting attack where an HTTPS server
 tracks a client by using a unique certificate or a variation of cert
 chains. The risk for this
 attack is accepted on the same grounds as the unique SCT attack
-described above. \[TBD any mitigations possible here?\]
+described above.
 
 ### Privacy for HTTPS clients performing STH Proof Fetching
 
