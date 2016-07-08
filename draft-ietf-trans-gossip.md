@@ -535,12 +535,9 @@ allows an HTTPS server to choose between an active push model or a
 passive pull model.
 
 The data received in a GET of the well-known URL or sent in the POST
-is defined in {{feedback-dataformat}}.
-
-\[ TBD: Technically the dataformat is slightly different.
-feedback-dataformat says the x509_chain will always contain a full
-chain. But when it is received by an auditor, it may omit the chain,
-as described three paragraphs below. \]
+is defined in {{feedback-dataformat}} with the following difference:
+The x509\_chain element may contain only he end-entity certificate, as
+described below.
 
 HTTPS servers SHOULD share all sct\_feedback objects they see that
 pass the checks in {{feedback-srvop}}. If this is an infeasible amount
