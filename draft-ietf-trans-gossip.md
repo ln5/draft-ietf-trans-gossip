@@ -1,6 +1,6 @@
 ---
 title: Gossiping in CT
-docname: draft-ietf-trans-gossip-04-dev
+docname: draft-ietf-trans-gossip-04
 category: exp
 pi: [toc, sortrefs, symrefs]
 ipr: trust200902
@@ -2436,6 +2436,10 @@ valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Josef
 Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
 
 # ChangeLog
+
+## Changes between ietf-03 and ietf-04
+
+- No changes.
 
 ## Changes between ietf-02 and ietf-03
 
