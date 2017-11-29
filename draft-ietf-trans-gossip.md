@@ -189,8 +189,8 @@ agreed on between client and trusted party.
 
 Despite the privacy risks with sharing SCTs there is no loss in
 privacy if a client sends SCTs for a given site to the site
-corresponding to the SCT. This is because the site's logs would
-already indicate that the client is accessing that site. In this way a
+corresponding to the SCT. This is because the site's cookies could
+already indicate that the client had accessed that site. In this way a
 site can accumulate records of SCTs that have been issued by various
 logs for that site, providing a consolidated repository of SCTs that
 could be shared with auditors. Auditors can use this information to
@@ -406,14 +406,19 @@ revisits the first party domain. In lieu of 'double-keying', an HTTPS
 client MAY treat SCT Feedback in the same manner it treats other
 security mechanisms that can enable tracking (such as HSTS and HPKP.)
 
-If the HTTPS client has configuration options for not sending cookies
-to third parties, SCTs of third parties MUST be treated as cookies
-with respect to this setting. This prevents third party tracking
-through the use of SCTs/certificates, which would bypass the cookie
-policy. For domains that are only loaded as third party domains, the
-client may never perform SCT Feedback; however the client may perform
-STH Pollination after fetching an inclusion proof, as specified in
-{{sth-pollination}}.
+SCT Feedback is only performed when a user connects to a site via
+intentional web browsing or normal third party resource inclusion.
+It MUST NOT be performed automatically as part of some sort of
+background process.
+
+Finally, if the HTTPS client has configuration options for not sending
+cookies to third parties, SCTs of third parties MUST be treated as
+cookies with respect to this setting. This prevents third party
+tracking through the use of SCTs/certificates, which would bypass the
+cookie policy. For domains that are only loaded as third party
+domains, the client may never perform SCT Feedback; however the client
+may perform STH Pollination after fetching an inclusion proof, as
+specified in {{sth-pollination}}.
 
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
