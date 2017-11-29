@@ -358,12 +358,17 @@ Trust Anchor) in an sct\_feedback object or equivalent data structure
 for later use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name
-the client contacted. They MUST NOT be sent to any domain not matching
-the original domain (e.g., if the original domain is sub.example.com
-they must not be sent to sub.sub.example.com or to example.com.) They
-MUST NOT be sent to any Subject Alternate Names specified in the
+the client contacted. They MUST NOT be sent to the well-known URI of
+any domain not matching the original domain (e.g., if the original
+domain is sub.example.com they must not be sent to sub.sub.example.com
+or to example.com.) In particular, they MUST NOT be sent to the
+well-known URI of any Subject Alternate Names specified in the
 certificate. In the case of certificates that validate multiple domain
-names, the same SCT is expected to be stored multiple times.
+names, after visiting a second domain name specified in the 
+certificate, the same SCT is expected to be stored once under each
+domain name's key. If Connection Reuse as defined in {{RFC7540}} is
+available, reusing an existing connection to sub.example.com to send
+data to sub.sub.example.com is permitted.
 
 Not following these constraints would increase the risk for two types
 of privacy breaches. First, the HTTPS server receiving the SCT would
