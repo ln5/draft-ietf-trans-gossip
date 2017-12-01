@@ -41,6 +41,7 @@ normative:
     date: 2015-10-13
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
   RFC7159:
+  RFC7540:
 
 informative:
   draft-ietf-trans-threat-analysis-03:
