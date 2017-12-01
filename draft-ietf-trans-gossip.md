@@ -153,11 +153,11 @@ attack (as described above).
 
 Gossiping about log behavior helps address the problem of detecting
 malicious or compromised logs with respect to a partitioning
-attack. We want some side of the partitioned tree, and ideally both
-sides, to see the other side.
+attack. We want some side of the partitioned tree, and ideally all
+sides, to see at least one other side.
 
 Disseminating information about a log poses a potential threat to the
-privacy of end users. Some data of interest (e.g. SCTs) is linkable to
+privacy of end users. Some data of interest (e.g., SCTs) is linkable to
 specific log entries and thereby to specific websites, which makes
 sharing them with others a privacy concern. Gossiping about this data
 has to take privacy considerations into account in order not to expose
@@ -175,7 +175,7 @@ Pollination, and a Trusted Auditor Relationship.
 SCT Feedback enables HTTPS clients to share Signed Certificate
 Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
-HTTPS servers, who in turn share them with CT auditors.
+HTTPS servers, which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools to share
 Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with
@@ -189,8 +189,8 @@ agreed on between client and trusted party.
 
 Despite the privacy risks with sharing SCTs there is no loss in
 privacy if a client sends SCTs for a given site to the site
-corresponding to the SCT. This is because the site's logs would
-already indicate that the client is accessing that site. In this way a
+corresponding to the SCT. This is because the site's cookies could
+already indicate that the client had accessed that site. In this way a
 site can accumulate records of SCTs that have been issued by various
 logs for that site, providing a consolidated repository of SCTs that
 could be shared with auditors. Auditors can use this information to
@@ -227,7 +227,7 @@ pre-trusted in a piece of client software.
 - HTTPS servers and CT auditors (SCT Feedback and STH Pollination)
 - CT auditors (Trusted Auditor Relationship)
 
-Additionally, some HTTPS clients may engage with an auditor who they
+Additionally, some HTTPS clients may engage with an auditor which they
 trust with their privacy:
 
 - HTTPS clients and CT auditors (Trusted Auditor Relationship)
@@ -353,17 +353,22 @@ TLS handshake using one or more of the three mechanisms described in
 extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
 remaining SCTs together with a locally constructed certificate chain
-which is trusted (i.e. terminated in a pre-loaded or locally installed
+which is trusted (i.e., terminated in a pre-loaded or locally installed
 Trust Anchor) in an sct\_feedback object or equivalent data structure
 for later use in SCT Feedback.
 
 The SCTs stored on the client MUST be keyed by the exact domain name
-the client contacted. They MUST NOT be sent to any domain not matching
-the original domain (e.g. if the original domain is sub.example.com
-they must not be sent to sub.sub.example.com or to example.com.) They
-MUST NOT be sent to any Subject Alternate Names specified in the
+the client contacted. They MUST NOT be sent to the well-known URI of
+any domain not matching the original domain (e.g., if the original
+domain is sub.example.com they must not be sent to sub.sub.example.com
+or to example.com.) In particular, they MUST NOT be sent to the
+well-known URI of any Subject Alternate Names specified in the
 certificate. In the case of certificates that validate multiple domain
-names, the same SCT is expected to be stored multiple times.
+names, after visiting a second domain name specified in the 
+certificate, the same SCT is expected to be stored once under each
+domain name's key. If Connection Reuse as defined in {{RFC7540}} is
+available, reusing an existing connection to sub.example.com to send
+data to sub.sub.example.com is permitted.
 
 Not following these constraints would increase the risk for two types
 of privacy breaches. First, the HTTPS server receiving the SCT would
@@ -406,14 +411,19 @@ revisits the first party domain. In lieu of 'double-keying', an HTTPS
 client MAY treat SCT Feedback in the same manner it treats other
 security mechanisms that can enable tracking (such as HSTS and HPKP.)
 
-If the HTTPS client has configuration options for not sending cookies
-to third parties, SCTs of third parties MUST be treated as cookies
-with respect to this setting. This prevents third party tracking
-through the use of SCTs/certificates, which would bypass the cookie
-policy. For domains that are only loaded as third party domains, the
-client may never perform SCT Feedback; however the client may perform
-STH Pollination after fetching an inclusion proof, as specified in
-{{sth-pollination}}.
+SCT Feedback is only performed when a user connects to a site via
+intentional web browsing or normal third party resource inclusion.
+It MUST NOT be performed automatically as part of some sort of
+background process.
+
+Finally, if the HTTPS client has configuration options for not sending
+cookies to third parties, SCTs of third parties MUST be treated as
+cookies with respect to this setting. This prevents third party
+tracking through the use of SCTs/certificates, which would bypass the
+cookie policy. For domains that are only loaded as third party
+domains, the client may never perform SCT Feedback; however the client
+may perform STH Pollination after fetching an inclusion proof, as
+specified in {{sth-pollination}}.
 
 SCTs and corresponding certificates are POSTed to the originating
 HTTPS server at the well-known URL:
@@ -427,11 +437,11 @@ disturbing ordinary secure browsing (https://). This is discussed more
 in {{blocking-policy-frustrating}}.
 
 The HTTPS server SHOULD respond with an HTTP 200 response code and an
-empty body if it was able to process the request. An HTTPS client who
-receives any other response SHOULD consider it an error.
+empty body if it was able to process the request. An HTTPS client
+which receives any other response SHOULD consider it an error.
 
 Some clients have trust anchors or logs that are locally added
-(e.g. by an administrator or by the user themselves). These additions
+(e.g., by an administrator or by the user themselves). These additions
 are potentially privacy-sensitive because they can carry information
 about the specific configuration, computer, or user.
 
@@ -527,11 +537,9 @@ The above describes the simpler mode of operation. In the more
 advanced server mode, the server will detect the attack described in
 {{dual-ca-compromise-attack}}. In this configuration the server will
 not modify the sct\_feedback object prior to performing checks 2, 3,
-and 4.
-
-To prevent a malicious client from filling the server's data store,
-the HTTPS server SHOULD perform an additional check in the more
-advanced mode:
+and 4. Instead, to prevent a malicious client from filling the 
+server's data store, the HTTPS server SHOULD perform an additional
+check in the more advanced mode:
 
   - if the x509\_chain consists of an invalid certificate chain, or
   the culminating trust anchor is not recognized by the server, the
@@ -670,9 +678,9 @@ within the validity window. Clients SHOULD perform all three methods
 of gossip about a log that has ceased operation since it is possible
 the log was still compromised and gossip can detect that. STH
 Pollination is the one mechanism where a client must know about a log
-shutdown. A client who does not know about a log shutdown MUST NOT
+shutdown. A client which does not know about a log shutdown MUST NOT
 attempt any heuristic to detect a shutdown. Instead the client MUST be
-informed about the shutdown from a verifiable source (e.g. a software
+informed about the shutdown from a verifiable source (e.g., a software
 update). The client SHOULD be provided the final STH issued by the log
 and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
 cannot be resolved to the final STH, clients SHOULD follow the
@@ -748,7 +756,7 @@ server.
 
 When operating in this fashion, the HTTPS client is promoting gossip
 for Certificate Transparency, but derives no direct benefit itself. In
-comparison, a client who resolves SCTs or historical STHs to recent
+comparison, a client which resolves SCTs or historical STHs to recent
 STHs and pollinates them is assured that if it was attacked, there is
 a probability that the ecosystem will detect and respond to the attack
 (by distrusting the log).
@@ -919,8 +927,8 @@ Unlike SCT Feedback, the STH Pollination mechanism is not hampered if
 only a minority of HTTPS servers deploy it. However, it makes an
 assumption that an HTTPS client performs Proof Fetching (such as the
 DNS mechanism discussed). Unfortunately, any manner that is anonymous
-for some (such as clients who use shared DNS services such as a large
-ISP), may not be anonymous for others.
+for some (such as clients which use shared DNS services such as a
+large ISP), may not be anonymous for others.
 
 For instance, DNS requests expose a considerable amount of sensitive
 information (including what data is already present in the cache) in
@@ -934,8 +942,8 @@ If STH Pollination was the only mechanism deployed, users that disable
 it would be able to be attacked without risk of detection.
 
 If STH Pollination was not deployed, HTTPS clients visiting HTTPS
-Servers who did not deploy SCT Feedback could be attacked without risk
-of detection.
+Servers which did not deploy SCT Feedback could be attacked without
+risk of detection.
 
 ## Trusted Auditor Relationship
 
@@ -1049,7 +1057,7 @@ chains are different.
 Cross-Signatures could result in a different org being treated as the
 'root', but in this case, one chain would be a subset of the other.
 
-Intermediate swapping (e.g. different signature algorithms) could result
+Intermediate swapping (e.g., different signature algorithms) could result
 in different chains, but the root would be the same.
 
 (Hitting both those cases at once would cause a false positive though,
@@ -1181,7 +1189,7 @@ Chains it is authoritative for it is recommended to configure the SCT
 Feedback mechanism to allow only certain certificates that are known
 to be valid. These chains and SCTs can then be discarded without being
 stored or subsequently provided to any clients or auditors. If the
-allowlist is not sufficient, the below Deletion Algorithm
+allowlist is not sufficient, the below Deletion Algorithm in
 {{deletion-algorithm}} is recommended to make it more difficult for
 the attacker to perform a flushing attack.
 
@@ -1346,7 +1354,7 @@ with such a relationship already established, sending SCTs to a
 trusted auditor run by the same organization does not appear to expose
 any additional information to the trusted third party.
 
-Clients who wish to contact a CT auditor without associating their
+Clients which wish to contact a CT auditor without associating their
 identities with their SCTs may wish to use an anonymizing network like
 Tor to submit SCT Feedback to the auditor. Auditors SHOULD accept SCT
 Feedback that arrives over such anonymizing networks.
@@ -1381,7 +1389,7 @@ taking on this role needs to consider the following:
 
 This section is intended as suggestions to implementors of HTTPS
 Clients, HTTPS servers, and CT auditors. It is not a requirement for
-technique of implementation, so long as privacy considerations
+technique of implementation, so long as the privacy considerations
 established above are obeyed.
 
 ## Blocking Recommendations {#blocking-policy-recommendations}
@@ -1633,6 +1641,10 @@ Both suggestions presented are applicable to both clients and servers.
 Servers may not perform proof fetching, in which case large portions
 of the pseudocode are not applicable. But it should work in either
 case.
+
+Note that we use a function 'rand()' in the pseudocode, this function
+is assumed to be a cryptographically secure pseudorandom 
+number generator.
 
 ### STH Pollination {#recommendations-sth-pollination}
 
@@ -1975,7 +1987,7 @@ illustrate the intended behavior. Hopefully the code matches!
 
       //  This is the number of times we have waited an
       //  WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, and still failed
-      //  e.g. 10 months of failures
+      //  e.g., 10 months of failures
       //  This is not used when this algorithm runs on servers
       private uint16   num_feedback_loop_failures
 
