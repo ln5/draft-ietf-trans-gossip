@@ -1165,8 +1165,10 @@ takes 1 Kilobytes, this is 6.56 Megabytes.
 
 Note that it is important that implementors do not calculate the exact
 size of cache expected -- if an attack does occur, a small number of
-additional STHs will enter into the cache. These STHs will be in
-addition to the expected set, and will be evidence of the attack.
+additional, fraudulent STHs will enter into the cache. These STHs will
+be in addition to the expected set, and will be evidence of the attack.
+Flooding the cache will not work, as an attacker would have to include
+fraudulent STHs in the flood.
 
 If an HTTPS client or HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all STHs
