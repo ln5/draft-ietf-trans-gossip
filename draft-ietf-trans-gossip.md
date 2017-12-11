@@ -1718,13 +1718,16 @@ validity window rarer and thus enable tracking.
         else {
           indexes = set()
           modulus = len(this.sth_list)
-          while(len(indexes) < MAX_STH_TO_GOSSIP) {
+          outdated_sths = 0
+          while(len(indexes) + outdated_sths < MAX_STH_TO_GOSSIP) {
             r = randomInt() % modulus
-            // Ignore STHs that are past the validity window but not
-            // yet removed.
-            if(r not in indexes
-               && now() - this.sth_list[i].timestamp < TWO_WEEKS)
-              indexes.insert(r)
+            if(r not in indexes)
+              // Ignore STHs that are past the validity window but not
+              // yet removed.
+              if(now() - this.sth_list[i].timestamp < TWO_WEEKS)
+                outdated_sths++;
+              else
+                indexes.insert(r)
           }
 
           return_selection = []
