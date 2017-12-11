@@ -984,19 +984,22 @@ auditor.
 
 ## Interaction
 
-The interactions of the mechanisms is thus outlined:
+Assuming no other log consistency measures exist, clients who perform
+only a subset of the mechanisms described in this document are exposed
+to the following vulnerabilities:
 
 HTTPS clients can be attacked without risk of detection if they do not
-participate in any of the three mechanisms.
+participate in any of the three mechanisms (or any other, unspecified
+mechanisms).
 
 HTTPS clients are afforded the greatest chance of detecting an attack
 when they either participate in both SCT Feedback and STH Pollination
 with Proof Fetching or if they have a Trusted Auditor relationship.
-(Participating in SCT Feedback is required to prevent a malicious log
-from refusing to ever resolve an SCT to an STH, as put forward in
-{{actively-malicious-log}}). Additionally, participating in SCT
-Feedback enables an HTTPS client to assist in detecting the exact
-target of an attack.
+(Participating in SCT Feedback is the only way specified in this
+document to prevent a malicious log from refusing to ever resolve
+an SCT to an STH, as put forward in {{actively-malicious-log}}).
+Additionally, participating in SCT Feedback enables an HTTPS client
+to assist in detecting the exact target of an attack.
 
 HTTPS servers that omit SCT Feedback enable malicious logs to carry
 out attacks without risk of detection. If these servers are targeted
@@ -1019,14 +1022,14 @@ trusted log that has actively decided to be malicious. It can carry
 out an attack in at least two ways:
 
 In the first attack, the log can present a split view of the log for
-all time. The only way to detect this attack is to resolve each view
-of the log to the two most recent STHs and then force the log to
-present a consistency proof. (Which it cannot.) This attack can be
-detected by CT auditors participating in STH Pollination, as long as
-they are explicitly built to handle the situation of a log
-continuously presenting a split view. We highly recommend they
-detect the case where two or more STHs cannot be resolved via
-consistency proofs for some period of time.
+all time. This attack can be detected by CT auditors, but a naive
+auditor implementation may fail to do so. The simplest, least
+efficient way to detect the attack is to mirror the entire log and
+assert inclusion of every peice of data. If an auditor does not mirror
+the log, one way to detect this attack is to resolve each view
+of the log to the most recent STHs available and then force the log to
+present a consistency proof. (Which it cannot.) We highly recommend
+auditors plan for this attack scenario and ensure it will be detected.
 
 In the second attack, the log can sign an SCT, and refuse to ever
 include the certificate that the SCT refers to in the
