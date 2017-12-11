@@ -708,11 +708,16 @@ this historical STH is considered personally identifiable information
 per above, the client needs to obtain a consistency proof to a more
 recent STH.
 
-A client SHOULD perform proof fetching. A client MUST NOT perform
-proof fetching for any SCTs or STHs issued by a locally added log. A
-client MAY fetch an inclusion proof for an SCT (issued by a pre-loaded
-log) that validates a certificate chaining to a locally added trust
-anchor.
+A client SHOULD attempt proof fetching. A client MAY do network probing
+to determine if proof fetching may succeed, and if it learns that it
+does not, SHOULD periodically re-probe (especially after network
+change, if it is aware of these events.) If it does succeed, queued
+events can be processed.
+
+A client MUST NOT perform proof fetching for any SCTs or STHs issued
+by a locally added log. A client MAY fetch an inclusion proof for an
+SCT (issued by a pre-loaded log) that validates a certificate
+chaining to a locally added trust anchor.
 
 If a client requested either proof directly from a log or auditor, it
 would reveal the client's browsing habits to a third party. To
