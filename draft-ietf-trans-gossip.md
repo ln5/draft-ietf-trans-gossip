@@ -1330,7 +1330,9 @@ only client pollinating that STH cross-origin.
 
 It is mitigated partially because the log is limited in the number of
 STHs it can issue. It must 'save' one of its STHs each MMD to perform
-the attack.
+the attack. A non-compliant log, who issues additional STHs, can be
+identified as non-compliant by auditors that track the number of STHs
+issused per MMD, as described in {{RFC-6962-BIS-09}} section 8.3.
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
