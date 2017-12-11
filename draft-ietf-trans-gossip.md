@@ -1245,7 +1245,9 @@ site. Because the client-server relationship is sensitive, gossip
 between clients and servers about unrelated SCTs is risky. Therefore,
 a client with an SCT for a given server SHOULD NOT transmit that
 information in any other than the following two channels: to the
-server associated with the SCT itself; or to a Trusted Auditor, if one
+server associated with the SCT itself (via a TLS connection with a
+certificate identifying the Domain Name of the web site with a Host
+header specifying the domain name); or to a Trusted Auditor, if one
 exists.
 
 ### Privacy in SCT Feedback {#privacy-feedback}
