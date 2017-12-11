@@ -894,21 +894,18 @@ These configuration needs, and the simple fact that it would require
 some deployment of software, means that some percentage of HTTPS
 servers will not deploy SCT Feedback.
 
-It is worthwhile to note that an attacker may be able to prevent
-detection of an attack on a webserver (in all cases) if SCT Feedback
-is not implemented. This attack is detailed in
-{{actively-malicious-log}}).
-
 If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-If SCT Feedback is not deployed by a webserver, malicious logs will be
-able to attack all users of the webserver (who do not have a Trusted
-Auditor relationship) with impunity. Additionally, users who wish to
-have the strongest measure of privacy protection (by disabling STH
-Pollination Proof Fetching and forgoing a Trusted Auditor) could be
-attacked without risk of detection.
+If SCT Feedback is not deployed by a webserver, a webserver may never
+learn that it was a target of an attack by a malicious log, as
+described in {{actively-malicious-log}} - although to be clear the
+prescense of an attack by the log could be learned through STH
+Pollination. Additionally, users who wish to have the strongest
+measure of privacy protection (by disabling STH Pollination Proof
+Fetching and forgoing a Trusted Auditor) could be attacked without
+risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
 
@@ -1019,7 +1016,7 @@ are those who do not have a Trusted Auditor relationship.
 
 One of the most powerful attacks possible in the CT ecosystem is a
 trusted log that has actively decided to be malicious. It can carry
-out an attack in two ways:
+out an attack in at least two ways:
 
 In the first attack, the log can present a split view of the log for
 all time. The only way to detect this attack is to resolve each view
@@ -1027,7 +1024,9 @@ of the log to the two most recent STHs and then force the log to
 present a consistency proof. (Which it cannot.) This attack can be
 detected by CT auditors participating in STH Pollination, as long as
 they are explicitly built to handle the situation of a log
-continuously presenting a split view.
+continuously presenting a split view. We highly recommend they
+detect the case where two or more STHs cannot be resolved via
+consistency proofs for some period of time.
 
 In the second attack, the log can sign an SCT, and refuse to ever
 include the certificate that the SCT refers to in the
@@ -1038,6 +1037,13 @@ STH), the log would respond with an error, and a client may simply
 regard the response as a transient error. This attack can be detected
 using SCT Feedback, or an Auditor of Last Resort, as presented in
 {{blocking-policy-response}}.
+
+Both of these attack variants can be detected by CT auditors who have
+obtained a STH of a 'abnormal' view of the log. However, they may not
+be able to link the STH to any particular SCT or Certificate. This
+means that while the log misbehavior was successfully detected, the
+target of the attack was not identified. To assertively identify the
+target(s) of the attack, SCT Feedback is necessary.
 
 ## Dual-CA Compromise {#dual-ca-compromise}
 
