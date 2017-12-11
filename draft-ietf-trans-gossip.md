@@ -1665,7 +1665,12 @@ case.
 
 Note that we use a function 'rand()' in the pseudocode, this function
 is assumed to be a cryptographically secure pseudorandom 
-number generator.
+number generator. Additionally, when N unique items are needed, they
+are chosen at random by drawing a random index repeatedly until the N
+unique items from an array have been chosen. Although simple, when the
+array is N or near-N items in length this is inefficient. A secure
+shuffle algorithm followed by selecting the first N items may be more
+efficient, especially when N is large.
 
 ### STH Pollination {#recommendations-sth-pollination}
 
