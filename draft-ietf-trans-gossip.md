@@ -682,8 +682,8 @@ Pollination is the one mechanism where a client must know about a log
 shutdown. A client which does not know about a log shutdown MUST NOT
 attempt any heuristic to detect a shutdown. Instead the client MUST be
 informed about the shutdown from a verifiable source (e.g., a software
-update). The client SHOULD be provided the final STH issued by the log
-and SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
+update), and be provided the final STH issued by the log. The client
+SHOULD resolve SCTs and STHs to this final STH. If an SCT or STH
 cannot be resolved to the final STH, clients SHOULD follow the
 requirements and recommendations set forth in
 {{blocking-policy-response}}.
