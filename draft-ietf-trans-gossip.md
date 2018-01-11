@@ -915,7 +915,7 @@ attack without any possibility of detection.
 
 A webserver not deploying SCT Feedback may never learn that it was
 a target of an attack by a malicious log, as described in
-{{actively-malicious-log}} - although the prescense of an attack
+{{actively-malicious-log}}, although the presence of an attack
 by the log could be learned through STH Pollination. Additionally,
 users who wish to have the strongest measure of privacy protection
 (by disabling STH Pollination Proof Fetching and forgoing a Trusted
@@ -1055,7 +1055,7 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 {{blocking-policy-response}}.
 
 Both of these attack variants can be detected by CT auditors who have
-obtained a STH of an 'abnormal' view of the log. However, they may not
+obtained an STH of an 'abnormal' view of the log. However, they may not
 be able to link the STH to any particular SCT or Certificate. This
 means that while the log misbehavior was successfully detected, the
 target of the attack was not identified. To assertively identify the
@@ -2343,7 +2343,7 @@ SCTStoreManager class will be used.
     // This function is called when the cache is not yet full, but is
     // nearing it. It prioritizes deleting data that should be safe
     // to delete (because it has been shared with the site or resolved
-    // to a STH)
+    // to an STH)
     def cache_pressure_is_imminent()
     {
       bundlesToDelete = []
