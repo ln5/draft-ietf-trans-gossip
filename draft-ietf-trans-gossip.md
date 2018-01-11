@@ -898,14 +898,13 @@ If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-If SCT Feedback is not deployed by a webserver, a webserver may never
-learn that it was a target of an attack by a malicious log, as
-described in {{actively-malicious-log}} - although to be clear the
-prescense of an attack by the log could be learned through STH
-Pollination. Additionally, users who wish to have the strongest
-measure of privacy protection (by disabling STH Pollination Proof
-Fetching and forgoing a Trusted Auditor) could be attacked without
-risk of detection.
+A webserver not deploying SCT Feedback may never learn that it was
+a target of an attack by a malicious log, as described in
+{{actively-malicious-log}} - although the prescense of an attack
+by the log could be learned through STH Pollination. Additionally,
+users who wish to have the strongest measure of privacy protection
+(by disabling STH Pollination Proof Fetching and forgoing a Trusted
+Auditor) could be attacked without risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
 
@@ -989,8 +988,7 @@ only a subset of the mechanisms described in this document are exposed
 to the following vulnerabilities:
 
 HTTPS clients can be attacked without risk of detection if they do not
-participate in any of the three mechanisms (or any other, unspecified
-mechanisms).
+participate in any of the three mechanisms.
 
 HTTPS clients are afforded the greatest chance of detecting an attack
 when they either participate in both SCT Feedback and STH Pollination
@@ -1042,7 +1040,7 @@ using SCT Feedback, or an Auditor of Last Resort, as presented in
 {{blocking-policy-response}}.
 
 Both of these attack variants can be detected by CT auditors who have
-obtained a STH of a 'abnormal' view of the log. However, they may not
+obtained a STH of an 'abnormal' view of the log. However, they may not
 be able to link the STH to any particular SCT or Certificate. This
 means that while the log misbehavior was successfully detected, the
 target of the attack was not identified. To assertively identify the
@@ -1330,9 +1328,7 @@ only client pollinating that STH cross-origin.
 
 It is mitigated partially because the log is limited in the number of
 STHs it can issue. It must 'save' one of its STHs each MMD to perform
-the attack. A non-compliant log, who issues additional STHs, can be
-identified as non-compliant by auditors that track the number of STHs
-issused per MMD, as described in {{RFC-6962-BIS-09}} section 8.3.
+the attack. 
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
