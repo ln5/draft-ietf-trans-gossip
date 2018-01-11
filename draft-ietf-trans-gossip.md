@@ -797,10 +797,15 @@ continues to be tracked in the system.
 ### STH Pollination data format {#sth-pollination-dataformat}
 
 The data sent from HTTPS clients and CT auditors to HTTPS servers is a
-JSON object {{RFC7159}} with the following content:
+JSON object {{RFC7159}} with one or two members:
 
-- sths -- an array of 0 or more fresh SignedTreeHeads as defined in
-  {{RFC-6962-BIS-09}} Section 3.6.1.
+- "v1" : array of 0 or more objects each containing an STH as returned
+  from ct/v1/get-sth, see {{RFC6962}} section 4.3
+
+- "v2" : array of 0 or more objects each containing an STH as returned
+  from ct/v2/get-sth, see {{6962-bis-27}} section 5.2
+
+Note that all STHs MUST be fresh as defined in {{sth-pollination}}.
 
 ## Trusted Auditor Stream
 
