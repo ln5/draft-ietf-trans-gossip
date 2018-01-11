@@ -2488,8 +2488,9 @@ SCTStoreManager class will be used.
 # Contributors
 
 The authors would like to thank the following contributors for
-valuable suggestions: Al Cutter, Ben Laurie, Benjamin Kaduk, Josef
-Gustafsson, Karen Seo, Magnus Ahltorp, Steven Kent, Yan Zhu.
+valuable suggestions: Al Cutter, Andrew Ayer, Ben Laurie, Benjamin
+Kaduk, Graham Edgecombe, Josef Gustafsson, Karen Seo, Magnus Ahltorp,
+Steven Kent, Yan Zhu.
 
 # ChangeLog
 
