@@ -284,15 +284,15 @@ show what goes in the Trusted Auditor Relationship stream.
   |  |         SCTs & Certs --- | Website  |
   |  |[1]           |           +----------+
   |  |[2]         STHs            ^     |
-  |  |[3]           v             |     |
+  |  |[3]           v             |  HTTPS traffic
   |  |          +----------+      |     |
-  |  +--------> | Auditor  |      |  HTTPS traffic
+  |  +--------> | Auditor  |      |  SCT & Cert
   |             +----------+      |     |
- STH                              |  SCT & Cert
-  |                        SCTs & Certs |
-Log entries                       |     |
-  |                             STHs   STHs
-  v                               |     |
+ STH                              |  STH & Inclusion proof
+  |                               |     |
+Log entries                SCTs & Certs |
+  |                               |     |
+  v                             STHs    |
 +----------+                      |     v
 | Monitor  |                    +----------+
 +----------+                    | Browser  |
