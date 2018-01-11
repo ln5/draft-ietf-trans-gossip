@@ -25,6 +25,21 @@ author:
     email: tom@ritter.vg
 
 normative:
+  RFC-6962-BIS-27:
+    title: "Certificate Transparency"
+    author:
+      -
+        ins: B. Laurie
+      -
+        ins: A. Langley
+      -
+        ins: E. Kasper
+      -
+        ins: E. Messeri
+      -
+        ins: R. Stradling
+    target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
+    date: 2017-10-30
   RFC-6962-BIS-09:
     title: "Certificate Transparency"
     author:
@@ -1312,7 +1327,10 @@ only client pollinating that STH cross-origin.
 
 It is mitigated partially because the log is limited in the number of
 STHs it can issue. It must 'save' one of its STHs each MMD to perform
-the attack.
+the attack. A log violating its STH Frequency Count
+({{RFC-6962-BIS-27}} section 4.1) can be identified as non-compliant
+by CT auditors following the procedure described in
+{{RFC-6962-BIS-27}} section 8.3.
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
