@@ -125,9 +125,10 @@ the users of the system don't have to trust that they behave correctly
 since the behavior of a log can be verified to be correct.
 
 This document tries to solve the problem with logs presenting a "split
-view" of their operations. It describes three gossiping mechanisms for
-Certificate Transparency: SCT Feedback, STH Pollination and Trusted
-Auditor Relationship.
+view" of their operations or failing to incorporate a submission
+within MMD. It describes three gossiping mechanisms for Certificate
+Transparency: SCT Feedback, STH Pollination and Trusted Auditor
+Relationship.
 
 --- middle
 
