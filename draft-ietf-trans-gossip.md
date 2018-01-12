@@ -1194,8 +1194,8 @@ fraudulent STHs in the flood.
 If an HTTPS client or HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all STHs
 within the validity window it is recommended to use the below Deletion
-Algorithm {{deletion-algorithm}} to make it more difficult for the
-attacker to perform a flushing attack.
+Algorithm in section {{deletion-algorithm}} to make it more difficult
+for the attacker to perform a flushing attack.
 
 ### SCTs & Certificate Chains on HTTPS Servers
 
