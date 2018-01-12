@@ -919,13 +919,14 @@ If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-A webserver not deploying SCT Feedback may never learn that it was
-a target of an attack by a malicious log, as described in
-{{actively-malicious-log}}, although the presence of an attack
-by the log could be learned through STH Pollination. Additionally,
-users who wish to have the strongest measure of privacy protection
-(by disabling STH Pollination Proof Fetching and forgoing a Trusted
-Auditor) could be attacked without risk of detection.
+A webserver not deploying SCT Feedback (or an alternative method
+providing equivalent functionality) may never learn that it was a
+target of an attack by a malicious log, as described in
+{{actively-malicious-log}}, although the presence of an attack by the
+log could be learned through STH Pollination. Additionally, users who
+wish to have the strongest measure of privacy protection (by disabling
+STH Pollination Proof Fetching and forgoing a Trusted Auditor) could
+be attacked without risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
 
@@ -964,9 +965,10 @@ benefit.)
 If STH Pollination was the only mechanism deployed, users that disable
 it would be able to be attacked without risk of detection.
 
-If STH Pollination was not deployed, HTTPS clients visiting HTTPS
-Servers which did not deploy SCT Feedback could be attacked without
-risk of detection.
+If STH Pollination (or an alternative method providing equivalent
+functionality) was not deployed, HTTPS clients visiting HTTPS Servers
+which did not deploy SCT Feedback could be attacked without risk of
+detection.
 
 ## Trusted Auditor Relationship
 
@@ -1192,8 +1194,8 @@ fraudulent STHs in the flood.
 If an HTTPS client or HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all STHs
 within the validity window it is recommended to use the below Deletion
-Algorithm {{deletion-algorithm}} to make it more difficult for the
-attacker to perform a flushing attack.
+Algorithm in section {{deletion-algorithm}} to make it more difficult
+for the attacker to perform a flushing attack.
 
 ### SCTs & Certificate Chains on HTTPS Servers
 
