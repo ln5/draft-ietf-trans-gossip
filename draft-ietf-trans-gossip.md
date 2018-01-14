@@ -493,20 +493,20 @@ In the simple mode of operation, upon receiving a submission at the
 sct-feedback well-known URL, an HTTPS server will perform a set of
 operations, checking on each sct\_feedback object before storing it:
 
-  1. the HTTPS server MAY modify the sct\_feedback object, and discard
-     all items in the x509\_chain array except the first item (which
-     is the end-entity certificate)
+  - (1) the HTTPS server MAY modify the sct\_feedback object, and
+    discard all items in the x509\_chain array except the first item
+    (which is the end-entity certificate)
 
-  2. if a bit-wise compare of the sct\_feedback object matches one
-     already in the store, this sct\_feedback object SHOULD be
-     discarded
+  - (2) if a bit-wise compare of the sct\_feedback object matches one
+    already in the store, this sct\_feedback object SHOULD be
+    discarded
 
-  3. if the leaf cert is not for a domain for which the server is
-     authoritative, the SCT MUST be discarded
+  - (3) if the leaf cert is not for a domain for which the server is
+    authoritative, the SCT MUST be discarded
 
-  4. if an SCT in the sct\_data array can't be verified to be a valid
-     SCT for the accompanying leaf cert, and issued by a known log,
-     the individual SCT SHOULD be discarded
+  - (4) if an SCT in the sct\_data array can't be verified to be a
+    valid SCT for the accompanying leaf cert, and issued by a known
+    log, the individual SCT SHOULD be discarded
 
 The modification in step number 1 is necessary to prevent a malicious
 client from exhausting the server's storage space. A client can
@@ -545,7 +545,7 @@ and 4. Instead, to prevent a malicious client from filling the
 server's data store, the HTTPS server SHOULD perform an additional
 check in the more advanced mode:
 
-  5. if the x509\_chain consists of an invalid certificate chain, or
+  - (5) if the x509\_chain consists of an invalid certificate chain, or
   the culminating trust anchor is not recognized by the server, the
   server SHOULD modify the sct\_feedback object, discarding all items
   in the x509\_chain array except the first item
