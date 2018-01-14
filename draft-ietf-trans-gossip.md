@@ -1,6 +1,6 @@
 ---
 title: Gossiping in CT
-docname: draft-ietf-trans-gossip-04
+docname: draft-ietf-trans-gossip-05
 category: exp
 pi: [toc, sortrefs, symrefs]
 ipr: trust200902
@@ -2408,6 +2408,11 @@ Kaduk, Graham Edgecombe, Josef Gustafsson, Karen Seo, Magnus Ahltorp,
 Steven Kent, Yan Zhu.
 
 # ChangeLog
+
+## Changes between ietf-04 and ietf-05
+
+- STH and SCT data formats changed to support CT v1 and v2.
+- Address ED review comments.
 
 ## Changes between ietf-03 and ietf-04
 
