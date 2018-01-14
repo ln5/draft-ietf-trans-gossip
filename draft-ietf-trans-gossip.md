@@ -1089,21 +1089,6 @@ method of determining if chains differ significantly is by asserting
 that one chain is not a subset of the other and that the roots of the
 chains are different.
 
-\[Note: Justification for this algorithm:
-
-Cross-Signatures could result in a different org being treated as the
-'root', but in this case, one chain would be a subset of the other.
-
-Intermediate swapping (e.g., different signature algorithms) could result
-in different chains, but the root would be the same.
-
-(Hitting both those cases at once would cause a false positive though,
-but this would likely be rare.)
-
-Are there other cases that could occur?
-(Left for the purposes of reading during pre-Last Call, to be removed by
-Editor)\]
-
 ## Censorship/Blocking considerations
 
 We assume a network attacker who is able to fully control the client's
@@ -1931,75 +1916,6 @@ SCT Feedback. Its behavior is:
 If a domain is visited infrequently (say, once every 7 months) then it
 will be evicted from the cache and start all over again (according to
 the suggestion values in the below pseudocode).
-
-\[
-Note: To be certain the logic is correct I give the following test cases which
-illustrate the intended behavior. Hopefully the code matches!
-
-     Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
-     Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ...
-     Succeed 1 month later num_submissions_attempted=13   num_submissions_succeeded=2  num_feedback_loop_failures=0(r) indicates (Reset)
-     -> Feedback is attempted regularly.
-
-     Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
-     Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=13   num_submissions_succeeded=1  num_feedback_loop_failures=2
-     ... wait a month ...
-     Succeed 1 month later num_submissions_attempted=14   num_submissions_succeeded=2  num_feedback_loop_failures=0(r)
-     -> Feedback is attempted regularly.
-
-     Succeed 1 Time        num_submissions_attempted=1    num_submissions_succeeded=1  num_feedback_loop_failures=0
-     Fail 10 Times         num_submissions_attempted=11   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=12   num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=13   num_submissions_succeeded=1  num_feedback_loop_failures=2
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=14   num_submissions_succeeded=2  num_feedback_loop_failures=3
-     ... clear_old_data() is run every hour ...
-                           num_submissions_attempted=0    num_submissions_succeeded=0  num_feedback_loop_failures=3
-                           sct_feedback_failing_longterm=True
-     Fail 1 month later    num_submissions_attempted=1    num_submissions_succeeded=0  num_feedback_loop_failures=4
-                           sct_feedback_failing_longterm=True
-     ... clear_old_data() is run every hour ...
-                           num_submissions_attempted=0(r) num_submissions_succeeded=0  num_feedback_loop_failures=3
-                           sct_feedback_failing_longterm=True
-     Succeed 1 month later num_submissions_attempted=2   num_submissions_succeeded=1  num_feedback_loop_failures=0(r)
-                           sct_feedback_failing_longterm=False
-     -> Feedback is attempted regularly.
-
-     Note above that the second run of clear_old_data() will reset num_submissions_attempted from 1 to 0.  This is
-     CRITICAL. Otherwise, we would have the below bug (where after 10 months of failures, a success would not hit
-     the required ratio to keep going)
-
-
-     //The below represents a bug.
-     Succeed 1 Time        num_submissions_attempted=1   num_submissions_succeeded=1  num_feedback_loop_failures=0
-     Fail 10 Times         num_submissions_attempted=11  num_submissions_succeeded=1  num_feedback_loop_failures=0
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=12  num_submissions_succeeded=1  num_feedback_loop_failures=1
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=13  num_submissions_succeeded=1  num_feedback_loop_failures=2
-     ... wait a month ...
-     Fail 1 month later    num_submissions_attempted=14  num_submissions_succeeded=2  num_feedback_loop_failures=3
-     ... clear_old_data() is run every hour ...
-                           num_submissions_attempted=0   num_submissions_succeeded=0  num_feedback_loop_failures=3
-                           sct_feedback_failing_longterm=True
-     Fail 1 month later    num_submissions_attempted=1   num_submissions_succeeded=0  num_feedback_loop_failures=4
-                           sct_feedback_failing_longterm=True
-     Fail 9 times for 9 months
-                           num_submissions_attempted=10  num_submissions_succeeded=0  num_feedback_loop_failures=13
-                           sct_feedback_failing_longterm=True
-     Succeed 1 month later num_submissions_attempted=11  num_submissions_succeeded=1  num_feedback_loop_failures=0(r)
-                           sct_feedback_failing_longterm=False
-     -> Feedback is NOT attempted regularly.
-\]
 
     //Suggestions:
     //  After concluding a domain doesn't support feedback, we try again
