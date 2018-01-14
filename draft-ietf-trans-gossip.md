@@ -342,16 +342,21 @@ via a well-known URL. This is described in {{feedback-srvaud}}.
 ### SCT Feedback data format {#feedback-dataformat}
 
 The data shared between HTTPS clients and servers, as well as between
-HTTPS servers and CT auditors, is a JSON array {{RFC7159}}.  Each item
-in the array is a JSON object with the following content:
+HTTPS servers and CT auditors, is a JSON array {{RFC7159}}. Each item
+in the array is a JSON object containing at least the first of the
+following members:
 
-- x509_chain: An array of PEM-encoded X.509 certificates. The
-  first element is the end-entity certificate, the second certifies
-  the first and so on.
+- "x509_chain" : An array of PEM-encoded X.509 certificates. The first
+  element is the end-entity certificate, the second certifies the
+  first and so on. The "x509_chain" member is mandatory to include.
 
-- sct_data: An array of objects consisting of the base64
-  representation of the binary SCT data as defined in
-  {{RFC-6962-BIS-09}} Section 3.3.
+- "sct_data_v1" : An array of base64 encoded
+  "SignedCertificateTimestampList"s as defined in {{RFC-6962}} section
+  3.3. The "sct_data_v1" member is optional.
+
+- "sct_data_v2" : An array of base64 encoded "TransItem" structures of
+  type "x509_sct_v2" or "precert_sct_v2" as defined in {{6962-bis-27}}
+  section 4.8. The "sct_data_v2" member is optional.
 
 We will refer to this object as 'sct\_feedback'.
 
