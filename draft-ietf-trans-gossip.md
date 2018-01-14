@@ -1691,8 +1691,8 @@ validity window rarer and thus enable tracking.
     {
       STH[] sth_list
 
-      //  This function is run after receiving a set of STHs from
-      //  a third party in response to a pollination submission
+      // This function is run after receiving a set of STHs from
+      // a third party in response to a pollination submission
       def insert(STH[] new_sths) {
         foreach(new in new_sths) {
           if(this.sth_list.contains(new))
@@ -1701,15 +1701,15 @@ validity window rarer and thus enable tracking.
         }
       }
 
-      //  This function is called to delete the given STH
-      //  from the data store
+      // This function is called to delete the given STH
+      // from the data store
       def delete_now(STH s) {
         this.sth_list.remove(s)
       }
 
-      //  When it is time to perform STH Pollination, the HTTPS client
-      //  calls this function to get a selection of STHs to send as
-      //  feedback
+      // When it is time to perform STH Pollination, the HTTPS client
+      // calls this function to get a selection of STHs to send as
+      // feedback
       def get_pollination_selection() {
         if(len(this.sth_list) < MAX_STH_TO_GOSSIP)
           return this.sth_list
@@ -1777,10 +1777,10 @@ member functions of the STHStore class.
 
 These functions also exist in the STHStore class.
 
-    //  This function is called after successfully pollinating STHs
-    //  to a third party. It is passed the STHs sent to the third
-    //  party, which is the output of get_gossip_selection(), as well
-    //  as the STHs received in the response.
+    // This function is called after successfully pollinating STHs
+    // to a third party. It is passed the STHs sent to the third
+    // party, which is the output of get_gossip_selection(), as well
+    // as the STHs received in the response.
     def successful_thirdparty_submission_callback(STH[] submitted_sth_list,
                                                   STH[] new_sths)
     {
@@ -1792,7 +1792,7 @@ These functions also exist in the STHStore class.
     }
 
 
-    //  Attempt auditor of last resort submissions until it succeeds
+    // Attempt auditor of last resort submissions until it succeeds
     def auditor_of_last_resort_callback(original_sth, error) {
       if(!error) {
         delete_now(original_sth)
@@ -1903,72 +1903,72 @@ will be evicted from the cache and start all over again (according to
 the suggestion values in the below pseudocode).
 
     //Suggestions:
-    //  After concluding a domain doesn't support feedback, we try again
-    //  after WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time to see if
-    //  they added support
+    // After concluding a domain doesn't support feedback, we try again
+    // after WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time to see if
+    // they added support
     #define WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS                     1 month
 
-    //  If we've waited MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE
-    //  multiplied by WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, we
-    //  still attempt SCT Feedback, but no longer bother storing any data
-    //  until the domain supports SCT Feedback
+    // If we've waited MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE
+    // multiplied by WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, we
+    // still attempt SCT Feedback, but no longer bother storing any data
+    // until the domain supports SCT Feedback
     #define MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE      3
 
-    //  If this percentage of SCT Feedback attempts previously succeeded,
-    //  we consider the domain as supporting feedback and is just having
-    //  transient errors
+    // If this percentage of SCT Feedback attempts previously succeeded,
+    // we consider the domain as supporting feedback and is just having
+    // transient errors
     #define MIN_RATIO_FOR_SCT_FEEDBACK_TO_BE_WORKING               .10
 
     class SCTDomainEntry
     {
-      //  This is the primary key of the object, the exact domain name it
-      //  is valid for
+      // This is the primary key of the object, the exact domain name it
+      // is valid for
       string   domain
 
-      //  This is the last time the domain was contacted. For client
-      //  operations it is updated whenever the client makes any request
-      //  (not just feedback) to the domain. For server operations, it is
-      //  updated whenever any client contacts the domain. Responsibility
-      //  for updating lies OUTSIDE of the class
+      // This is the last time the domain was contacted. For client
+      // operations it is updated whenever the client makes any request
+      // (not just feedback) to the domain. For server operations, it is
+      // updated whenever any client contacts the domain. Responsibility
+      // for updating lies OUTSIDE of the class
       public datetime last_contact_for_domain
 
-      //  This is the last time SCT Feedback was attempted for the domain.
-      //  It is updated whenever feedback is attempted - responsibility for
-      //  updating lies OUTSIDE of the class
-      //  This is not used when this algorithm runs on servers
+      // This is the last time SCT Feedback was attempted for the domain.
+      // It is updated whenever feedback is attempted - responsibility for
+      // updating lies OUTSIDE of the class
+      // This is not used when this algorithm runs on servers
       public datetime last_sct_feedback_attempt
 
-      //  This is the number of times we have waited an
-      //  WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, and still failed
-      //  e.g., 10 months of failures
-      //  This is not used when this algorithm runs on servers
+      // This is the number of times we have waited an
+      // WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS amount of time, and still failed
+      // e.g., 10 months of failures
+      // This is not used when this algorithm runs on servers
       private uint16   num_feedback_loop_failures
 
-      //  This is whether or not SCT Feedback has failed enough times that we
-      //  should not bother storing data for it anymore. It is a small function
-      //  used for illustrative purposes
-      //  This is not used when this algorithm runs on servers
+      // This is whether or not SCT Feedback has failed enough times that we
+      // should not bother storing data for it anymore. It is a small function
+      // used for illustrative purposes
+      // This is not used when this algorithm runs on servers
       private bool     sct_feedback_failing_longterm()
         { num_feedback_loop_failures >= MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE }
 
-      //  This is the number of SCT Feedback submissions attempted.
-      //  Responsibility for incrementing lies OUTSIDE of the class
-      //  (And watch for integer overflows)
-      //  This is not used when this algorithm runs on servers
+      // This is the number of SCT Feedback submissions attempted.
+      // Responsibility for incrementing lies OUTSIDE of the class
+      // (And watch for integer overflows)
+      // This is not used when this algorithm runs on servers
       public uint16    num_submissions_attempted
 
-      //  This is the number of successful SCT Feedback submissions. This
-      //  variable is updated by the class.
-      //  This is not used when this algorithm runs on servers
+      // This is the number of successful SCT Feedback submissions. This
+      // variable is updated by the class.
+      // This is not used when this algorithm runs on servers
       private uint16   num_submissions_succeeded
 
-      //  This contains all the bundles of SCT data we have observed for
-      //  this domain
+      // This contains all the bundles of SCT data we have observed for
+      // this domain
       SCTBundle[] observed_records
 
 
-      //  This function can be called to determine if we should attempt
-      //  SCT Feedback for this domain.
+      // This function can be called to determine if we should attempt
+      // SCT Feedback for this domain.
       def should_attempt_feedback() {
         // Servers always perform feedback!
         if(operator_is_server)
@@ -1987,11 +1987,11 @@ the suggestion values in the below pseudocode).
         return false
       }
 
-      //  For Clients, this function is called after a successful
-      //  connection to an HTTPS server, with a single SCTBundle
-      //  constructed from that connection's certificate chain and SCTs.
-      //  For Servers, this is called after receiving SCT Feedback with
-      //  all the bundles sent in the feedback.
+      // For Clients, this function is called after a successful
+      // connection to an HTTPS server, with a single SCTBundle
+      // constructed from that connection's certificate chain and SCTs.
+      // For Servers, this is called after receiving SCT Feedback with
+      // all the bundles sent in the feedback.
       def insert(SCTBundle[] bundles) {
         // Do not store data for long-failing domains
         if(sct_feedback_failing_longterm()) {
@@ -2019,9 +2019,9 @@ the suggestion values in the below pseudocode).
         SCTStoreManager.update_cache_percentage()
       }
 
-      //  When it is time to perform SCT Feedback, the HTTPS client
-      //  calls this function to get a selection of SCTBundles to send
-      //  as feedback
+      // When it is time to perform SCT Feedback, the HTTPS client
+      // calls this function to get a selection of SCTBundles to send
+      // as feedback
       def get_gossip_selection() {
         if(len(observed_records) > MAX_SCT_RECORDS_TO_GOSSIP) {
           indexes = set()
@@ -2044,20 +2044,20 @@ the suggestion values in the below pseudocode).
       }
 
       def passes_validity_checks(SCTBundle b) {
-        //  This function performs the validity checks specified in
-        //  {{feedback-srvop}}
+        // This function performs the validity checks specified in
+        // {{feedback-srvop}}
       }
     }
 
 The SCTDomainEntry is responsible for handling the outcome of a
 submission report for that domain using its member function:
 
-    //  This function is called after providing SCT Feedback
-    //  to a server. It is passed the feedback sent to the other party, which
-    //  is the output of get_gossip_selection(), and also the SCTBundle
-    //  representing the connection the data was sent on.
-    //  (When this code runs on the server, connectionBundle is NULL)
-    //  If the Feedback was not sent successfully, error is True
+    // This function is called after providing SCT Feedback
+    // to a server. It is passed the feedback sent to the other party, which
+    // is the output of get_gossip_selection(), and also the SCTBundle
+    // representing the connection the data was sent on.
+    // (When this code runs on the server, connectionBundle is NULL)
+    // If the Feedback was not sent successfully, error is True
     def after_submit_to_thirdparty(error, SCTBundle[] submittedBundles,
                                    SCTBundle connectionBundle)
     {
