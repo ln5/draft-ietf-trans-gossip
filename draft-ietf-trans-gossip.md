@@ -40,16 +40,17 @@ normative:
         ins: R. Stradling
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
     date: 2017-10-30
+  RFC6962:
   RFC7159:
   RFC7540:
 
 informative:
-  draft-ietf-trans-threat-analysis-03:
-    title: "Attack Model and Threat for Certificate Transparency"
+  draft-ietf-trans-threat-analysis-12:
+    title: "Attack and Threat Model for Certificate Transparency"
     author:
       -
         ins: S. Kent
-    date: 2015-10-06
+    date: 2017-10-13
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-threat-analysis/
 
   dual-ca-compromise-attack:
@@ -336,11 +337,11 @@ following members:
   first and so on. The "x509_chain" member is mandatory to include.
 
 - "sct_data_v1" : An array of base64 encoded
-  "SignedCertificateTimestampList"s as defined in {{RFC-6962}} section
+  "SignedCertificateTimestampList"s as defined in {{RFC6962}} section
   3.3. The "sct_data_v1" member is optional.
 
 - "sct_data_v2" : An array of base64 encoded "TransItem" structures of
-  type "x509_sct_v2" or "precert_sct_v2" as defined in {{6962-bis-27}}
+  type "x509_sct_v2" or "precert_sct_v2" as defined in {{RFC-6962-BIS-27}}
   section 4.8. The "sct_data_v2" member is optional.
 
 We will refer to this object as 'sct\_feedback'.
@@ -789,7 +790,7 @@ JSON object {{RFC7159}} with one or both of the following two members:
   from ct/v1/get-sth, see {{RFC6962}} section 4.3
 
 - "v2" : array of 0 or more objects each containing an STH as returned
-  from ct/v2/get-sth, see {{6962-bis-27}} section 5.2
+  from ct/v2/get-sth, see {{RFC-6962-BIS-27}} section 5.2
 
 Note that all STHs MUST be fresh as defined in {{sth-pollination}}.
 
