@@ -1283,7 +1283,7 @@ HTTP Cookies, etc. -- this is considered acceptable.
 
 The fingerprinting attack described above would be mitigated by a
 requirement that logs must use a deterministic signature scheme when
-signing SCTs ({{RFC-6962-BIS-09}} Section 2.1.4). A log signing using
+signing SCTs ({{RFC-6962-BIS-09}} section 2.1.4). A log signing using
 RSA is not required to use a deterministic signature scheme.
 
 Since logs are allowed to issue a new SCT for a certificate already
