@@ -2407,7 +2407,7 @@ SCTStoreManager class will be used.
 
 # IANA considerations
 
-\[ TBD \]
+There are no IANA considerations.
 
 # Contributors
 
