@@ -546,10 +546,6 @@ The check in step 3 is to help malfunctioning clients from exposing
 which sites they visit. It additionally helps prevent DoS attacks on
 the server.
 
-\[ Note: Thinking about building this, how does the SCT Feedback app know
-which sites it's authoritative for? It will need that amount of
-configuration at least. \]
-
 The check in step 4 is to prevent DoS attacks where an adversary fills
 up the store prior to attacking a client (thus preventing the client's
 feedback from being recorded), or an attack where an adversary simply
@@ -563,7 +559,7 @@ and 4. Instead, to prevent a malicious client from filling the
 server's data store, the HTTPS server SHOULD perform an additional
 check in the more advanced mode:
 
-  - if the x509\_chain consists of an invalid certificate chain, or
+  5. if the x509\_chain consists of an invalid certificate chain, or
   the culminating trust anchor is not recognized by the server, the
   server SHOULD modify the sct\_feedback object, discarding all items
   in the x509\_chain array except the first item
