@@ -1945,11 +1945,12 @@ the suggestion values in the below pseudocode).
       private uint16   num_feedback_loop_failures
 
       // This is whether or not SCT Feedback has failed enough times that we
-      // should not bother storing data for it anymore. It is a small function
-      // used for illustrative purposes
+      // should not bother storing data for it anymore. It is a small
+      // function used for illustrative purposes.
       // This is not used when this algorithm runs on servers
       private bool     sct_feedback_failing_longterm()
-        { num_feedback_loop_failures >= MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE }
+        { num_feedback_loop_failures >=
+            MIN_SCT_FEEDBACK_ATTEMPTS_BEFORE_OMITTING_STORAGE }
 
       // This is the number of SCT Feedback submissions attempted.
       // Responsibility for incrementing lies OUTSIDE of the class
@@ -1975,7 +1976,8 @@ the suggestion values in the below pseudocode).
           return true
 
         // If we have not tried in a month, try again
-        if(now() - last_sct_feedback_attempt > WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS)
+        if(now() - last_sct_feedback_attempt >
+            WAIT_BETWEEN_SCT_FEEDBACK_ATTEMPTS)
           return true
 
         // If we have tried recently, and it seems to be working, go for it!
@@ -2295,7 +2297,8 @@ SCTStoreManager class will be used.
       while(bundlesToDelete.length > 0 &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex = rand() % bundlesToDelete.length
-        bundlesToDelete[rndIndex].domainEntry.observed_records.remove(bundlesToDelete[rndIndex].sctBundle)
+        bundlesToDelete[rndIndex].domainEntry.observed_records.remove(
+            bundlesToDelete[rndIndex].sctBundle)
         bundlesToDelete.removeAt(rndIndex)
 
         recalculateIndex++
@@ -2329,10 +2332,12 @@ SCTStoreManager class will be used.
       while(all_sct_stores.length > savedRecords &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex1 = rand() % all_sct_stores.length
-        uint rndIndex2 = rand() % all_sct_stores[rndIndex1].observed_records.length
+        uint rndIndex2 = rand() %
+            all_sct_stores[rndIndex1].observed_records.length
 
         if(proof_fetching_enabled) {
-          if(all_sct_stores[rndIndex1].observed_records[rndIndex2].max_proof_failures() >
+          if(all_sct_stores[rndIndex1].observed_records[
+              rndIndex2].max_proof_failures() >
              MIN_PROOF_FAILURES_CONSIDERED_SUSPICIOUS) {
             savedRecords++
             continue
@@ -2372,7 +2377,8 @@ SCTStoreManager class will be used.
       while(all_sct_stores.length > 0 &&
             current_cache_percentage() > CACHE_PRESSURE_SAFE) {
         uint rndIndex1 = rand() % all_sct_stores.length
-        uint rndIndex2 = rand() % all_sct_stores[rndIndex1].observed_records.length
+        uint rndIndex2 = rand() %
+            all_sct_stores[rndIndex1].observed_records.length
 
         all_sct_stores[rndIndex1].observed_records.removeAt(rndIndex2)
         if(all_sct_stores[rndIndex1].observed_records.length == 0) {
