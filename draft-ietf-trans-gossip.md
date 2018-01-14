@@ -40,21 +40,6 @@ normative:
         ins: R. Stradling
     target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
     date: 2017-10-30
-  RFC-6962-BIS-09:
-    title: "Certificate Transparency"
-    author:
-      -
-        ins: B. Laurie
-      -
-        ins: A. Langley
-      -
-        ins: E. Kasper
-      -
-        ins: E. Messeri
-      -
-        ins: R. Stradling
-    date: 2015-10-13
-    target: https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis/
   RFC7159:
   RFC7540:
 
@@ -190,12 +175,12 @@ This document presents three gossiping mechanisms: SCT Feedback, STH
 Pollination, and a Trusted Auditor Relationship.
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
-Timestamps (SCTs) (Section 3.3 of {{RFC-6962-BIS-09}}) with CT
+Timestamps (SCTs) (Section 4.8 of {{RFC-6962-BIS-27}}) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
 HTTPS servers, which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools to share
-Signed Tree Heads (STHs) (Section 3.6 of {{RFC-6962-BIS-09}}) with
+Signed Tree Heads (STHs) (Section 4.10 of {{RFC-6962-BIS-27}}) with
 other connecting clients in the hope that STHs will find their way to
 CT auditors.
 
@@ -212,7 +197,7 @@ site can accumulate records of SCTs that have been issued by various
 logs for that site, providing a consolidated repository of SCTs that
 could be shared with auditors. Auditors can use this information to
 detect a misbehaving log that fails to include a certificate within
-the time period stipulated by its MMD metadata.
+the time period stipulated by its MMD log parameter.
 
 Sharing an STH is considered reasonably safe from a privacy
 perspective as long as the same STH is shared by a large number of
@@ -224,11 +209,11 @@ issuance frequency (see {{sth-pollination}}).
 # Terminology
 
 This document relies on terminology and data structures defined in
-{{RFC-6962-BIS-09}}, including MMD, STH, SCT, Version, LogID, SCT
+{{RFC-6962-BIS-27}}, including MMD, STH, SCT, Version, LogID, SCT
 timestamp, CtExtensions, SCT signature, Merkle Tree Hash.
 
 This document relies on terminology defined in
-{{draft-ietf-trans-threat-analysis-03}}, including Auditing.
+{{draft-ietf-trans-threat-analysis-12}}, including Auditing.
 
 ## Pre-Loaded vs Locally Added Anchors
 
@@ -371,7 +356,7 @@ contains as well as more details about the x509\_chain element.
 When an HTTPS client connects to an HTTPS server, the client receives
 a set of SCTs as part of the TLS handshake. SCTs are included in the
 TLS handshake using one or more of the three mechanisms described in
-{{RFC-6962-BIS-09}} section 3.4 -- in the server certificate, in a TLS
+{{RFC-6962-BIS-27}} section 6 -- in the server certificate, in a TLS
 extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
 remaining SCTs together with a locally constructed certificate chain
@@ -673,8 +658,7 @@ of the system to ensure an STH will not be rare.
 
 - HTTPS clients silently ignore STHs from logs with an STH issuance
   frequency of more than one STH per hour. Logs use the STH Frequency
-  Count metadata to express this ({{RFC-6962-BIS-09}} sections 3.6
-  and 5.1).
+  Count log parameter to express this ({{RFC-6962-BIS-27}} section 4.1).
 - HTTPS clients silently ignore STHs which are not fresh.
 
 An STH is considered fresh iff its timestamp is less than 14 days in
@@ -826,7 +810,7 @@ people running their own services. In such a setting, retrieving
 proofs from that third party could be considered reasonable from a
 privacy perspective. The HTTPS client may also do its own auditing and
 might additionally share SCTs and STHs with the trusted party to
-contribute to herd immunity. Here, the ordinary {{RFC-6962-BIS-09}}
+contribute to herd immunity. Here, the ordinary {{RFC-6962-BIS-27}}
 protocol is sufficient for the client to do the auditing while SCT
 Feedback and STH Pollination can be used in whole or in parts for the
 gossip part.
@@ -1283,7 +1267,7 @@ HTTP Cookies, etc. -- this is considered acceptable.
 
 The fingerprinting attack described above would be mitigated by a
 requirement that logs must use a deterministic signature scheme when
-signing SCTs ({{RFC-6962-BIS-09}} section 2.1.4). A log signing using
+signing SCTs ({{RFC-6962-BIS-27}} section 2.2). A log signing using
 RSA is not required to use a deterministic signature scheme.
 
 Since logs are allowed to issue a new SCT for a certificate already
@@ -1305,7 +1289,7 @@ if it has seen no SCTs from that log.
 
 The time between two polls for new STH's SHOULD NOT be significantly
 shorter than the MMD of the polled log divided by its STH Frequency
-Count ({{RFC-6962-BIS-09}} section 5.1).
+Count ({{RFC-6962-BIS-27}} section 4.1).
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
