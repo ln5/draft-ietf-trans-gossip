@@ -1032,7 +1032,7 @@ In the first attack, the log can present a split view of the log for
 all time. This attack can be detected by CT auditors, but a naive
 auditor implementation may fail to do so. The simplest, least
 efficient way to detect the attack is to mirror the entire log and
-assert inclusion of every peice of data. If an auditor does not mirror
+assert inclusion of every piece of data. If an auditor does not mirror
 the log, one way to detect this attack is to resolve each view
 of the log to the most recent STHs available and then force the log to
 present a consistency proof. (Which it cannot.) We highly recommend
