@@ -176,12 +176,12 @@ This document presents three gossiping mechanisms: SCT Feedback, STH
 Pollination, and a Trusted Auditor Relationship.
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
-Timestamps (SCTs) (Section 4.8 of {{RFC-6962-BIS-27}}) with CT
+Timestamps (SCTs) (section 4.8 of {{RFC-6962-BIS-27}}) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
 HTTPS servers, which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools to share
-Signed Tree Heads (STHs) (Section 4.10 of {{RFC-6962-BIS-27}}) with
+Signed Tree Heads (STHs) (section 4.10 of {{RFC-6962-BIS-27}}) with
 other connecting clients in the hope that STHs will find their way to
 CT auditors.
 
