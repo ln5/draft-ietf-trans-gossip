@@ -905,7 +905,7 @@ If SCT Feedback was the only mechanism in the ecosystem, any server
 that did not implement the feature would open itself and its users to
 attack without any possibility of detection.
 
-A webserver not deploying SCT Feedback (or an alternative method
+An HTTPS server not deploying SCT Feedback (or an alternative method
 providing equivalent functionality) may never learn that it was a
 target of an attack by a malicious log, as described in
 {{actively-malicious-log}}, although the presence of an attack by the
@@ -1485,7 +1485,7 @@ concerns, so if implemented, it SHOULD connect using public key
 pinning and not consider an item delivered until it receives a
 confirmation.
 
-In the cases 3, 4, and 5, we assume that the webserver(s) or trusted
+In the cases 3, 4, and 5, we assume that the HTTPS server(s) or trusted
 auditor in question is either experiencing an operational failure, or
 being attacked. In both cases, a client SHOULD retain the data for
 later submission (subject to Private Browsing or other
