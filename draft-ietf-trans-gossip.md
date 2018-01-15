@@ -2414,6 +2414,10 @@ Rasmus Dahlberg, Steven Kent, Yan Zhu.
 
 # ChangeLog
 
+## Changes between ietf-05 and ietf-06
+
+- Clarifications and nits based on feedback from Rasmus Dahlberg.
+
 ## Changes between ietf-04 and ietf-05
 
 - STH and SCT data formats changed to support CT v1 and v2.
