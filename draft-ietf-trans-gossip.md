@@ -555,7 +555,7 @@ check:
 
 The HTTPS server MAY choose to omit checks 4 or 5. This will place the
 server at risk of having its data store filled up by invalid data, but
-can also allow a server to identify interesting certificate or
+can also allow a server to identify interesting certificates or
 certificate chains that omit valid SCTs, or do not chain to a trusted
 root. This information may enable an HTTPS server operator to detect
 attacks or unusual behavior of Certificate Authorities even outside
