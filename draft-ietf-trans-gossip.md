@@ -125,7 +125,7 @@ to as CT Gossip, is to detect certain misbehavior by CT logs. In
 particular, CT Gossip aims to detect logs that are providing
 inconsistent views to different log clients, and logs failing to
 include submitted certificates within the time period stipulated by
-MMD.
+MMD. See {{terminology}} for terminology used in this document.
 
 One of the major challenges of any gossip protocol is limiting damage
 to user privacy. The goal of CT gossip is to publish and distribute
