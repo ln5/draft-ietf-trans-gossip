@@ -660,7 +660,7 @@ concerns explained below. Suggestions for the policy can be found in
 An HTTPS client could be tracked by giving it a unique or rare STH,
 see {{privacy-sth-pollination}} and {{privacy-sth-interaction}}. To
 address this concern, we place restrictions on different components of
-the system to ensure an STH will not be rare.
+the system to ensure an STH will not be rare:
 
 - HTTPS clients silently ignore STHs from logs with an STH issuance
   frequency of more than one STH per hour. Logs use the STH Frequency
