@@ -177,12 +177,12 @@ This document presents three gossiping mechanisms: SCT Feedback, STH
 Pollination, and a Trusted Auditor Relationship.
 
 SCT Feedback enables HTTPS clients to share Signed Certificate
-Timestamps (SCTs) (section 4.8 of {{RFC-6962-BIS-27}}) with CT
+Timestamps (SCTs) ({{RFC-6962-BIS-27}} Section 4.8) with CT
 auditors in a privacy-preserving manner by sending SCTs to originating
 HTTPS servers, which in turn share them with CT auditors.
 
 In STH Pollination, HTTPS clients use HTTPS servers as pools to share
-Signed Tree Heads (STHs) (section 4.10 of {{RFC-6962-BIS-27}}) with
+Signed Tree Heads (STHs) ({{RFC-6962-BIS-27}} Section 4.10) with
 other connecting clients in the hope that STHs will find their way to
 CT auditors.
 
@@ -340,12 +340,12 @@ following members:
   first and so on. The "x509_chain" member is mandatory to include.
 
 - "sct_data_v1" : An array of base64 encoded
-  "SignedCertificateTimestampList"s as defined in {{RFC6962}} section
+  "SignedCertificateTimestampList"s as defined in {{RFC6962}} Section
   3.3. The "sct_data_v1" member is optional.
 
 - "sct_data_v2" : An array of base64 encoded "TransItem" structures of
   type "x509_sct_v2" or "precert_sct_v2" as defined in {{RFC-6962-BIS-27}}
-  section 4.8. The "sct_data_v2" member is optional.
+  Section 4.8. The "sct_data_v2" member is optional.
 
 We will refer to this object as 'sct\_feedback'.
 
@@ -360,7 +360,7 @@ contains as well as more details about the x509\_chain element.
 When an HTTPS client connects to an HTTPS server, the client receives
 a set of SCTs as part of the TLS handshake. SCTs are included in the
 TLS handshake using one or more of the three mechanisms described in
-{{RFC-6962-BIS-27}} section 6 -- in the server certificate, in a TLS
+{{RFC-6962-BIS-27}} Section 6 -- in the server certificate, in a TLS
 extension, or in an OCSP extension. The client MUST discard SCTs that
 are not signed by a log known to the client and SHOULD store the
 remaining SCTs together with a locally constructed certificate chain
@@ -791,10 +791,10 @@ The data sent from HTTPS clients and CT auditors to HTTPS servers is a
 JSON object {{RFC7159}} with one or both of the following two members:
 
 - "v1" : array of 0 or more objects each containing an STH as returned
-  from ct/v1/get-sth, see {{RFC6962}} section 4.3
+  from ct/v1/get-sth, see {{RFC6962}} Section 4.3
 
 - "v2" : array of 0 or more objects each containing an STH as returned
-  from ct/v2/get-sth, see {{RFC-6962-BIS-27}} section 5.2
+  from ct/v2/get-sth, see {{RFC-6962-BIS-27}} Section 5.2
 
 Note that all STHs MUST be fresh as defined in {{sth-pollination}}.
 
@@ -1272,7 +1272,7 @@ HTTP Cookies, etc. -- this is considered acceptable.
 
 The fingerprinting attack described above would be mitigated by a
 requirement that logs must use a deterministic signature scheme when
-signing SCTs ({{RFC-6962-BIS-27}} section 2.2). A log signing using
+signing SCTs ({{RFC-6962-BIS-27}} Section 2.2). A log signing using
 RSA is not required to use a deterministic signature scheme.
 
 Since logs are allowed to issue a new SCT for a certificate already
@@ -1294,7 +1294,7 @@ if it has seen no SCTs from that log.
 
 The time between two polls for new STH's SHOULD NOT be significantly
 shorter than the MMD of the polled log divided by its STH Frequency
-Count ({{RFC-6962-BIS-27}} section 4.1).
+Count ({{RFC-6962-BIS-27}} Section 4.1).
 
 The actual mechanism by which Proof Fetching is done carries
 considerable privacy concerns. Although out of scope for the document,
@@ -1327,9 +1327,9 @@ only client pollinating that STH cross-origin.
 It is mitigated partially because the log is limited in the number of
 STHs it can issue. It must 'save' one of its STHs each MMD to perform
 the attack. A log violating its STH Frequency Count
-({{RFC-6962-BIS-27}} section 4.1) can be identified as non-compliant
+({{RFC-6962-BIS-27}} Section 4.1) can be identified as non-compliant
 by CT auditors following the procedure described in
-{{RFC-6962-BIS-27}} section 8.3.
+{{RFC-6962-BIS-27}} Section 8.3.
 
 ### Privacy in STH Interaction {#privacy-sth-interaction}
 
