@@ -144,9 +144,10 @@ their adoption is not universal.
 # Defining the problem
 
 When a log provides different views of the log to different clients
-this is described as a partitioning attack. Each client would be able
-to verify the append-only nature of the log but, in the extreme case,
-each client might see a unique view of the log.
+this is described as a partitioning attack (resulting in a split
+view). Each client would be able to verify the append-only nature of
+the log but, in the extreme case, each client might see a unique view
+of the log.
 
 The CT logs are public, append-only and untrusted and thus have to be
 audited for consistency, i.e., they should never rewrite history.
