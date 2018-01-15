@@ -575,7 +575,7 @@ passive pull model.
 
 The data received in a GET of the well-known URL or sent in the POST
 is defined in {{feedback-dataformat}} with the following difference:
-The x509\_chain element may contain only he end-entity certificate, as
+The x509\_chain element may contain only the end-entity certificate, as
 described below.
 
 HTTPS servers SHOULD share all sct\_feedback objects they see that
