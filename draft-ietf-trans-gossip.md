@@ -307,6 +307,8 @@ log presenting inconsistent views. The sharing of certificate chains
 is beneficial to HTTPS server operators interested in direct feedback
 from clients for detecting bogus certificates issued in their name and
 therefore incentivizes server operators to take part in SCT Feedback.
+It also enables detection of the Dual-CA Compromise attack (see
+section {{dual-ca-compromise}}).
 
 SCT Feedback is the most privacy-preserving gossip mechanism, as it
 does not directly expose any links between an end user and the sites
