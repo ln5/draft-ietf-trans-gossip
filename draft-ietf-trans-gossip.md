@@ -2406,7 +2406,7 @@ There are no IANA considerations.
 The authors would like to thank the following contributors for
 valuable suggestions: Al Cutter, Andrew Ayer, Ben Laurie, Benjamin
 Kaduk, Graham Edgecombe, Josef Gustafsson, Karen Seo, Magnus Ahltorp,
-Steven Kent, Yan Zhu.
+Rasmus Dahlberg, Steven Kent, Yan Zhu.
 
 # ChangeLog
 
