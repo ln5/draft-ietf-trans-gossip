@@ -644,6 +644,7 @@ described in {{sth-pollination-dataformat}}.
 
 An HTTPS client may acquire STHs by several methods:
 
+- as part of the TLS handshake;
 - in replies to pollination POSTs;
 - asking logs that it recognizes for the current STH, either directly
   (v2/get-sth) or indirectly (for example over DNS)
