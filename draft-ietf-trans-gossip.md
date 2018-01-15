@@ -657,13 +657,14 @@ happen is regarded as undefined policy with the exception of privacy
 concerns explained below. Suggestions for the policy can be found in
 {{pooling-policy-recommendations}}.
 
-An HTTPS client could be tracked by giving it a unique or rare STH.
-To address this concern, we place restrictions on different components
-of the system to ensure an STH will not be rare.
+An HTTPS client could be tracked by giving it a unique or rare STH,
+see {{privacy-sth-pollination}} and {{privacy-sth-interaction}}. To
+address this concern, we place restrictions on different components of
+the system to ensure an STH will not be rare.
 
 - HTTPS clients silently ignore STHs from logs with an STH issuance
   frequency of more than one STH per hour. Logs use the STH Frequency
-  Count log parameter to express this ({{RFC-6962-BIS-27}} section 4.1).
+  Count log parameter to express this ({{RFC-6962-BIS-27}} Section 4.1).
 - HTTPS clients silently ignore STHs which are not fresh.
 
 An STH is considered fresh iff its timestamp is less than 14 days in
@@ -1302,7 +1303,7 @@ DNS is a mechanism currently discussed. DNS exposes data in plaintext
 over the network (including what sites the user is visiting and what
 sites they have previously visited) and may not be suitable for some.
 
-### Privacy in STH Pollination
+### Privacy in STH Pollination {#privacy-sth-pollination}
 
 An STH linked to an HTTPS client may indicate the following about that
 client:
