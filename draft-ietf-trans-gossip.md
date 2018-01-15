@@ -541,12 +541,12 @@ feedback from being recorded), or an attack where an adversary simply
 attempts to fill up server's storage space.
 
 The above describes the simpler mode of operation. In the more
-advanced server mode, the server will detect the attack described in
+complex server mode, the server will detect the attack described in
 {{dual-ca-compromise-attack}}. In this configuration the server will
 not modify the sct\_feedback object prior to performing checks 2, 3,
 and 4. Instead, to prevent a malicious client from filling the 
 server's data store, the HTTPS server SHOULD perform an additional
-check in the more advanced mode:
+check:
 
   - (5) if the x509\_chain consists of an invalid certificate chain, or
   the culminating trust anchor is not recognized by the server, the
