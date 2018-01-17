@@ -1618,7 +1618,7 @@ effort to not delete data until it has been successfully resolved to a
 new STH via a proof.
 
 When it is time to delete a record, it can be done in a way that makes
-it more difficult for a successful flushing attack to to be performed.
+it more difficult for a successful flushing attack to be performed.
 
   1. When the record cache has reached a certain size that is yet
      under the limit, aggressively perform proof fetching. This should
