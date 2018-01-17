@@ -1525,7 +1525,7 @@ in this draft are:
 
 - When a client receives STHs during STH Pollination, it should store
   them for some amount of time, mix them with other STHs, release some
-  of them them to various servers at some point, resolve some of them
+  of them to various servers at some point, resolve some of them
   to new STHs, and eventually remove them from its store
 
 - When a server receives SCTs during SCT Feedback, it should store
