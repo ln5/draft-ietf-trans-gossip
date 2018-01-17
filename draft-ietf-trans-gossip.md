@@ -916,7 +916,7 @@ target of an attack by a malicious log, as described in
 {{actively-malicious-log}}, although the presence of an attack by the
 log could be learned through STH Pollination. Additionally, users who
 wish to have the strongest measure of privacy protection (by disabling
-STH Pollination Proof Fetching and forgoing a Trusted Auditor) could
+STH Pollination Proof Fetching, and forgoing a Trusted Auditor) could
 be attacked without risk of detection.
 
 ## STH Pollination {#threemetheco-sth-pollination}
