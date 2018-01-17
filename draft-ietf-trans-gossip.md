@@ -1169,7 +1169,7 @@ fraudulent STHs in the flood.
 
 If an HTTPS client or HTTPS server is operating in a constrained
 environment and cannot devote enough storage space to hold all STHs
-within the validity window it is recommended to use the below Deletion
+within the validity window it is recommended to use the Deletion
 Algorithm in {{deletion-algorithm}} to make it more difficult
 for the attacker to perform a flushing attack.
 
@@ -1203,7 +1203,7 @@ Chains it is authoritative for it is recommended to configure the SCT
 Feedback mechanism to allow only certain certificates that are known
 to be valid. These chains and SCTs can then be discarded without being
 stored or subsequently provided to any clients or auditors. If the
-allowlist is not sufficient, the below Deletion Algorithm in
+allowlist is not sufficient, the Deletion Algorithm in
 {{deletion-algorithm}} is recommended to make it more difficult for
 the attacker to perform a flushing attack.
 
@@ -1215,7 +1215,7 @@ delete entries when the cache size meets its limit. This does not
 mitigate flushing attacks, and such an attack is documented in
 {{gossip-mixing}}.
 
-The below Deletion Algorithm {{deletion-algorithm}} is recommended to
+The Deletion Algorithm in {{deletion-algorithm}} is recommended to
 make it more difficult for the attacker to perform a flushing attack.
 
 ## Privacy considerations
